@@ -7,7 +7,7 @@ type Lesson = {
   title: string;
   description: string;
   status: LessonStatus;
-  link: string
+  link: string;
 };
 
 const lessons: Lesson[] = [
@@ -17,7 +17,7 @@ const lessons: Lesson[] = [
     description:
       "Read People records using API_DoQuery, fetch(), the Quickbase session, an Application Token, XML, and DOMParser.",
     status: "complete",
-    link: "/lessons/1a"
+    link: "/lessons/1a",
   },
   {
     number: "1B",
@@ -25,7 +25,7 @@ const lessons: Lesson[] = [
     description:
       "Read the exact same People table using the modern Quickbase RESTful JSON API.",
     status: "next",
-    link: "/lessons/1b"
+    link: "/lessons/1b",
   },
   {
     number: "2",
@@ -33,7 +33,7 @@ const lessons: Lesson[] = [
     description:
       "Sort records already loaded into the browser without sending another request to Quickbase.",
     status: "upcoming",
-    link: "/lessons/2"
+    link: "/lessons/2",
   },
   {
     number: "3",
@@ -41,7 +41,7 @@ const lessons: Lesson[] = [
     description:
       "Search the records displayed by the Code Page using JavaScript.",
     status: "upcoming",
-    link: "/lessons/3"
+    link: "/lessons/3",
   },
   {
     number: "4",
@@ -49,14 +49,14 @@ const lessons: Lesson[] = [
     description:
       "Filter the displayed dataset using specific field values and conditions.",
     status: "upcoming",
-    link: "/lessons/4"
+    link: "/lessons/4",
   },
   {
     number: "5",
     title: "Add Records",
     description: "Create new Quickbase records from a Code Page.",
     status: "upcoming",
-    link: "/lessons/5"
+    link: "/lessons/5",
   },
   {
     number: "6",
@@ -64,7 +64,7 @@ const lessons: Lesson[] = [
     description:
       "Update existing Quickbase records from the training application.",
     status: "upcoming",
-    link: "/lessons/6"
+    link: "/lessons/6",
   },
   {
     number: "7",
@@ -72,14 +72,14 @@ const lessons: Lesson[] = [
     description:
       "Delete Quickbase records and properly handle the resulting API response.",
     status: "upcoming",
-    link: "/lessons/7"
+    link: "/lessons/7",
   },
   {
     number: "8",
     title: "Pagination",
     description: "Request and display larger datasets in manageable pages.",
     status: "upcoming",
-    link: "/lessons/8"
+    link: "/lessons/8",
   },
   {
     number: "9",
@@ -87,7 +87,7 @@ const lessons: Lesson[] = [
     description:
       "Work with Quickbase parent-child relationships through the API.",
     status: "upcoming",
-    link: "/lessons/9"
+    link: "/lessons/9",
   },
   {
     number: "10",
@@ -95,7 +95,7 @@ const lessons: Lesson[] = [
     description:
       "Extract the patterns learned throughout the lab into reusable Quickbase development utilities.",
     status: "upcoming",
-    link: "/lessons/10"
+    link: "/lessons/10",
   },
 ];
 
@@ -126,18 +126,37 @@ export default function Home() {
     <main className="min-h-screen bg-white text-black">
       <header className="border-b border-gray-300 bg-[#1f5c99] text-white">
         <div className="mx-auto max-w-7xl px-6 py-8">
-          <p className="mb-2 text-base font-bold uppercase tracking-wide">
-            Quickbase Tutorials
-          </p>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="mb-2 text-base font-bold uppercase tracking-wide">
+                Quickbase Tutorials
+              </p>
 
-          <h1 className="text-3xl font-bold md:text-4xl">
-            Code Pages Developer Lab
-          </h1>
+              <h1 className="text-3xl font-bold md:text-4xl">
+                Code Pages Developer Lab
+              </h1>
 
-          <p className="mt-3 max-w-4xl text-lg text-white">
-            Learn Quickbase development by building real working Code Page
-            examples one concept at a time.
-          </p>
+              <p className="mt-3 max-w-4xl text-lg text-white">
+                Learn Quickbase development by building real working Code Page
+                examples one concept at a time.
+              </p>
+
+              <p className="mt-4 max-w-4xl text-base text-white">
+                This lab is being built in public. Browse the source, follow the
+                lessons, open an issue, or help improve an example.
+                Contributions are very welcome. ❤️
+              </p>
+            </div>
+
+            <a
+              href="https://github.com/dariansweb/Quickbase-API"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-fit items-center rounded-md border-2 border-white px-5 py-3 font-bold text-white transition hover:bg-white hover:text-[#1f5c99]"
+            >
+              View on GitHub →
+            </a>
+          </div>
         </div>
       </header>
 
