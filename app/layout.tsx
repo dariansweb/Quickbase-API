@@ -78,6 +78,9 @@ export default function RootLayout({
               <Link href="/lessons" className="text-white hover:underline">
                 Table of Contents
               </Link>
+              <Link href="/about" className="text-white hover:underline">
+                About
+              </Link>
             </div>
           </div>
         </nav>
