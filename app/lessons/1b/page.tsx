@@ -387,7 +387,13 @@ export default function Lesson1BPage() {
         <p className="font-bold uppercase tracking-wide text-[#1f5c99]">
           Lesson 1B
         </p>
-
+        <Link
+          href="/files/PeoplePage_rest.txt"
+          target="_blank"
+          className="font-bold text-[#1f5c99] underline"
+        >
+          Code Page Here - PeoplePage_rest.html
+        </Link>
         <h1 className="mt-2 text-4xl font-bold">
           Read Records with the REST API
         </h1>

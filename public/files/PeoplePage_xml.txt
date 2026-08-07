@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>People Table</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 32px;
+        background: #f4f6f8;
+        color: #1f2933;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .page {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        color: #003366;
+      }
+
+      .description {
+        margin: 0 0 24px;
+        color: #5b6775;
+      }
+
+      .status {
+        margin-bottom: 16px;
+        padding: 12px 14px;
+        border: 1px solid #cfd8e3;
+        border-radius: 6px;
+        background: #ffffff;
+      }
+
+      .status.error {
+        border-color: #a61c1c;
+        color: #7f0000;
+        background: #fff1f1;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        border: 1px solid #d7dee7;
+        border-radius: 8px;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #e5e9ef;
+        text-align: left;
+      }
+
+      th {
+        background: #003366;
+        color: #ffffff;
+      }
+
+      tbody tr:hover {
+        background: #f3f7fb;
+      }
+
+      .color-value {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .color-swatch {
+        width: 18px;
+        height: 18px;
+        border: 1px solid #7f8c99;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="page">
+      <h1>People</h1>
+      <h2>
+        Lesson 1A Quickbase → XML API → XML → DOMParser → JavaScript → HTML
+      </h2>
+      <p class="description">
+        Records loaded directly from the Quickbase People table.
+      </p>
+
+      <div id="status" class="status">Loading Quickbase records...</div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Record ID</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Favorite Color</th>
+            </tr>
+          </thead>
+
+          <tbody id="peopleRows"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <script>
+      const TABLE_DBID = "bv9j6j4n5";
+
+      /*
+    Paste your newly generated application token here.
+    Do not use a user token in browser JavaScript.
+  */
+      const APP_TOKEN = "ENTER YOUR APP TOKEN HERE";
+
+      const FIELD_IDS = {
+        recordId: 3,
+        name: 6,
+        age: 7,
+        favoriteColor: 8,
+      };
+
+      function getFieldValue(record, fieldId) {
+        const field = record.querySelector(`f[id="${fieldId}"]`);
+        return field ? field.textContent.trim() : "";
+      }
+
+      function createCell(value) {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        return cell;
+      }
+
+      function createColorCell(colorName) {
+        const cell = document.createElement("td");
+
+        const wrapper = document.createElement("span");
+        wrapper.className = "color-value";
+
+        const swatch = document.createElement("span");
+        swatch.className = "color-swatch";
+        swatch.style.backgroundColor = colorName || "transparent";
+
+        const label = document.createElement("span");
+        label.textContent = colorName;
+
+        wrapper.appendChild(swatch);
+        wrapper.appendChild(label);
+        cell.appendChild(wrapper);
+
+        return cell;
+      }
+
+      function renderRecords(records) {
+        const tableBody = document.getElementById("peopleRows");
+        tableBody.replaceChildren();
+
+        for (const record of records) {
+          const recordId = getFieldValue(record, FIELD_IDS.recordId);
+
+          const name = getFieldValue(record, FIELD_IDS.name);
+
+          const age = getFieldValue(record, FIELD_IDS.age);
+
+          const favoriteColor = getFieldValue(record, FIELD_IDS.favoriteColor);
+
+          const row = document.createElement("tr");
+
+          row.appendChild(createCell(recordId));
+          row.appendChild(createCell(name));
+          row.appendChild(createCell(age));
+          row.appendChild(createColorCell(favoriteColor));
+
+          tableBody.appendChild(row);
+        }
+      }
+
+      async function loadPeople() {
+        const startTime = performance.now();
+        const status = document.getElementById("status");
+
+        try {
+          const fieldList = [
+            FIELD_IDS.recordId,
+            FIELD_IDS.name,
+            FIELD_IDS.age,
+            FIELD_IDS.favoriteColor,
+          ].join(".");
+
+          const requestBody = `
+              <qdbapi>
+                <apptoken>${APP_TOKEN}</apptoken>
+                <fmt>structured</fmt>
+                <clist>${fieldList}</clist>
+                <slist>${FIELD_IDS.name}</slist>
+                <options>sortorder-A</options>
+              </qdbapi>
+            `;
+          const response = await fetch(`/db/${TABLE_DBID}`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/xml",
+              "QUICKBASE-ACTION": "API_DoQuery",
+            },
+            body: requestBody,
+          });
+
+          const responseText = await response.text();
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${responseText}`);
+          }
+
+          const parser = new DOMParser();
+
+          const xml = parser.parseFromString(responseText, "application/xml");
+
+          const parserError = xml.querySelector("parsererror");
+
+          if (parserError) {
+            throw new Error(
+              "Quickbase returned data that could not be parsed as XML.",
+            );
+          }
+
+          const errorCode = xml.querySelector("errcode")?.textContent?.trim();
+
+          if (errorCode && errorCode !== "0") {
+            const errorText =
+              xml.querySelector("errtext")?.textContent?.trim() ||
+              "Unknown Quickbase API error";
+
+            const errorDetail =
+              xml.querySelector("errdetail")?.textContent?.trim() || "";
+
+            throw new Error(
+              `Quickbase error ${errorCode}: ${errorText} ${errorDetail}`,
+            );
+          }
+
+          const records = [...xml.querySelectorAll("record")];
+
+          renderRecords(records);
+
+          const endTime = performance.now();
+          const renderTime = endTime - startTime;
+
+          console.log(`Total load/render time: ${renderTime.toFixed(2)} ms`);
+
+          status.classList.remove("error");
+
+          status.textContent = `${records.length} record(s) loaded from Quickbase in ${renderTime.toFixed(2)} ms.`;
+        } catch (error) {
+          console.error(error);
+
+          status.classList.add("error");
+
+          status.textContent = `Unable to load records: ${error.message}`;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", loadPeople);
+    </script>
+  </body>
+</html>

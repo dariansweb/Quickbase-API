@@ -407,6 +407,13 @@ export default function Lesson1APage() {
         <p className="font-bold uppercase tracking-wide text-[#1f5c99]">
           Lesson 1A
         </p>
+        <Link
+          href="/files/PeoplePage_xml.txt"
+          target="_blank"
+          className="font-bold text-[#1f5c99] underline"
+        >
+          Code Page Here - PeoplePage_xml.html
+        </Link>
 
         <h1 className="mt-2 text-4xl font-bold">
           Read Records with the XML API
@@ -559,7 +566,8 @@ export default function Lesson1APage() {
         </pre>
 
         <p className="mt-4">
-          From Quickbase&apos;s perspective, Field ID 6 is the important identity.
+          From Quickbase&apos;s perspective, Field ID 6 is the important
+          identity.
         </p>
       </section>
 
