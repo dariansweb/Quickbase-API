@@ -1,112 +1,15 @@
 import Link from "next/link";
 
-type LessonStatus = "complete" | "next" | "upcoming";
-
-type Lesson = {
-  number: string;
-  title: string;
-  description: string;
-  status: LessonStatus;
-  link: string;
-};
-
-const lessons: Lesson[] = [
-  {
-    number: "1A",
-    title: "Read Records with XML API",
-    description:
-      "Read People records using API_DoQuery, fetch(), the Quickbase session, an Application Token, XML, and DOMParser.",
-    status: "complete",
-    link: "/lessons/1a",
-  },
-  {
-    number: "1B",
-    title: "Read Records with REST API",
-    description:
-      "Read the exact same People table using the modern Quickbase RESTful JSON API.",
-    status: "next",
-    link: "/lessons/1b",
-  },
-  {
-    number: "2",
-    title: "Client-Side Sorting",
-    description:
-      "Sort records already loaded into the browser without sending another request to Quickbase.",
-    status: "upcoming",
-    link: "/lessons/2",
-  },
-  {
-    number: "3",
-    title: "Client-Side Searching",
-    description:
-      "Search the records displayed by the Code Page using JavaScript.",
-    status: "upcoming",
-    link: "/lessons/3",
-  },
-  {
-    number: "4",
-    title: "Client-Side Filtering",
-    description:
-      "Filter the displayed dataset using specific field values and conditions.",
-    status: "upcoming",
-    link: "/lessons/4",
-  },
-  {
-    number: "5",
-    title: "Add Records",
-    description: "Create new Quickbase records from a Code Page.",
-    status: "upcoming",
-    link: "/lessons/5",
-  },
-  {
-    number: "6",
-    title: "Edit Records",
-    description:
-      "Update existing Quickbase records from the training application.",
-    status: "upcoming",
-    link: "/lessons/6",
-  },
-  {
-    number: "7",
-    title: "Delete Records",
-    description:
-      "Delete Quickbase records and properly handle the resulting API response.",
-    status: "upcoming",
-    link: "/lessons/7",
-  },
-  {
-    number: "8",
-    title: "Pagination",
-    description: "Request and display larger datasets in manageable pages.",
-    status: "upcoming",
-    link: "/lessons/8",
-  },
-  {
-    number: "9",
-    title: "Relationships",
-    description:
-      "Work with Quickbase parent-child relationships through the API.",
-    status: "upcoming",
-    link: "/lessons/9",
-  },
-  {
-    number: "10",
-    title: "Reusable JavaScript Library",
-    description:
-      "Extract the patterns learned throughout the lab into reusable Quickbase development utilities.",
-    status: "upcoming",
-    link: "/lessons/10",
-  },
-];
+import { lessons, type LessonStatus } from "./data/lessons";
 
 function StatusBadge({ status }: { status: LessonStatus }) {
-  const styles = {
+  const styles: Record<LessonStatus, string> = {
     complete: "border-green-700 bg-green-50 text-green-900",
     next: "border-amber-700 bg-amber-50 text-amber-950",
     upcoming: "border-gray-400 bg-white text-black",
   };
 
-  const labels = {
+  const labels: Record<LessonStatus, string> = {
     complete: "Complete",
     next: "Next Lesson",
     upcoming: "Upcoming",
@@ -122,8 +25,37 @@ function StatusBadge({ status }: { status: LessonStatus }) {
 }
 
 export default function Home() {
+  /*
+   * ------------------------------------------------------------
+   * DERIVED CURRICULUM DATA
+   * ------------------------------------------------------------
+   *
+   * Nothing below is manually maintained.
+   *
+   * The page calculates its current state from lessons.ts.
+   */
+
+  const completedLessons = lessons.filter(
+    (lesson) => lesson.status === "complete",
+  );
+
+  const completedCount = completedLessons.length;
+
+  const totalLessons = lessons.length;
+
+  const progressPercent =
+    totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
+
+  const nextLesson = lessons.find((lesson) => lesson.status === "next");
+
+  const mostRecentCompletedLesson = completedLessons.at(-1);
+
   return (
     <main className="min-h-screen bg-white text-black">
+      {/* ======================================================
+          HEADER
+      ====================================================== */}
+
       <header className="border-b border-gray-300 bg-[#1f5c99] text-white">
         <div className="mx-auto max-w-7xl px-6 py-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -160,21 +92,49 @@ export default function Home() {
         </div>
       </header>
 
+      {/* ======================================================
+          MAIN CONTENT GRID
+      ====================================================== */}
+
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[280px_1fr]">
+        {/* ====================================================
+            SIDEBAR
+        ==================================================== */}
+
         <aside>
           <div className="sticky top-6 rounded-lg border border-gray-300 bg-[#f7f8fa] p-5">
             <h2 className="mb-4 text-xl font-bold">Lab Progress</h2>
 
+            {/* -----------------------------------------------
+                AUTOMATIC PROGRESS
+            ----------------------------------------------- */}
+
             <div className="mb-6">
               <div className="mb-2 flex items-center justify-between text-base">
                 <span>Lessons Completed</span>
-                <strong>1 / 11</strong>
+
+                <strong>
+                  {completedCount} / {totalLessons}
+                </strong>
               </div>
 
               <div className="h-3 overflow-hidden rounded-full border border-gray-300 bg-white">
-                <div className="h-full w-[9%] bg-[#216e39]" />
+                <div
+                  className="h-full bg-[#216e39] transition-all"
+                  style={{
+                    width: `${progressPercent}%`,
+                  }}
+                />
               </div>
+
+              <p className="mt-2 text-sm font-semibold">
+                {progressPercent.toFixed(0)}% complete
+              </p>
             </div>
+
+            {/* -----------------------------------------------
+                LESSON NAVIGATION
+            ----------------------------------------------- */}
 
             <nav aria-label="Developer Lab lessons">
               <ul className="space-y-2">
@@ -184,15 +144,31 @@ export default function Home() {
                       href={`#lesson-${lesson.number.toLowerCase()}`}
                       className="block rounded-md border border-transparent px-3 py-2 text-base font-semibold hover:border-gray-300 hover:bg-white"
                     >
-                      <span className="mr-2 font-bold">{lesson.number}</span>
+                      <span className="mr-2 font-bold text-[#1f5c99]">
+                        {lesson.number}
+                      </span>
+
                       {lesson.title}
                     </a>
                   </li>
                 ))}
               </ul>
             </nav>
+
+            <div className="mt-6 border-t border-gray-300 pt-5">
+              <Link
+                href="/lessons"
+                className="inline-flex w-full justify-center rounded-md border-2 border-[#1f5c99] px-4 py-2 font-bold text-[#1f5c99] hover:bg-[#eaf3fb]"
+              >
+                Full Table of Contents
+              </Link>
+            </div>
           </div>
         </aside>
+
+        {/* ====================================================
+            ROADMAP
+        ==================================================== */}
 
         <section>
           <div className="mb-10">
@@ -212,24 +188,50 @@ export default function Home() {
             </p>
           </div>
 
+          {/* ==================================================
+              CURRENT POSITION
+
+              This section also derives itself from lessons.ts.
+          ================================================== */}
+
           <div className="mb-10 rounded-lg border-2 border-[#1f5c99] bg-[#eaf3fb] p-6">
             <h2 className="text-2xl font-bold">Current Position</h2>
 
-            <p className="mt-3">
-              Lesson <strong>1A</strong> is complete. The working
-              <code className="mx-2 rounded border border-gray-300 bg-white px-2 py-1">
-                PeoplePage_xml.html
-              </code>
-              Code Page reads five records from the Quickbase People table using
-              the legacy XML API.
-            </p>
+            {mostRecentCompletedLesson && (
+              <p className="mt-3">
+                Lesson <strong>{mostRecentCompletedLesson.number}</strong> is
+                complete: <strong>{mostRecentCompletedLesson.title}</strong>.
+                {mostRecentCompletedLesson.workingExample && (
+                  <>
+                    {" "}
+                    The working example is{" "}
+                    <code className="mx-1 rounded border border-gray-300 bg-white px-2 py-1">
+                      {mostRecentCompletedLesson.workingExample}
+                    </code>
+                    .
+                  </>
+                )}
+              </p>
+            )}
 
-            <p className="mt-3">
-              The next lesson will query the exact same table using the modern
-              Quickbase RESTful API so that the two API architectures can be
-              compared directly.
-            </p>
+            {nextLesson ? (
+              <p className="mt-3">
+                Next is Lesson <strong>{nextLesson.number}</strong>:{" "}
+                <strong>{nextLesson.title}</strong>.
+                {nextLesson.nextObjective && <> {nextLesson.nextObjective}</>}
+              </p>
+            ) : (
+              <p className="mt-3">
+                All currently defined lessons are complete.
+              </p>
+            )}
           </div>
+
+          {/* ==================================================
+              LESSON CARDS
+
+              Every card comes from lessons.ts.
+          ================================================== */}
 
           <div className="space-y-5">
             {lessons.map((lesson) => (
@@ -252,20 +254,32 @@ export default function Home() {
 
                 <p className="mt-4">{lesson.description}</p>
 
-                {lesson.status === "complete" && (
+                {/* -------------------------------------------
+                    OPTIONAL WORKING EXAMPLE
+                ------------------------------------------- */}
+
+                {lesson.workingExample && (
                   <div className="mt-5 border-t border-gray-200 pt-4">
                     <strong>Working example:</strong>{" "}
-                    <code>PeoplePage_xml.html</code>
+                    <code className="rounded bg-[#f7f8fa] px-2 py-1">
+                      {lesson.workingExample}
+                    </code>
                   </div>
                 )}
 
-                {lesson.status === "next" && (
+                {/* -------------------------------------------
+                    OPTIONAL NEXT OBJECTIVE
+                ------------------------------------------- */}
+
+                {lesson.nextObjective && (
                   <div className="mt-5 border-t border-gray-200 pt-4">
-                    <strong>Next objective:</strong> Replace XML request and
-                    response handling with the Quickbase RESTful JSON API while
-                    keeping the People dataset unchanged.
+                    <strong>Next objective:</strong> {lesson.nextObjective}
                   </div>
                 )}
+
+                {/* -------------------------------------------
+                    LESSON LINK
+                ------------------------------------------- */}
 
                 <div className="mt-5">
                   <Link
@@ -280,6 +294,10 @@ export default function Home() {
           </div>
         </section>
       </div>
+
+      {/* ======================================================
+          FOOTER
+      ====================================================== */}
 
       <footer className="mt-10 border-t border-gray-300 bg-[#f7f8fa]">
         <div className="mx-auto max-w-7xl px-6 py-8">
