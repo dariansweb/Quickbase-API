@@ -104,7 +104,6 @@ export default function Home() {
         <aside>
           <div className="sticky top-6 rounded-lg border border-gray-300 bg-[#f7f8fa] p-5">
             <h2 className="mb-4 text-xl font-bold">Lab Progress</h2>
-
             {/* -----------------------------------------------
                 AUTOMATIC PROGRESS
             ----------------------------------------------- */}
@@ -181,11 +180,28 @@ export default function Home() {
             </h2>
 
             <p className="mt-4 max-w-4xl">
-              Each lesson introduces one development concept and builds upon a
-              previously working example. Completed lessons remain intact so
-              that the differences between Quickbase technologies can be
-              examined directly.
+              Each lesson introduces one Quickbase development concept and
+              builds upon a previously working example. Completed lessons remain
+              intact so that the differences between Quickbase technologies can
+              be examined directly.
             </p>
+
+            <p className="mt-4 max-w-4xl">
+              New to the lab? Start by creating the simple Quickbase{" "}
+              <strong>People</strong> table used throughout the lessons.
+              You&apos;ll add the Name, Age, and Favorite Color fields, create a
+              few sample records, and identify the Quickbase table and field
+              references needed by the API examples.
+            </p>
+
+            <div className="mt-6">
+              <Link
+                href="/get-started"
+                className="inline-flex rounded-md bg-[#1f5c99] px-5 py-3 font-bold text-white hover:bg-[#164875]"
+              >
+                Get Started →
+              </Link>
+            </div>
           </div>
 
           {/* ==================================================
