@@ -1,485 +1,158 @@
 # Quickbase Code Pages Developer Lab
 
-A hands-on developer training project for learning how to work with **Quickbase Code Pages, APIs, JavaScript, and Quickbase application objects** through real working examples.
+A personal training project for learning Quickbase development through small, working examples.
 
-This repository accompanies an evolving Quickbase tutorial application built with:
+The lab focuses on Quickbase Code Pages, the legacy XML API, the modern RESTful JSON API, and the Quickbase objects that appear in code such as table DBIDs, Field IDs, records, authentication, and API responses.
 
-* Next.js
-* React
-* TypeScript
-* Tailwind CSS
-* Quickbase Code Pages
-* Quickbase legacy XML API
-* Quickbase RESTful API
+Live site:
 
-The purpose of this project is not to build a production application.
-
-The purpose is to understand **how Quickbase development actually works in code**.
+https://quickbase-api-tan.vercel.app/
 
 ---
 
-## What This Lab Teaches
+## Getting Started
 
-The lessons assume that the developer already understands HTML, CSS, JavaScript, and normal browser development.
-
-The emphasis is instead on Quickbase-specific concepts such as:
-
-* Application structure
-* Table DBIDs
-* Field IDs
-* Record IDs
-* Application Tokens
-* Signed-in Quickbase sessions
-* Quickbase API operations
-* XML request bodies
-* REST JSON requests
-* API headers
-* Quickbase error responses
-* Record parsing
-* Relationships
-* CRUD operations
-
-The goal is not simply to make an API request succeed.
-
-The goal is to understand **what every Quickbase reference in the code points to and why Quickbase requires it**.
-
----
-
-# Learning Philosophy
-
-Each lesson introduces only one major new concept.
-
-Previous working examples remain intact so that different Quickbase techniques can be compared directly.
-
-The general progression is:
-
-```text
-Understand the Quickbase object
-        ↓
-Identify how Quickbase references it
-        ↓
-Build the API request
-        ↓
-Inspect the Quickbase response
-        ↓
-Use the returned records in JavaScript
-```
-
-The project deliberately avoids hiding Quickbase behavior behind large libraries during the early lessons.
-
-We want to see what Quickbase is actually doing.
-
----
-
-# Lesson Roadmap
-
-## Lesson 1A — Read Records with XML API ✅
-
-Read records from a Quickbase People table using the legacy XML API.
-
-Topics include:
-
-* Table DBID
-* Field IDs
-* `API_DoQuery`
-* `QUICKBASE-ACTION`
-* Application Token
-* Signed-in browser session
-* `<clist>`
-* `<slist>`
-* Structured XML
-* `<record>`
-* `<f id="">`
-* `errcode`
-* `errtext`
-* `errdetail`
-* `DOMParser`
-
-Working example:
-
-```text
-PeoplePage_xml.html
-```
-
----
-
-## Lesson 1B — Read Records with REST API
-
-Read the exact same People table using the modern Quickbase RESTful API.
-
-This lesson will allow a direct comparison between:
-
-```text
-Legacy XML API
-```
-
-and:
-
-```text
-Modern REST API
-```
-
-without changing the underlying Quickbase data.
-
----
-
-## Lesson 2 — Client-Side Sorting
-
-Sort records already returned to the browser.
-
----
-
-## Lesson 3 — Client-Side Searching
-
-Search the loaded Quickbase records using JavaScript.
-
----
-
-## Lesson 4 — Client-Side Filtering
-
-Filter records using selected field values and conditions.
-
----
-
-## Lesson 5 — Add Records
-
-Create Quickbase records from a Code Page.
-
----
-
-## Lesson 6 — Edit Records
-
-Modify existing Quickbase records.
-
----
-
-## Lesson 7 — Delete Records
-
-Delete Quickbase records and properly interpret the API response.
-
----
-
-## Lesson 8 — Pagination
-
-Retrieve and display larger datasets in manageable groups.
-
----
-
-## Lesson 9 — Relationships
-
-Work with Quickbase parent and child table relationships through code.
-
----
-
-## Lesson 10 — Reusable JavaScript Library
-
-Extract the patterns developed throughout the previous lessons into reusable Quickbase JavaScript utilities.
-
----
-
-# Lesson 1A — The Central Concept
-
-A Quickbase developer sees human-readable objects in the application:
+Before beginning the lessons, create a small Quickbase table named:
 
 ```text
 People
-
-Record ID#
-Name
-Age
-Favorite Color
 ```
 
-The API often works with persistent Quickbase identifiers instead:
+Add these fields:
+
+| Field          | Type    |
+| -------------- | ------- |
+| Name           | Text    |
+| Age            | Numeric |
+| Favorite Color | Text    |
+
+Quickbase will also provide the normal system fields, including `Record ID#`.
+
+Add a few sample records so the API lessons have something to retrieve.
+
+For example:
+
+| Name   | Age | Favorite Color |
+| ------ | --: | -------------- |
+| Alice  |  32 | Blue           |
+| Marcus |  41 | Green          |
+| Olivia |  27 | Purple         |
+
+The exact sample values do not matter.
+
+What matters is that your `People` table contains records with values in those three fields.
+
+---
+
+## Your Field IDs Will Probably Be Different
+
+The tutorial uses Field IDs from the original training table.
+
+For example:
 
 ```text
-People              → Table DBID
-
-Record ID#          → Field ID 3
-Name                → Field ID 6
-Age                 → Field ID 7
-Favorite Color      → Field ID 8
+Record ID#       → Field ID 3
+Name             → Field ID 6
+Age              → Field ID 7
+Favorite Color   → Field ID 8
 ```
 
-The JavaScript might therefore contain:
+Your Quickbase table may assign different Field IDs.
+
+Always use the Field IDs from your own table when adapting the examples.
+
+You will also need your own table DBID:
 
 ```javascript
 const TABLE_DBID = "YOUR_TABLE_DBID";
-
-const FIELD_IDS = {
-  recordId: 3,
-  name: 6,
-  age: 7,
-  favoriteColor: 8,
-};
 ```
 
-The JavaScript property:
-
-```javascript
-name
-```
-
-is chosen by the developer.
-
-The value:
-
-```javascript
-6
-```
-
-is the actual Quickbase Field ID.
-
-That distinction is fundamental to understanding Quickbase API development.
+The lessons explain how Quickbase uses table DBIDs and Field IDs when making API requests.
 
 ---
 
-# Legacy XML API Example
+## What the Lessons Cover
 
-A simplified Quickbase XML request looks like:
-
-```xml
-<qdbapi>
-  <apptoken>YOUR_APPLICATION_TOKEN</apptoken>
-  <fmt>structured</fmt>
-  <clist>3.6.7.8</clist>
-  <slist>6</slist>
-  <options>sortorder-A</options>
-</qdbapi>
-```
-
-It is sent to the table using a request similar to:
-
-```javascript
-const response = await fetch(`/db/${TABLE_DBID}`, {
-  method: "POST",
-  credentials: "include",
-  headers: {
-    "Content-Type": "application/xml",
-    "QUICKBASE-ACTION": "API_DoQuery",
-  },
-  body: requestBody,
-});
-```
-
-Several different Quickbase concepts are represented here.
-
-### `/db/${TABLE_DBID}`
-
-Identifies the Quickbase table that should receive the request.
-
-### `QUICKBASE-ACTION`
-
-Identifies the legacy Quickbase API operation.
-
-For Lesson 1A:
+The project begins by reading records from the same `People` table in two different ways:
 
 ```text
-API_DoQuery
+Lesson 1A
+Quickbase → XML API → XML → DOMParser → JavaScript → HTML
 ```
 
-means that Quickbase should query records from the targeted table.
+```text
+Lesson 1B
+Quickbase → REST API → JSON → JavaScript → HTML
+```
 
-### `credentials: "include"`
+Later lessons build on those working examples with sorting, searching, filtering, CRUD operations, pagination, relationships, and reusable JavaScript utilities.
 
-Allows the request to operate through the existing signed-in Quickbase browser session.
-
-Quickbase can therefore evaluate the request according to the permissions of the current user.
-
-### Application Token
-
-The Application Token satisfies an additional API requirement configured for the Quickbase application.
-
-An Application Token is **not** a User Token.
-
-Do not embed Quickbase User Tokens in client-side browser JavaScript.
+The intent is to introduce one Quickbase concept at a time rather than hide the API behavior behind large abstractions.
 
 ---
 
-# Structured XML
+# About This Project
 
-When the request contains:
+This repository is a personal learning project.
 
-```xml
-<fmt>structured</fmt>
-```
+I created it to improve my own understanding of Quickbase development and to keep a structured record of the lessons, experiments, mistakes, discoveries, and working examples I encounter while learning.
 
-Quickbase can return field data resembling:
+It is essentially a developer notebook that happens to be public.
 
-```xml
-<record>
-  <f id="3">1</f>
-  <f id="6">Alice</f>
-  <f id="7">32</f>
-  <f id="8">Blue</f>
-</record>
-```
-
-The field identifier reconnects the XML value to the Quickbase field:
-
-```text
-<f id="6">Alice</f>
-
-        ↓
-
-Field ID 6
-
-        ↓
-
-Name
-```
-
-JavaScript can therefore locate the field using:
-
-```javascript
-record.querySelector(`f[id="${fieldId}"]`);
-```
+The material reflects my understanding at the time each lesson is written. As I learn more, explanations and examples may be revised or corrected.
 
 ---
 
-# Quickbase Error Handling
+## Independent Project
 
-The legacy XML API can return Quickbase-specific error information even when the HTTP request itself succeeds.
+This website, repository, source code, tutorials, commentary, and examples are independently created materials.
 
-Important XML elements include:
+I am not affiliated with, employed by, sponsored by, endorsed by, or representing Quickbase, Inc.
 
-```xml
-<errcode>
-<errtext>
-<errdetail>
-```
+Nothing in this repository should be interpreted as:
 
-An `errcode` of `0` indicates that the Quickbase API operation succeeded.
+* official Quickbase documentation
+* official Quickbase training material
+* official technical guidance
+* an endorsement by Quickbase
+* a statement made on behalf of Quickbase
 
-This means applications should distinguish between:
-
-```text
-HTTP error
-```
-
-and:
-
-```text
-Quickbase API error
-```
-
-They are separate layers.
+Official Quickbase documentation should always be used to verify current API behavior, authentication requirements, security guidance, supported features, and platform limits.
 
 ---
 
-# Application Structure
+## Educational Code
 
-The tutorial website uses the Next.js App Router.
+The examples in this repository are primarily intended for learning and experimentation.
 
-Current structure:
+They should not automatically be treated as production-ready code.
 
-```text
-app/
-├── globals.css
-├── layout.tsx
-├── not-found.tsx
-├── page.tsx
-└── lessons/
-    ├── layout.tsx
-    ├── page.tsx
-    └── 1a/
-        └── page.tsx
-```
+Some examples intentionally favor clarity and visibility of Quickbase behavior over abstraction or production architecture.
 
-`/lessons` acts as the Table of Contents.
-
-Individual lessons use routes such as:
-
-```text
-/lessons/1a
-/lessons/1b
-/lessons/2
-```
+Anyone adapting the code is responsible for testing it within their own Quickbase environment.
 
 ---
 
-# Running the Tutorial Site
+## Security
 
-Clone the repository:
+Do not commit Quickbase User Tokens, private credentials, or other sensitive values to a public repository.
 
-```bash
-git clone https://github.com/dariansweb/Quickbase-API.git
-```
-
-Enter the project directory:
-
-```bash
-cd Quickbase-API
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run the development server:
-
-```bash
-npm run dev
-```
-
-Then open:
-
-```text
-http://localhost:3000
-```
-
----
-
-# Security
-
-Do not commit real Quickbase credentials or User Tokens to this repository.
-
-Tutorial code should use placeholders such as:
+Training examples should use placeholders such as:
 
 ```javascript
 const APP_TOKEN = "YOUR_APPLICATION_TOKEN";
-```
-
-and:
-
-```javascript
 const TABLE_DBID = "YOUR_TABLE_DBID";
 ```
 
-where appropriate.
-
-If you fork this repository to experiment with your own Quickbase application, verify that sensitive credentials are not included before committing or pushing changes.
+Never embed a Quickbase User Token in browser-side JavaScript.
 
 ---
 
-# Contributions Are Welcome ❤️
+## Contributions Welcome
 
-This project is intentionally being built in public.
+Although this began as a personal training log, the project is public so others can follow along, correct mistakes, suggest better approaches, or improve the examples.
 
-If you are a Quickbase developer, administrator, builder, JavaScript developer, API developer, or simply learning alongside the project, contributions are welcome.
-
-You can help by:
-
-* Improving explanations
-* Correcting Quickbase terminology
-* Improving code comments
-* Suggesting additional examples
-* Reporting mistakes
-* Proposing new developer exercises
-* Improving accessibility
-* Improving TypeScript or React code
-* Testing lessons against Quickbase
-* Opening issues when something is unclear
-
-The guiding rule is simple:
-
-> Keep the examples understandable and teach one Quickbase concept at a time.
-
----
-
-# Repository
+Constructive contributions are welcome.
 
 GitHub:
 
@@ -487,10 +160,10 @@ https://github.com/dariansweb/Quickbase-API
 
 ---
 
-# Disclaimer
+## Disclaimer
 
-This is an independent educational project created for learning Quickbase development techniques.
+This project is provided for educational purposes on an "as is" basis.
 
-It is not official Quickbase documentation and is not a replacement for the official Quickbase API documentation.
+No warranty is made regarding correctness, completeness, fitness for a particular purpose, or continued compatibility with Quickbase.
 
-Quickbase product names and related terminology belong to their respective owners.
+Quickbase product names, terminology, trademarks, and related intellectual property belong to their respective owners.
