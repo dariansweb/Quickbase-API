@@ -10,6 +10,18 @@ https://quickbase-api-tan.vercel.app/
 
 ---
 
+## License
+
+This project is released under **The Unlicense**.
+
+You are free to copy, modify, publish, use, compile, sell, distribute, remix, rewrite, or otherwise do whatever you want with the code and tutorial material in this repository.
+
+Attribution is not required.
+
+If something here helps you, take it and use it.
+
+See the `LICENSE` file for the full license text.
+
 ## Getting Started
 
 Before beginning the lessons, create a small Quickbase table named:

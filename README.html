@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Quickbase Code Pages Developer Lab</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="quickbase-code-pages-developer-lab">Quickbase Code Pages Developer Lab</h1>
+<p>A personal training project for learning Quickbase development through small, working examples.</p>
+<p>The lab focuses on Quickbase Code Pages, the legacy XML API, the modern RESTful JSON API, and the Quickbase objects that appear in code such as table DBIDs, Field IDs, records, authentication, and API responses.</p>
+<p>Live site:</p>
+<p><a href="https://quickbase-api-tan.vercel.app/">https://quickbase-api-tan.vercel.app/</a></p>
+<hr>
+<h2 id="license">License</h2>
+<p>This project is released under <strong>The Unlicense</strong>.</p>
+<p>You are free to copy, modify, publish, use, compile, sell, distribute, remix, rewrite, or otherwise do whatever you want with the code and tutorial material in this repository.</p>
+<p>Attribution is not required.</p>
+<p>If something here helps you, take it and use it.</p>
+<p>See the <code>LICENSE</code> file for the full license text.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>Before beginning the lessons, create a small Quickbase table named:</p>
+<pre><code class="language-text">People
+</code></pre>
+<p>Add these fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td>Text</td>
+</tr>
+<tr>
+<td>Age</td>
+<td>Numeric</td>
+</tr>
+<tr>
+<td>Favorite Color</td>
+<td>Text</td>
+</tr>
+</tbody>
+</table>
+<p>Quickbase will also provide the normal system fields, including <code>Record ID#</code>.</p>
+<p>Add a few sample records so the API lessons have something to retrieve.</p>
+<p>For example:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th style="text-align:right">Age</th>
+<th>Favorite Color</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alice</td>
+<td style="text-align:right">32</td>
+<td>Blue</td>
+</tr>
+<tr>
+<td>Marcus</td>
+<td style="text-align:right">41</td>
+<td>Green</td>
+</tr>
+<tr>
+<td>Olivia</td>
+<td style="text-align:right">27</td>
+<td>Purple</td>
+</tr>
+</tbody>
+</table>
+<p>The exact sample values do not matter.</p>
+<p>What matters is that your <code>People</code> table contains records with values in those three fields.</p>
+<hr>
+<h2 id="your-field-ids-will-probably-be-different">Your Field IDs Will Probably Be Different</h2>
+<p>The tutorial uses Field IDs from the original training table.</p>
+<p>For example:</p>
+<pre><code class="language-text">Record ID#       → Field ID 3
+Name             → Field ID 6
+Age              → Field ID 7
+Favorite Color   → Field ID 8
+</code></pre>
+<p>Your Quickbase table may assign different Field IDs.</p>
+<p>Always use the Field IDs from your own table when adapting the examples.</p>
+<p>You will also need your own table DBID:</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">TABLE_DBID</span> = <span class="hljs-string">&quot;YOUR_TABLE_DBID&quot;</span>;
+</code></pre>
+<p>The lessons explain how Quickbase uses table DBIDs and Field IDs when making API requests.</p>
+<hr>
+<h2 id="what-the-lessons-cover">What the Lessons Cover</h2>
+<p>The project begins by reading records from the same <code>People</code> table in two different ways:</p>
+<pre><code class="language-text">Lesson 1A
+Quickbase → XML API → XML → DOMParser → JavaScript → HTML
+</code></pre>
+<pre><code class="language-text">Lesson 1B
+Quickbase → REST API → JSON → JavaScript → HTML
+</code></pre>
+<p>Later lessons build on those working examples with sorting, searching, filtering, CRUD operations, pagination, relationships, and reusable JavaScript utilities.</p>
+<p>The intent is to introduce one Quickbase concept at a time rather than hide the API behavior behind large abstractions.</p>
+<hr>
+<h1 id="about-this-project">About This Project</h1>
+<p>This repository is a personal learning project.</p>
+<p>I created it to improve my own understanding of Quickbase development and to keep a structured record of the lessons, experiments, mistakes, discoveries, and working examples I encounter while learning.</p>
+<p>It is essentially a developer notebook that happens to be public.</p>
+<p>The material reflects my understanding at the time each lesson is written. As I learn more, explanations and examples may be revised or corrected.</p>
+<hr>
+<h2 id="independent-project">Independent Project</h2>
+<p>This website, repository, source code, tutorials, commentary, and examples are independently created materials.</p>
+<p>I am not affiliated with, employed by, sponsored by, endorsed by, or representing Quickbase, Inc.</p>
+<p>Nothing in this repository should be interpreted as:</p>
+<ul>
+<li>official Quickbase documentation</li>
+<li>official Quickbase training material</li>
+<li>official technical guidance</li>
+<li>an endorsement by Quickbase</li>
+<li>a statement made on behalf of Quickbase</li>
+</ul>
+<p>Official Quickbase documentation should always be used to verify current API behavior, authentication requirements, security guidance, supported features, and platform limits.</p>
+<hr>
+<h2 id="educational-code">Educational Code</h2>
+<p>The examples in this repository are primarily intended for learning and experimentation.</p>
+<p>They should not automatically be treated as production-ready code.</p>
+<p>Some examples intentionally favor clarity and visibility of Quickbase behavior over abstraction or production architecture.</p>
+<p>Anyone adapting the code is responsible for testing it within their own Quickbase environment.</p>
+<hr>
+<h2 id="security">Security</h2>
+<p>Do not commit Quickbase User Tokens, private credentials, or other sensitive values to a public repository.</p>
+<p>Training examples should use placeholders such as:</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">APP_TOKEN</span> = <span class="hljs-string">&quot;YOUR_APPLICATION_TOKEN&quot;</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-variable constant_">TABLE_DBID</span> = <span class="hljs-string">&quot;YOUR_TABLE_DBID&quot;</span>;
+</code></pre>
+<p>Never embed a Quickbase User Token in browser-side JavaScript.</p>
+<hr>
+<h2 id="contributions-welcome">Contributions Welcome</h2>
+<p>Although this began as a personal training log, the project is public so others can follow along, correct mistakes, suggest better approaches, or improve the examples.</p>
+<p>Constructive contributions are welcome.</p>
+<p>GitHub:</p>
+<p><a href="https://github.com/dariansweb/Quickbase-API">https://github.com/dariansweb/Quickbase-API</a></p>
+<hr>
+<h2 id="disclaimer">Disclaimer</h2>
+<p>This project is provided for educational purposes on an &quot;as is&quot; basis.</p>
+<p>No warranty is made regarding correctness, completeness, fitness for a particular purpose, or continued compatibility with Quickbase.</p>
+<p>Quickbase product names, terminology, trademarks, and related intellectual property belong to their respective owners.</p>
+
+            
+            
+        </body>
+        </html>
