@@ -57,37 +57,59 @@ export default function Home() {
       ====================================================== */}
 
       <header className="border-b border-gray-300 bg-[#1f5c99] text-white">
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="mb-2 text-base font-bold uppercase tracking-wide">
-                Quickbase Tutorials
-              </p>
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
+          <div className="max-w-5xl">
+            <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-white sm:text-base">
+              Quickbase Tutorials
+            </p>
 
-              <h1 className="text-3xl font-bold md:text-4xl">
-                Code Pages Developer Lab
-              </h1>
+            <h1 className="max-w-4xl text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
+              Code Pages Developer Lab
+            </h1>
 
-              <p className="mt-3 max-w-4xl text-lg text-white">
-                Learn Quickbase development by building real working Code Page
-                examples one concept at a time.
-              </p>
+            <p className="mt-4 max-w-3xl text-lg leading-8 text-white sm:text-xl">
+              Learn Quickbase development by building real working Code Page
+              examples, one concept at a time.
+            </p>
 
-              <p className="mt-4 max-w-4xl text-base text-white">
-                This lab is being built in public. Browse the source, follow the
-                lessons, open an issue, or help improve an example.
-                Contributions are very welcome. ❤️
-              </p>
+            <p className="mt-4 max-w-4xl text-base leading-7 text-white sm:text-lg">
+              Follow the progression from Quickbase table and field references,
+              through XML and REST API requests, into client-side data control,
+              searching, filtering, CRUD operations, relationships, and reusable
+              JavaScript patterns.
+            </p>
+
+            <p className="mt-4 max-w-4xl text-base leading-7 text-white">
+              This lab is being built in public as a personal training project
+              and learning log. Browse the lessons, inspect the source, open an
+              issue, or help improve an example. Contributions are very welcome.
+              ❤️
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Link
+                href="/lessons"
+                className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 font-bold text-[#1f5c99] shadow-sm transition hover:bg-[#eef6fd] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1f5c99]"
+              >
+                Browse Lessons →
+              </Link>
+
+              <a
+                href="https://github.com/dariansweb/Quickbase-API"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-lg border-2 border-white px-5 py-3 font-bold text-white transition hover:bg-white hover:text-[#1f5c99] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1f5c99]"
+              >
+                View on GitHub
+              </a>
+
+              <Link
+                href="/about"
+                className="inline-flex items-center justify-center rounded-lg border border-white/70 px-5 py-3 font-bold text-white transition hover:border-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1f5c99]"
+              >
+                About the Project
+              </Link>
             </div>
-
-            <a
-              href="https://github.com/dariansweb/Quickbase-API"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex w-fit items-center rounded-md border-2 border-white px-5 py-3 font-bold text-white transition hover:bg-white hover:text-[#1f5c99]"
-            >
-              View on GitHub →
-            </a>
           </div>
         </div>
       </header>
