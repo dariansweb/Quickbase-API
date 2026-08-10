@@ -42,18 +42,19 @@ export const lessons: Lesson[] = [
   },
   {
     number: "3",
-    title: "Client-Side Searching",
+    title: "Query Quickbase with Search Criteria",
     description:
-      "Search the records displayed by the Code Page using JavaScript.",
-    status: "next",
+      "Use a REST where expression so Quickbase returns only records matching the requested criteria.",
+    status: "complete",
     link: "/lessons/3",
+    workingExample: "PeoplePage_search.html",
   },
   {
     number: "4",
     title: "Client-Side Filtering",
     description:
       "Filter the displayed dataset using specific field values and conditions.",
-    status: "upcoming",
+    status: "next",
     link: "/lessons/4",
   },
   {
