@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { lessons, type LessonStatus } from "./data/lessons";
+import Image from "next/image";
 
 function StatusBadge({ status }: { status: LessonStatus }) {
   const styles: Record<LessonStatus, string> = {
@@ -58,57 +59,110 @@ export default function Home() {
 
       <header className="border-b border-gray-300 bg-[#1f5c99] text-white">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
-          <div className="max-w-5xl">
-            <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-white sm:text-base">
-              Quickbase Tutorials
-            </p>
+          <div className="relative overflow-hidden">
+            {/* Decorative background */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-6 rounded-full bg-cyan-300/20 blur-3xl"
+            />
 
-            <h1 className="max-w-4xl text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
-              Code Pages Developer Lab
-            </h1>
+            <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
+              {/* LEFT — Hero content */}
+              <div className="max-w-5xl">
+                <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-white/80 sm:text-base">
+                  Quickbase Tutorials
+                </p>
 
-            <p className="mt-4 max-w-3xl text-lg leading-8 text-white sm:text-xl">
-              Learn Quickbase development by building real working Code Page
-              examples, one concept at a time.
-            </p>
+                <h1 className="max-w-4xl text-3xl font-extrabold leading-tight text-white sm:text-4xl lg:text-5xl">
+                  Code Pages Developer Lab
+                </h1>
 
-            <p className="mt-4 max-w-4xl text-base leading-7 text-white sm:text-lg">
-              Follow the progression from Quickbase table and field references,
-              through XML and REST API requests, into client-side data control,
-              searching, filtering, CRUD operations, relationships, and reusable
-              JavaScript patterns.
-            </p>
+                <p className="mt-4 max-w-3xl text-lg leading-8 text-white sm:text-xl">
+                  Learn Quickbase development by building real working Code Page
+                  examples, one concept at a time.
+                </p>
 
-            <p className="mt-4 max-w-4xl text-base leading-7 text-white">
-              This lab is being built in public as a personal training project
-              and learning log. Browse the lessons, inspect the source, open an
-              issue, or help improve an example. Contributions are very welcome.
-              ❤️
-            </p>
+                <p className="mt-4 max-w-4xl text-base leading-7 text-white/90 sm:text-lg">
+                  Follow the progression from Quickbase table and field
+                  references, through XML and REST API requests, into
+                  client-side data control, searching, filtering, CRUD
+                  operations, relationships, and reusable JavaScript patterns.
+                </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link
-                href="/lessons"
-                className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 font-bold text-[#1f5c99] shadow-sm transition hover:bg-[#eef6fd] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1f5c99]"
-              >
-                Browse Lessons →
-              </Link>
+                <p className="mt-4 max-w-4xl text-base leading-7 text-white/90">
+                  This lab is being built in public as a personal training
+                  project and learning log. Browse the lessons, inspect the
+                  source, open an issue, or help improve an example.
+                  Contributions are very welcome. ❤️
+                </p>
 
-              <a
-                href="https://github.com/dariansweb/Quickbase-API"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-lg border-2 border-white px-5 py-3 font-bold text-white transition hover:bg-white hover:text-[#1f5c99] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1f5c99]"
-              >
-                View on GitHub
-              </a>
+                {/* CTA */}
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                  <Link
+                    href="/lessons"
+                    className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 font-bold text-[#1f5c99] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#eef6fd] hover:shadow-md"
+                  >
+                    Browse Lessons →
+                  </Link>
 
-              <Link
-                href="/about"
-                className="inline-flex items-center justify-center rounded-lg border border-white/70 px-5 py-3 font-bold text-white transition hover:border-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1f5c99]"
-              >
-                About the Project
-              </Link>
+                  <a
+                    href="https://github.com/dariansweb/Quickbase-API"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center rounded-lg border-2 border-white px-5 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:bg-white hover:text-[#1f5c99]"
+                  >
+                    View on GitHub
+                  </a>
+
+                  <Link
+                    href="/about"
+                    className="inline-flex items-center justify-center rounded-lg border border-white/70 px-5 py-3 font-bold text-white transition hover:border-white hover:bg-white/10"
+                  >
+                    About the Project
+                  </Link>
+                </div>
+              </div>
+
+              {/* RIGHT — Training logo */}
+              <div className="order-first flex justify-center lg:order-last lg:justify-end">
+                <div className="relative">
+                  {/* subtle glow behind logo */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-6 rounded-full bg-cyan-300/20 blur-3xl"
+                  />
+
+                  <Image
+                    src="/qbimage.png"
+                    alt="Quickbase Developer Training"
+                    width={360}
+                    height={360}
+                    priority
+                    className="
+            relative
+            h-auto
+            w-40
+            rounded-[2rem]
+            shadow-2xl
+            ring-1
+            ring-white/20
+            transition
+            duration-300
+            hover:-translate-y-1
+            hover:scale-[1.02]
+            sm:w-52
+            lg:w-80
+          "
+                  />
+
+                  {/* little label under logo */}
+                  <div className="mt-4 text-center">
+                    <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-white/80 backdrop-blur">
+                      Learn • Build • Experiment
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
