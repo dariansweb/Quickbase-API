@@ -680,6 +680,13 @@ export default function Lesson2Page() {
           Lesson 2
         </p>
 
+        <Link
+          href="/files/PeoplePage_sort.txt"
+          target="_blank"
+          className="font-bold text-[#1f5c99] underline"
+        >
+          Code Page Here - PeoplePage_sort.html
+        </Link>
         <h1 className="mt-2 text-4xl font-bold">
           Client-Side Sorting
         </h1>
