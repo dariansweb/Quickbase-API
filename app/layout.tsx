@@ -67,7 +67,7 @@ export default function RootLayout({
               href="/"
               className="text-sm font-bold tracking-wide text-white hover:underline"
             >
-              Quickbase Developer Lab
+              Quickbase API Labs
             </Link>
 
             <div className="flex items-center gap-5 text-sm font-semibold">
@@ -76,7 +76,7 @@ export default function RootLayout({
               </Link>
 
               <Link href="/lessons" className="text-white hover:underline">
-                Table of Contents
+                ToC
               </Link>
               <Link href="/about" className="text-white hover:underline">
                 About

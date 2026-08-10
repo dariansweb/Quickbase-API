@@ -34,17 +34,18 @@ export const lessons: Lesson[] = [
     title: "Client-Side Sorting",
     description:
       "Sort records already loaded into the browser without sending another request to Quickbase.",
-    status: "next",
+    status: "complete",
     link: "/lessons/2",
     nextObjective:
       "Add client-side sorting to records already returned from Quickbase.",
+    workingExample: "PeoplePage_sort.html",
   },
   {
     number: "3",
     title: "Client-Side Searching",
     description:
       "Search the records displayed by the Code Page using JavaScript.",
-    status: "upcoming",
+    status: "next",
     link: "/lessons/3",
   },
   {

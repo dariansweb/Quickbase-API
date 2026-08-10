@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>People Table</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 32px;
+        background: #f4f6f8;
+        color: #1f2933;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .page {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        color: #003366;
+      }
+
+      .description {
+        margin: 0 0 24px;
+        color: #5b6775;
+      }
+
+      .status {
+        margin-bottom: 16px;
+        padding: 12px 14px;
+        border: 1px solid #cfd8e3;
+        border-radius: 6px;
+        background: #ffffff;
+      }
+
+      .status.error {
+        border-color: #a61c1c;
+        color: #7f0000;
+        background: #fff1f1;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        border: 1px solid #d7dee7;
+        border-radius: 8px;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #e5e9ef;
+        text-align: left;
+      }
+
+      th {
+        background: #003366;
+        color: #ffffff;
+      }
+
+      tbody tr:hover {
+        background: #f3f7fb;
+      }
+
+      .color-value {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .color-swatch {
+        width: 18px;
+        height: 18px;
+        border: 1px solid #7f8c99;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="page">
+      <h1>People</h1>
+      <h2>Lesson 1B Quickbase → JSON REST API → JavaScript → HTML</h2>
+      <p class="description">
+        Records loaded directly from the Quickbase People table.
+      </p>
+
+      <div id="status" class="status">Loading Quickbase records...</div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Record ID</th>
+              <th>
+                <button type="button" id="sortName">Name</button>
+              </th>
+              <th>Age</th>
+              <th>Favorite Color</th>
+            </tr>
+          </thead>
+
+          <tbody id="peopleRows"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <script>
+      /*
+        Training note (student): REALM must match your Quickbase account host.
+        Training note (admin): using an explicit fallback avoids confusion when
+        testing from localhost or a static host outside Quickbase.
+      */
+      const REALM = window.location.hostname.includes("quickbase.com")
+        ? window.location.hostname
+        : "YOUR_REALM.quickbase.com";
+      const TABLE_DBID = "bv9j6j4n5";
+      const APP_TOKEN = "";
+      let peopleRecords = [];
+      let nameSortDirection = "asc";
+
+      const FIELD_IDS = {
+        recordId: 3,
+        name: 6,
+        age: 7,
+        favoriteColor: 8,
+      };
+
+      function createCell(value) {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        return cell;
+      }
+
+      function createColorCell(colorName) {
+        const cell = document.createElement("td");
+
+        const wrapper = document.createElement("span");
+        wrapper.className = "color-value";
+
+        const swatch = document.createElement("span");
+        swatch.className = "color-swatch";
+        swatch.style.backgroundColor = colorName || "transparent";
+
+        const label = document.createElement("span");
+        label.textContent = colorName;
+
+        wrapper.appendChild(swatch);
+        wrapper.appendChild(label);
+        cell.appendChild(wrapper);
+
+        return cell;
+      }
+
+      async function readQuickbaseResponse(response) {
+        const rawBody = await response.text();
+
+        try {
+          return {
+            parsed: JSON.parse(rawBody),
+            rawBody,
+          };
+        } catch {
+          return {
+            parsed: null,
+            rawBody,
+          };
+        }
+      }
+
+      function renderRecords(records) {
+        const tableBody = document.getElementById("peopleRows");
+        tableBody.replaceChildren();
+
+        for (const record of records) {
+          const recordId = getFieldValue(record, FIELD_IDS.recordId);
+
+          const name = getFieldValue(record, FIELD_IDS.name);
+
+          const age = getFieldValue(record, FIELD_IDS.age);
+
+          const favoriteColor = getFieldValue(record, FIELD_IDS.favoriteColor);
+
+          const row = document.createElement("tr");
+
+          row.appendChild(createCell(recordId));
+          row.appendChild(createCell(name));
+          row.appendChild(createCell(age));
+          row.appendChild(createColorCell(favoriteColor));
+
+          tableBody.appendChild(row);
+        }
+      }
+
+      async function getTemporaryToken() {
+        /*
+          Training note (student): some apps require app tokens, some do not.
+          Training note (admin): only send QB-App-Token when present so auth
+          behavior is explicit and easier to debug across environments.
+        */
+        const headers = {
+          "QB-Realm-Hostname": REALM,
+        };
+
+        if (APP_TOKEN.trim()) {
+          headers["QB-App-Token"] = APP_TOKEN;
+        }
+
+        const response = await fetch(
+          `https://api.quickbase.com/v1/auth/temporary/${TABLE_DBID}`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers,
+          },
+        );
+
+        const { parsed, rawBody } = await readQuickbaseResponse(response);
+
+        if (!response.ok) {
+          const details = parsed ? JSON.stringify(parsed) : rawBody;
+          throw new Error(`HTTP ${response.status}: ${details}`);
+        }
+
+        if (!parsed?.temporaryAuthorization) {
+          throw new Error("Quickbase did not return temporaryAuthorization.");
+        }
+
+        return parsed.temporaryAuthorization;
+      }
+
+      function getFieldValue(record, fieldId) {
+        return record[String(fieldId)]?.value ?? "";
+      }
+
+      function sortByName() {
+        peopleRecords.sort((a, b) => {
+          const nameA = getFieldValue(a, FIELD_IDS.name);
+          const nameB = getFieldValue(b, FIELD_IDS.name);
+
+          const comparison = nameA.localeCompare(nameB);
+
+          return nameSortDirection === "asc" ? comparison : -comparison;
+        });
+
+        const sortButton = document.getElementById("sortName");
+
+        if (nameSortDirection === "asc") {
+          sortButton.textContent = "Name ↑";
+          nameSortDirection = "desc";
+        } else {
+          sortButton.textContent = "Name ↓";
+          nameSortDirection = "asc";
+        }
+
+        renderRecords(peopleRecords);
+      }
+      
+      async function loadPeople() {
+        const startTime = performance.now();
+
+        const status = document.getElementById("status");
+
+        try {
+          // ------------------------------------------
+          // CHECKPOINT 2
+          // Temporary token test.
+          //
+          // const temporaryToken = await getTemporaryToken();
+          // console.log("Temporary token acquired:", temporaryToken);
+          // status.classList.remove("error");
+          // status.textContent = "Temporary REST authorization acquired.";
+          // ------------------------------------------
+
+          const temporaryToken = await getTemporaryToken();
+
+          const query = {
+            from: TABLE_DBID,
+            select: [
+              FIELD_IDS.recordId,
+              FIELD_IDS.name,
+              FIELD_IDS.age,
+              FIELD_IDS.favoriteColor,
+            ],
+            /*
+              Training note (student): top/skip are paging controls.
+              Training note (admin): explicit paging protects clients from
+              unexpectedly large result sets as data grows.
+            */
+            options: {
+              top: 200,
+              skip: 0,
+            },
+            sortBy: [
+              {
+                fieldId: FIELD_IDS.name,
+                order: "ASC",
+              },
+            ],
+          };
+
+          const response = await fetch(
+            "https://api.quickbase.com/v1/records/query",
+            {
+              method: "POST",
+              headers: {
+                "QB-Realm-Hostname": REALM,
+                Authorization: `QB-TEMP-TOKEN ${temporaryToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(query),
+            },
+          );
+
+          const { parsed, rawBody } = await readQuickbaseResponse(response);
+
+          // ------------------------------------------
+          // CHECKPOINT 3
+          // Inspect the complete REST response.
+          // ------------------------------------------
+          console.log("REST query response:", parsed ?? rawBody);
+
+          if (!response.ok) {
+            const details = parsed ? JSON.stringify(parsed) : rawBody;
+            throw new Error(`HTTP ${response.status}: ${details}`);
+          }
+
+          const records = Array.isArray(parsed?.data) ? parsed.data : [];
+
+          if (!Array.isArray(parsed?.data)) {
+            throw new Error("REST response did not include a data array.");
+          }
+
+          if (records.length === 0) {
+            renderRecords(records);
+
+            const endTime = performance.now();
+            const renderTime = endTime - startTime;
+
+            status.classList.remove("error");
+            status.textContent = `REST query returned 0 record(s) in ${renderTime.toFixed(2)} ms.`;
+            return;
+          }
+
+          // ------------------------------------------
+          // CHECKPOINT 4
+          // Read one REST record.
+          // ------------------------------------------
+          const firstRecord = records[0];
+
+          console.log("First record:", firstRecord);
+          console.log(
+            "Record ID:",
+            getFieldValue(firstRecord, FIELD_IDS.recordId),
+          );
+          console.log("Name:", getFieldValue(firstRecord, FIELD_IDS.name));
+          console.log("Age:", getFieldValue(firstRecord, FIELD_IDS.age));
+          console.log(
+            "Favorite Color:",
+            getFieldValue(firstRecord, FIELD_IDS.favoriteColor),
+          );
+
+          // ------------------------------------------
+          // CHECKPOINT 5
+          // Render all REST records.
+          // ------------------------------------------
+          peopleRecords = records;
+
+          renderRecords(peopleRecords);
+
+          const endTime = performance.now();
+          const renderTime = endTime - startTime;
+
+          console.log(`Total load/render time: ${renderTime.toFixed(2)} ms`);
+
+          status.classList.remove("error");
+          status.textContent = `REST query returned ${records.length} record(s) in ${renderTime.toFixed(2)} ms.`;
+        } catch (error) {
+          console.error(error);
+          status.classList.add("error");
+          status.textContent = `REST query failed: ${error.message}`;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .getElementById("sortName")
+          .addEventListener("click", sortByName);
+
+        loadPeople();
+      });
+    </script>
+  </body>
+</html>
