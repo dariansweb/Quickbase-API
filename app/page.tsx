@@ -180,26 +180,80 @@ export default function Home() {
             </h2>
 
             <p className="mt-4 max-w-4xl">
-              Each lesson introduces one Quickbase development concept and
-              builds upon a previously working example. Completed lessons remain
-              intact so that the differences between Quickbase technologies can
-              be examined directly.
+              This lab is built around one continuous idea: first understand how
+              Quickbase objects are represented in code, then retrieve those
+              objects through the API, and finally decide what your application
+              should do with the returned data.
             </p>
 
             <p className="mt-4 max-w-4xl">
-              New to the lab? Start by creating the simple Quickbase{" "}
-              <strong>People</strong> table used throughout the lessons.
-              You&apos;ll add the Name, Age, and Favorite Color fields, create a
-              few sample records, and identify the Quickbase table and field
-              references needed by the API examples.
+              The early lessons concentrate on the Quickbase-specific pieces
+              that make API development work: table DBIDs, Field IDs,
+              application and session authorization, XML and JSON request
+              structures, REST endpoints, and the way Quickbase records are
+              represented when they return to JavaScript.
             </p>
 
-            <div className="mt-6">
+            <p className="mt-4 max-w-4xl">
+              Once the records are in JavaScript, the focus changes. The browser
+              is no longer just displaying Quickbase data — it can retain that
+              data and begin working with it. Sorting is the first simple
+              example, followed by searching and filtering. Later lessons move
+              into creating, editing, and deleting records, pagination,
+              relationships, and reusable JavaScript patterns.
+            </p>
+
+            <div className="mt-6 rounded-lg border border-gray-300 bg-[#f7f8fa] p-5">
+              <p className="font-bold">The progression of the lab:</p>
+
+              <div className="mt-3 font-mono leading-8">
+                <div>Identify Quickbase objects</div>
+                <div>↓</div>
+
+                <div>Retrieve Quickbase records</div>
+                <div>↓</div>
+
+                <div>Understand the returned structure</div>
+                <div>↓</div>
+
+                <div>Retain the records in JavaScript</div>
+                <div>↓</div>
+
+                <div>Manipulate the client-side data</div>
+                <div>↓</div>
+
+                <div>Use the API to change Quickbase data</div>
+              </div>
+            </div>
+
+            <p className="mt-6 max-w-4xl">
+              Each lesson introduces one new Quickbase development concept and
+              builds upon a previously working example. Completed examples
+              remain available so that you can compare how the code evolves from
+              one lesson to the next instead of replacing earlier work.
+            </p>
+
+            <p className="mt-4 max-w-4xl">
+              New to the lab? Begin with the small Quickbase{" "}
+              <strong>People</strong> table used throughout the tutorials.
+              You&apos;ll create the Name, Age, and Favorite Color fields, add a
+              few sample records, and identify the table DBID and Field IDs that
+              the API examples will use.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
               <Link
                 href="/get-started"
                 className="inline-flex rounded-md bg-[#1f5c99] px-5 py-3 font-bold text-white hover:bg-[#164875]"
               >
                 Get Started →
+              </Link>
+
+              <Link
+                href="/lessons"
+                className="inline-flex rounded-md border-2 border-[#1f5c99] px-5 py-3 font-bold text-[#1f5c99] hover:bg-[#eaf3fb]"
+              >
+                View Table of Contents →
               </Link>
             </div>
           </div>
