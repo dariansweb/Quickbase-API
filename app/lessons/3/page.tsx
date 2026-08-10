@@ -921,7 +921,7 @@ export default function Lesson3Page() {
           target="_blank"
           className="font-bold text-[#1f5c99] underline"
         >
-          Code Page Here - PeoplePage_sort.html
+          Code Page Here - PeoplePage_search.html
         </Link>
         <h1 className="mt-2 text-4xl font-bold">
           Query Quickbase with Search Criteria
