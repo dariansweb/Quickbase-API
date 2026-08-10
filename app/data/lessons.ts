@@ -15,7 +15,7 @@ export const lessons: Lesson[] = [
     number: "1A",
     title: "Read Records with XML API",
     description:
-      "Read People records using API_DoQuery, fetch(), the Quickbase session, an Application Token, XML, and DOMParser.",
+      "Learn how Quickbase tables, Field IDs, Application Tokens, API_DoQuery, and structured XML work together to retrieve People records.",
     status: "complete",
     link: "/lessons/1a",
     workingExample: "PeoplePage_xml.html",
@@ -24,44 +24,44 @@ export const lessons: Lesson[] = [
     number: "1B",
     title: "Read Records with REST API",
     description:
-      "Read the exact same People table using the modern Quickbase RESTful JSON API.",
+      "Query the same People table with the Quickbase REST API and learn how temporary authorization, JSON requests, Field IDs, and REST responses replace the XML workflow.",
     status: "complete",
     link: "/lessons/1b",
     workingExample: "PeoplePage_rest.html",
   },
   {
     number: "2",
-    title: "Client-Side Sorting",
+    title: "Control Returned Data with Client-Side Sorting",
     description:
-      "Sort records already loaded into the browser without sending another request to Quickbase.",
+      "Retain Quickbase records in JavaScript, manipulate the client-side dataset, and re-render it without sending another request to Quickbase.",
     status: "complete",
     link: "/lessons/2",
-    nextObjective:
-      "Add client-side sorting to records already returned from Quickbase.",
     workingExample: "PeoplePage_sort.html",
   },
   {
     number: "3",
     title: "Query Quickbase with Search Criteria",
     description:
-      "Use a REST where expression so Quickbase returns only records matching the requested criteria.",
+      "Build a REST where expression and send it to Quickbase so only records matching the requested criteria are returned.",
     status: "complete",
     link: "/lessons/3",
     workingExample: "PeoplePage_search.html",
   },
   {
     number: "4",
-    title: "Client-Side Filtering",
+    title: "Quickbase Query Operators",
     description:
-      "Filter the displayed dataset using specific field values and conditions.",
-    status: "next",
+      "Explore Quickbase query operators beyond EX and learn how different comparisons control which records the REST API returns.",
+    status: "complete",
     link: "/lessons/4",
+    nextObjective:
+      "Use different Quickbase query operators with the People fields and observe how each operator changes the records returned.",
   },
   {
     number: "5",
     title: "Add Records",
     description: "Create new Quickbase records from a Code Page.",
-    status: "upcoming",
+    status: "next",
     link: "/lessons/5",
   },
   {
