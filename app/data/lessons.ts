@@ -60,23 +60,27 @@ export const lessons: Lesson[] = [
   {
     number: "5",
     title: "Add Records",
-    description: "Create new Quickbase records from a Code Page.",
-    status: "next",
+    description:
+      "Begin the CRUD workflow by sending People field values to the Quickbase REST API and creating a new record.",
+    status: "complete",
     link: "/lessons/5",
+    workingExample: "PeoplePage_add.html",
+    nextObjective:
+      "Create a new People record with Name, Age, and Favorite Color, then query Quickbase again to confirm the record was created.",
   },
   {
     number: "6",
     title: "Edit Records",
     description:
-      "Update existing Quickbase records from the training application.",
-    status: "upcoming",
+      "Continue the CRUD workflow by identifying an existing People record and sending updated field values to Quickbase.",
+    status: "next",
     link: "/lessons/6",
   },
   {
     number: "7",
     title: "Delete Records",
     description:
-      "Delete Quickbase records and properly handle the resulting API response.",
+      "Complete the CRUD workflow by identifying an existing People record, deleting it through the Quickbase REST API, and confirming the result.",
     status: "upcoming",
     link: "/lessons/7",
   },
