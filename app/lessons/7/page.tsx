@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Lesson7Page() {
   return (
     <section>
@@ -8,7 +10,13 @@ export default function Lesson7Page() {
         <p className="mb-2 font-bold uppercase tracking-wide text-[#1f5c99]">
           Lesson 7
         </p>
-
+        <Link
+          href="/files/PeoplePage_delete.txt"
+          target="_blank"
+          className="font-bold text-[#1f5c99] underline"
+        >
+          Code Page Here - PeoplePage_delete.html
+        </Link>
         <h1 className="text-4xl font-bold">
           Delete Records with the Quickbase REST API
         </h1>
