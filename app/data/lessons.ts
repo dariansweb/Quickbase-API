@@ -73,7 +73,7 @@ export const lessons: Lesson[] = [
     title: "Edit Records",
     description:
       "Continue the CRUD workflow by identifying an existing People record and sending updated field values to Quickbase.",
-    status: "next",
+    status: "complete",
     link: "/lessons/6",
   },
   {
@@ -81,14 +81,14 @@ export const lessons: Lesson[] = [
     title: "Delete Records",
     description:
       "Complete the CRUD workflow by identifying an existing People record, deleting it through the Quickbase REST API, and confirming the result.",
-    status: "upcoming",
+    status: "complete",
     link: "/lessons/7",
   },
   {
     number: "8",
     title: "Pagination",
     description: "Request and display larger datasets in manageable pages.",
-    status: "upcoming",
+    status: "next",
     link: "/lessons/8",
   },
   {
