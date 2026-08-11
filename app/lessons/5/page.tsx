@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Lesson5Page() {
   return (
     <section>
@@ -8,7 +10,13 @@ export default function Lesson5Page() {
         <p className="mb-2 font-bold uppercase tracking-wide text-[#1f5c99]">
           Lesson 5
         </p>
-
+        <Link
+          href="/files/PeoplePage_add.txt"
+          target="_blank"
+          className="font-bold text-[#1f5c99] underline"
+        >
+          Code Page Here - PeoplePage_add.html
+        </Link>
         <h1 className="text-4xl font-bold">
           Add Records with the Quickbase REST API
         </h1>
