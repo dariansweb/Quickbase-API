@@ -88,7 +88,7 @@ export const lessons: Lesson[] = [
     number: "8",
     title: "Pagination",
     description: "Request and display larger datasets in manageable pages.",
-    status: "next",
+    status: "complete",
     link: "/lessons/8",
   },
   {
@@ -96,7 +96,7 @@ export const lessons: Lesson[] = [
     title: "Relationships",
     description:
       "Work with Quickbase parent-child relationships through the API.",
-    status: "upcoming",
+    status: "next",
     link: "/lessons/9",
   },
   {
