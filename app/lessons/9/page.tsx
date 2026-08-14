@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 type ExplorerAction = "table" | "fields" | "relationships";
@@ -20,7 +21,7 @@ type FakeTable = {
   pluralRecordName: string;
 };
 
-const APP_DBID = "bqblabapp9";
+const APP_DBID = "beqbhappylol";
 
 const fakeTables: FakeTable[] = [
   {
@@ -345,6 +346,13 @@ export default function Lesson9Page() {
         <p className="mb-2 font-bold uppercase tracking-wide text-[#1f5c99]">
           Lesson 9
         </p>
+        <Link
+          href="/files/QBSchemaExplorer.txt"
+          target="_blank"
+          className="font-bold text-[#1f5c99] underline"
+        >
+          Code Page Here - QBSchemaExplorer.html
+        </Link>
 
         <h1 className="text-4xl font-bold">Quickbase Schema Discovery</h1>
 
