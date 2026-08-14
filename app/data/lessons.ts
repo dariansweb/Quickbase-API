@@ -93,18 +93,26 @@ export const lessons: Lesson[] = [
   },
   {
     number: "9",
-    title: "Relationships",
+    title: "Schema Discovery",
     description:
-      "Work with Quickbase parent-child relationships through the API.",
-    status: "next",
+      "Build a reusable Quickbase Schema Explorer that discovers the current app, lists its tables, and inspects table, field, and relationship metadata.",
+    status: "complete",
     link: "/lessons/9",
   },
   {
     number: "10",
+    title: "Relationships",
+    description:
+      "Work with Quickbase parent-child relationships through the API.",
+    status: "next",
+    link: "/lessons/10",
+  },
+  {
+    number: "11",
     title: "Reusable JavaScript Library",
     description:
       "Extract the patterns learned throughout the lab into reusable Quickbase development utilities.",
     status: "upcoming",
-    link: "/lessons/10",
+    link: "/lessons/11",
   },
 ];
