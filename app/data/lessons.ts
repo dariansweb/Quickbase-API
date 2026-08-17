@@ -104,15 +104,15 @@ export const lessons: Lesson[] = [
     title: "Relationships",
     description:
       "Work with Quickbase parent-child relationships through the API.",
-    status: "next",
+    status: "complete",
     link: "/lessons/10",
   },
-  {
-    number: "11",
-    title: "Reusable JavaScript Library",
-    description:
-      "Extract the patterns learned throughout the lab into reusable Quickbase development utilities.",
-    status: "upcoming",
-    link: "/lessons/11",
-  },
+{
+  number: "Review",
+  title: "Quickbase REST API Developer Review",
+  description:
+    "Review the complete developer lab by connecting CRUD, querying, pagination, schema discovery, identifiers, relationships, and dynamic schema creation into one complete Quickbase REST API model.",
+  status: "complete",
+  link: "/lessons/review",
+},
 ];
