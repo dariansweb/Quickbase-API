@@ -1,0 +1,1983 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Lesson 10 - Dynamic Quickbase Schema Creation</title>
+
+    <style>
+      :root {
+        --qb-blue: #1f5c99;
+        --qb-blue-dark: #174a7c;
+        --qb-navy: #003366;
+        --page-bg: #f4f6f8;
+        --panel-bg: #ffffff;
+        --border: #d7dee7;
+        --text: #1f2933;
+        --muted: #52616f;
+        --success: #276749;
+        --success-bg: #f0fff4;
+        --warning: #8a5a00;
+        --warning-bg: #fffaf0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 32px;
+        background: var(--page-bg);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      h1,
+      h2 {
+        color: var(--qb-navy);
+      }
+
+      h1 {
+        margin-bottom: 8px;
+      }
+
+      h2 {
+        margin-top: 0;
+      }
+
+      p {
+        line-height: 1.6;
+      }
+
+      .lead {
+        margin-top: 0;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .panel {
+        margin-top: 24px;
+        padding: 20px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--panel-bg);
+      }
+
+      .schema-flow {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .schema-table {
+        padding: 16px;
+        border: 1px solid #b8c7d6;
+        border-radius: 8px;
+        background: #f8fbfe;
+      }
+
+      .schema-table strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--qb-navy);
+        font-size: 1.05rem;
+      }
+
+      .relationship {
+        padding-left: 16px;
+        border-left: 4px solid var(--qb-blue);
+        color: var(--muted);
+      }
+
+      .helper-note {
+        border-color: #ecd7a5;
+        background: var(--warning-bg);
+      }
+
+      .helper-note strong {
+        color: var(--warning);
+      }
+
+      .status {
+        margin-top: 24px;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--panel-bg);
+      }
+
+      .status.success {
+        border-color: #9cc9ae;
+        background: var(--success-bg);
+        color: var(--success);
+      }
+
+      button {
+        margin-top: 16px;
+        padding: 10px 18px;
+        border: 1px solid var(--qb-blue-dark);
+        border-radius: 6px;
+        background: var(--qb-blue);
+        color: white;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: var(--qb-blue-dark);
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+
+      .output-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .output-toolbar button {
+        margin-top: 0;
+      }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      pre {
+        margin-top: 12px;
+        padding: 18px;
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #ffffff;
+        white-space: pre-wrap;
+      }
+
+      code {
+        font-family: Consolas, Monaco, "Courier New", monospace;
+      }
+
+      .small {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .progress-board {
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .progress-item {
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #ffffff;
+      }
+
+      .progress-item.complete {
+        border-color: #9cc9ae;
+        background: var(--success-bg);
+      }
+
+      .progress-item.pending {
+        border-color: #ecd7a5;
+        background: var(--warning-bg);
+      }
+
+      .progress-item strong {
+        color: var(--qb-navy);
+      }
+
+      .next-action {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-left: 5px solid var(--qb-blue);
+        background: #f3f7fb;
+      }
+
+      .lesson-actions {
+        margin-top: 24px;
+      }
+
+      .lesson-actions h3 {
+        margin-bottom: 6px;
+        color: var(--qb-navy);
+      }
+
+      .lesson-step {
+        display: flex;
+        gap: 16px;
+        margin-top: 14px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #ffffff;
+      }
+
+      .step-number {
+        display: flex;
+        flex: 0 0 42px;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: var(--qb-blue);
+        color: #ffffff;
+        font-size: 1.15rem;
+        font-weight: 700;
+      }
+
+      .step-content {
+        flex: 1;
+      }
+
+      .step-content strong {
+        display: block;
+        color: var(--qb-navy);
+        font-size: 1.02rem;
+      }
+
+      .step-content span {
+        display: block;
+        margin-top: 5px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .step-content button {
+        margin-top: 12px;
+      }
+
+      .lesson-utilities {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+      }
+
+      .lesson-utilities button {
+        margin-top: 0;
+      }
+      .lesson-complete {
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #9cc9ae;
+        border-left: 6px solid var(--success);
+        border-radius: 10px;
+        background: var(--success-bg);
+      }
+
+      .lesson-complete h3 {
+        margin: 0 0 10px;
+        color: var(--success);
+        font-size: 1.25rem;
+      }
+
+      .lesson-complete p {
+        margin: 10px 0 0;
+      }
+
+      .lesson-complete-schema {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-top: 16px;
+        padding: 14px;
+        border: 1px solid #b9dbc6;
+        border-radius: 8px;
+        background: #ffffff;
+      }
+
+      .lesson-complete-schema strong {
+        color: var(--qb-navy);
+      }
+
+      .lesson-complete-schema span {
+        color: var(--qb-blue);
+        font-size: 1.3rem;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <h1>Lesson 10 — Dynamic Quickbase Schema Creation</h1>
+
+      <p class="lead">
+        Build new Quickbase schema from JavaScript and observe what Quickbase
+        creates automatically when relationships are added.
+      </p>
+
+      <section class="panel">
+        <h2>Target Schema</h2>
+
+        <p>
+          The existing <strong>People</strong> table remains the center of the
+          lesson. We will add <strong>Departments</strong> and
+          <strong>Tasks</strong>, then connect them to People.
+        </p>
+
+        <div class="schema-flow">
+          <div class="schema-table">
+            <strong>Departments</strong>
+            Department Name<br />
+            Location
+          </div>
+
+          <div class="relationship">Departments → People relationship</div>
+
+          <div class="schema-table">
+            <strong>People</strong>
+            Existing training table
+          </div>
+
+          <div class="relationship">People → Tasks relationship</div>
+
+          <div class="schema-table">
+            <strong>Tasks</strong>
+            Task Name<br />
+            Due Date<br />
+            Status
+          </div>
+        </div>
+      </section>
+
+      <section class="panel helper-note">
+        <h2>Important Quickbase Behavior</h2>
+
+        <p>
+          <strong
+            >Not every field in the finished schema will be created by our
+            field-creation requests.</strong
+          >
+        </p>
+
+        <p>
+          When we create a Quickbase relationship, Quickbase can create the
+          relationship reference field and requested lookup fields for us. Those
+          fields must be identified separately from the fields our code
+          explicitly creates.
+        </p>
+
+        <pre><code>Our code creates:
+  Department Name
+  Location
+
+Quickbase relationship creation can create:
+  Related Department
+  Department Name lookup
+  Department Location lookup</code></pre>
+      </section>
+
+      <section class="panel">
+        <h2>Lesson Workspace</h2>
+
+        <p>
+          This page checks the current Quickbase schema before each step.
+          Completed work is detected automatically, and only the next valid
+          schema action is enabled.
+        </p>
+
+        <!-- ============================================================
+       CURRENT LESSON STATE
+       ============================================================ -->
+
+        <div id="progressBoard" class="progress-board">
+          <div class="progress-item pending">
+            Inspecting Quickbase schema...
+          </div>
+        </div>
+
+        <div id="nextActionMessage" class="next-action">
+          Determining the next valid lesson action...
+        </div>
+        <div id="lessonCompletePanel" class="lesson-complete" hidden>
+          <h3>✓ Lesson 10 Complete</h3>
+
+          <p>
+            Quickbase successfully created and connected the complete Lesson 10
+            schema.
+          </p>
+
+          <div class="lesson-complete-schema">
+            <strong>Departments</strong>
+            <span>↓</span>
+            <strong>People</strong>
+            <span>↓</span>
+            <strong>Tasks</strong>
+          </div>
+
+          <p>
+            During this lesson, our JavaScript explicitly created tables,
+            ordinary fields, and relationships. Quickbase also created its own
+            required system fields and relationship-derived fields.
+          </p>
+
+          <p>
+            <strong>Final verification:</strong>
+            Open the Lesson 9 Schema Explorer and inspect People and Tasks to
+            confirm the completed relationships, reference fields, and lookup
+            fields.
+          </p>
+        </div>
+        <!-- ============================================================
+       SCHEMA CONSTRUCTION STEPS
+       ============================================================ -->
+
+        <div class="lesson-actions">
+          <h3>Schema Construction Steps</h3>
+
+          <p class="small">
+            Complete the steps in order. A disabled step is either already
+            complete or is waiting for a prerequisite from an earlier step.
+          </p>
+
+          <div class="lesson-step">
+            <div class="step-number">1</div>
+
+            <div class="step-content">
+              <strong>Create Departments Table</strong>
+              <span
+                >Create the first new table and capture its Table DBID.</span
+              >
+
+              <button type="button" id="createDepartmentsButton" disabled>
+                Create Departments Table
+              </button>
+            </div>
+          </div>
+
+          <div class="lesson-step">
+            <div class="step-number">2</div>
+
+            <div class="step-content">
+              <strong>Create Department Fields</strong>
+              <span>
+                Create Department Name and Location, then capture their Field
+                IDs.
+              </span>
+
+              <button type="button" id="createDepartmentFieldsButton" disabled>
+                Create Department Fields
+              </button>
+            </div>
+          </div>
+
+          <div class="lesson-step">
+            <div class="step-number">3</div>
+
+            <div class="step-content">
+              <strong>Create Departments → People Relationship</strong>
+              <span>
+                Create the relationship and observe the reference and lookup
+                fields Quickbase creates automatically.
+              </span>
+
+              <button
+                type="button"
+                id="createDepartmentsPeopleRelationshipButton"
+                disabled
+              >
+                Create Departments → People Relationship
+              </button>
+            </div>
+          </div>
+
+          <div class="lesson-step">
+            <div class="step-number">4</div>
+
+            <div class="step-content">
+              <strong>Create Tasks Table</strong>
+              <span
+                >Create the second new table and capture its Table DBID.</span
+              >
+
+              <button type="button" id="createTasksButton" disabled>
+                Create Tasks Table
+              </button>
+            </div>
+          </div>
+
+          <div class="lesson-step">
+            <div class="step-number">5</div>
+
+            <div class="step-content">
+              <strong>Create Task Fields</strong>
+              <span>
+                Create Task Name, Due Date, and Status, then capture their Field
+                IDs.
+              </span>
+
+              <button type="button" id="createTaskFieldsButton" disabled>
+                Create Task Fields
+              </button>
+            </div>
+          </div>
+
+          <div class="lesson-step">
+            <div class="step-number">6</div>
+
+            <div class="step-content">
+              <strong>Create People → Tasks Relationship</strong>
+              <span>
+                Complete the schema and observe the relationship fields
+                Quickbase creates in Tasks.
+              </span>
+
+              <button
+                type="button"
+                id="createPeopleTasksRelationshipButton"
+                disabled
+              >
+                Create People → Tasks Relationship
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+       UTILITY ACTION
+       ============================================================ -->
+
+        <div class="lesson-utilities">
+          <button type="button" id="startButton">Refresh Lesson Status</button>
+
+          <span class="small">
+            Re-read the current Quickbase schema and rebuild the lesson state.
+          </span>
+        </div>
+
+        <!-- ============================================================
+       STATUS AND API OUTPUT
+       ============================================================ -->
+
+        <div id="status" class="status">Ready.</div>
+
+        <div class="output-toolbar">
+          <strong>JSON Output</strong>
+
+          <button type="button" id="copyOutputButton">Copy JSON</button>
+        </div>
+
+        <pre id="output">No API response yet.</pre>
+      </section>
+
+      <p class="small">
+        Lesson 9's Schema Explorer will be used later to verify the resulting
+        tables, fields, and relationships.
+      </p>
+    </main>
+
+    <script>
+      /*
+       * ============================================================
+       * QUICKBASE CONTEXT
+       * ============================================================
+       *
+       * The Code Page should discover the app it is running inside.
+       * We are not hard-coding an App DBID.
+       */
+
+      const REALM = window.location.hostname.includes("quickbase.com")
+        ? window.location.hostname
+        : "YOUR_REALM.quickbase.com";
+
+      function getAppDbid() {
+        const match = window.location.pathname.match(/\/db\/([^/]+)/);
+
+        if (!match) {
+          throw new Error(
+            "Could not determine the App DBID from the Quickbase URL.",
+          );
+        }
+
+        return match[1];
+      }
+
+      /*
+       * Keep the Application Token empty in the shared lesson file.
+       */
+      const APP_TOKEN = "";
+
+      /*
+       * We will populate this only after the page confirms that
+       * it is running inside a Quickbase application.
+       */
+      let APP_DBID = "";
+
+      /*
+       * ============================================================
+       * TEMPORARY REST AUTHORIZATION
+       * ============================================================
+       *
+       * Same signed-in Code Page authorization pattern used in
+       * previous REST lessons.
+       */
+
+      async function getTemporaryToken(dbid) {
+        const headers = {
+          "QB-Realm-Hostname": REALM,
+        };
+
+        if (APP_TOKEN.trim()) {
+          headers["QB-App-Token"] = APP_TOKEN;
+        }
+
+        const response = await fetch(
+          `https://api.quickbase.com/v1/auth/temporary/${dbid}`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers,
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${JSON.stringify(data)}`);
+        }
+
+        if (!data.temporaryAuthorization) {
+          throw new Error("Quickbase did not return temporaryAuthorization.");
+        }
+
+        return data.temporaryAuthorization;
+      }
+
+      /*
+       * ============================================================
+       * LESSON STATE
+       * ============================================================
+       *
+       * These identifiers will eventually be populated from actual
+       * Quickbase REST API responses.
+       *
+       * We deliberately do NOT invent or hard-code them.
+       */
+
+      const lessonState = {
+        departmentsTableDbid: null,
+        peopleTableDbid: null,
+        tasksTableDbid: null,
+
+        departmentNameFieldId: null,
+        departmentLocationFieldId: null,
+        personNameFieldId: null,
+
+        taskNameFieldId: null,
+        taskDueDateFieldId: null,
+        taskStatusFieldId: null,
+
+        departmentsPeopleRelationshipId: null,
+        peopleTasksRelationshipId: null,
+      };
+
+      /*
+       * ============================================================
+       * STARTER ACTION
+       * ============================================================
+       *
+       * For now this only proves that the Code Page can identify
+       * the current Quickbase app.
+       *
+       * No schema is changed.
+       */
+
+      function setButtonStates(state) {
+        document.getElementById("createDepartmentsButton").disabled =
+          state.departmentsExists;
+
+        document.getElementById("createDepartmentFieldsButton").disabled =
+          !state.departmentsExists || state.departmentFieldsExist;
+
+        document.getElementById(
+          "createDepartmentsPeopleRelationshipButton",
+        ).disabled = !state.departmentFieldsExist || state.relationshipExists;
+
+        document.getElementById("createTasksButton").disabled =
+          !state.relationshipExists || state.tasksExists;
+
+        document.getElementById("createTaskFieldsButton").disabled =
+          !state.tasksExists || state.taskFieldsExist;
+
+        document.getElementById(
+          "createPeopleTasksRelationshipButton",
+        ).disabled =
+          !state.taskFieldsExist || state.peopleTasksRelationshipExists;
+      }
+
+      function renderLessonProgress(state) {
+        const progressBoard = document.getElementById("progressBoard");
+        const nextActionMessage = document.getElementById("nextActionMessage");
+        const lessonCompletePanel = document.getElementById(
+          "lessonCompletePanel",
+        );
+        const items = [
+          {
+            complete: state.peopleExists,
+            title: "People table",
+            detail: state.peopleExists
+              ? `Found — ${lessonState.peopleTableDbid}`
+              : "Missing — the original training table must exist.",
+          },
+          {
+            complete: state.departmentsExists,
+            title: "Departments table",
+            detail: state.departmentsExists
+              ? `Found — ${lessonState.departmentsTableDbid}`
+              : "Not created yet.",
+          },
+          {
+            complete: state.departmentFieldsExist,
+            title: "Department fields",
+            detail: state.departmentFieldsExist
+              ? `Department Name FID ${lessonState.departmentNameFieldId}, Location FID ${lessonState.departmentLocationFieldId}`
+              : "Department Name and Location still need to be created.",
+          },
+          {
+            complete: state.relationshipExists,
+            title: "Departments → People relationship",
+            detail: state.relationshipExists
+              ? `Found — Relationship ID ${lessonState.departmentsPeopleRelationshipId}`
+              : "Relationship has not been created yet.",
+          },
+          {
+            complete: state.tasksExists,
+            title: "Tasks table",
+            detail: state.tasksExists
+              ? `Found — ${lessonState.tasksTableDbid}`
+              : "Not created yet.",
+          },
+          {
+            complete: state.taskFieldsExist,
+            title: "Task fields",
+            detail: state.taskFieldsExist
+              ? `Task Name FID ${lessonState.taskNameFieldId}, Due Date FID ${lessonState.taskDueDateFieldId}, Status FID ${lessonState.taskStatusFieldId}`
+              : "Task Name, Due Date, and Status still need to be created.",
+          },
+          {
+            complete: state.peopleTasksRelationshipExists,
+            title: "People → Tasks relationship",
+            detail: state.peopleTasksRelationshipExists
+              ? `Found — Relationship ID ${lessonState.peopleTasksRelationshipId}`
+              : "Relationship has not been created yet.",
+          },
+        ];
+
+        progressBoard.innerHTML = items
+          .map(
+            (item) => `
+                    <div class="progress-item ${item.complete ? "complete" : "pending"}">
+                      <strong>${item.complete ? "✓" : "○"} ${item.title}</strong><br />
+                      ${item.detail}
+                    </div>
+                  `,
+          )
+          .join("");
+
+        let nextMessage = "";
+
+        lessonCompletePanel.hidden = true;
+
+        if (!state.peopleExists) {
+          nextMessage =
+            "The People table is missing. Lesson 10 expects the existing People training table before continuing.";
+        } else if (!state.departmentsExists) {
+          nextMessage = 'Next step: click "Create Departments Table".';
+        } else if (!state.departmentFieldsExist) {
+          nextMessage =
+            'Departments already exists. Next step: click "Create Department Fields".';
+        } else if (!state.relationshipExists) {
+          nextMessage =
+            'Departments and its fields exist. Next step: click "Create Departments → People Relationship".';
+        } else if (!state.tasksExists) {
+          nextMessage =
+            'Departments → People is complete. Next step: click "Create Tasks Table".';
+        } else if (!state.taskFieldsExist) {
+          nextMessage = 'Tasks exists. Next step: click "Create Task Fields".';
+        } else if (!state.peopleTasksRelationshipExists) {
+          nextMessage =
+            'Task fields exist. Next step: click "Create People → Tasks Relationship".';
+        } else {
+          nextMessage = "All Lesson 10 schema construction steps are complete.";
+
+          lessonCompletePanel.hidden = false;
+        }
+
+        nextActionMessage.textContent = nextMessage;
+      }
+
+      async function inspectLessonSchema() {
+        const status = document.getElementById("status");
+        const output = document.getElementById("output");
+
+        try {
+          APP_DBID = getAppDbid();
+
+          status.classList.remove("success");
+          status.textContent = "Inspecting current Quickbase schema...";
+
+          const temporaryToken = await getTemporaryToken(APP_DBID);
+          const tablesEndpoint = `https://api.quickbase.com/v1/tables?appId=${APP_DBID}`;
+
+          const tablesResponse = await fetch(tablesEndpoint, {
+            method: "GET",
+            headers: {
+              "QB-Realm-Hostname": REALM,
+              Authorization: `QB-TEMP-TOKEN ${temporaryToken}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          const tables = await tablesResponse.json();
+
+          if (!tablesResponse.ok) {
+            throw new Error(
+              `HTTP ${tablesResponse.status}: ${JSON.stringify(tables)}`,
+            );
+          }
+
+          const people = tables.find(
+            (table) => table.name.trim().toLowerCase() === "people",
+          );
+
+          const departments = tables.find(
+            (table) => table.name.trim().toLowerCase() === "departments",
+          );
+
+          const tasks = tables.find(
+            (table) => table.name.trim().toLowerCase() === "tasks",
+          );
+
+          lessonState.peopleTableDbid = people ? people.id : null;
+          lessonState.departmentsTableDbid = departments
+            ? departments.id
+            : null;
+          lessonState.tasksTableDbid = tasks ? tasks.id : null;
+
+          lessonState.departmentNameFieldId = null;
+          lessonState.departmentLocationFieldId = null;
+          lessonState.personNameFieldId = null;
+          lessonState.taskNameFieldId = null;
+          lessonState.taskDueDateFieldId = null;
+          lessonState.taskStatusFieldId = null;
+          lessonState.departmentsPeopleRelationshipId = null;
+          lessonState.peopleTasksRelationshipId = null;
+
+          let departmentFields = [];
+          let peopleFields = [];
+          let taskFields = [];
+          let peopleRelationships = { relationships: [] };
+          let taskRelationships = { relationships: [] };
+
+          if (departments) {
+            const departmentToken = await getTemporaryToken(departments.id);
+
+            const fieldsResponse = await fetch(
+              `https://api.quickbase.com/v1/fields?tableId=${departments.id}`,
+              {
+                method: "GET",
+                headers: {
+                  "QB-Realm-Hostname": REALM,
+                  Authorization: `QB-TEMP-TOKEN ${departmentToken}`,
+                  "Content-Type": "application/json",
+                },
+              },
+            );
+
+            departmentFields = await fieldsResponse.json();
+
+            if (!fieldsResponse.ok) {
+              throw new Error(
+                `HTTP ${fieldsResponse.status}: ${JSON.stringify(departmentFields)}`,
+              );
+            }
+
+            const departmentName = departmentFields.find(
+              (field) => field.label === "Department Name" && field.mode === "",
+            );
+
+            const location = departmentFields.find(
+              (field) => field.label === "Location" && field.mode === "",
+            );
+
+            lessonState.departmentNameFieldId = departmentName
+              ? departmentName.id
+              : null;
+            lessonState.departmentLocationFieldId = location
+              ? location.id
+              : null;
+          }
+
+          if (people) {
+            const peopleToken = await getTemporaryToken(people.id);
+
+            const peopleFieldsResponse = await fetch(
+              `https://api.quickbase.com/v1/fields?tableId=${people.id}`,
+              {
+                method: "GET",
+                headers: {
+                  "QB-Realm-Hostname": REALM,
+                  Authorization: `QB-TEMP-TOKEN ${peopleToken}`,
+                  "Content-Type": "application/json",
+                },
+              },
+            );
+
+            peopleFields = await peopleFieldsResponse.json();
+
+            if (!peopleFieldsResponse.ok) {
+              throw new Error(
+                `HTTP ${peopleFieldsResponse.status}: ${JSON.stringify(peopleFields)}`,
+              );
+            }
+
+            const personNameField = peopleFields.find(
+              (field) => field.label === "Name" && field.mode === "",
+            );
+
+            lessonState.personNameFieldId = personNameField
+              ? personNameField.id
+              : null;
+
+            const relationshipsResponse = await fetch(
+              `https://api.quickbase.com/v1/tables/${people.id}/relationships`,
+              {
+                method: "GET",
+                headers: {
+                  "QB-Realm-Hostname": REALM,
+                  Authorization: `QB-TEMP-TOKEN ${peopleToken}`,
+                  "Content-Type": "application/json",
+                },
+              },
+            );
+
+            peopleRelationships = await relationshipsResponse.json();
+
+            if (!relationshipsResponse.ok) {
+              throw new Error(
+                `HTTP ${relationshipsResponse.status}: ${JSON.stringify(peopleRelationships)}`,
+              );
+            }
+
+            if (departments) {
+              const relationship = (
+                peopleRelationships.relationships || []
+              ).find(
+                (item) =>
+                  item.parentTableId === departments.id &&
+                  item.childTableId === people.id,
+              );
+
+              lessonState.departmentsPeopleRelationshipId = relationship
+                ? relationship.id
+                : null;
+            }
+          }
+
+          if (tasks) {
+            const tasksToken = await getTemporaryToken(tasks.id);
+
+            const taskFieldsResponse = await fetch(
+              `https://api.quickbase.com/v1/fields?tableId=${tasks.id}`,
+              {
+                method: "GET",
+                headers: {
+                  "QB-Realm-Hostname": REALM,
+                  Authorization: `QB-TEMP-TOKEN ${tasksToken}`,
+                  "Content-Type": "application/json",
+                },
+              },
+            );
+
+            taskFields = await taskFieldsResponse.json();
+
+            if (!taskFieldsResponse.ok) {
+              throw new Error(
+                `HTTP ${taskFieldsResponse.status}: ${JSON.stringify(taskFields)}`,
+              );
+            }
+
+            const taskName = taskFields.find(
+              (field) => field.label === "Task Name" && field.mode === "",
+            );
+
+            const dueDate = taskFields.find(
+              (field) => field.label === "Due Date" && field.mode === "",
+            );
+
+            const statusField = taskFields.find(
+              (field) => field.label === "Status" && field.mode === "",
+            );
+
+            lessonState.taskNameFieldId = taskName ? taskName.id : null;
+            lessonState.taskDueDateFieldId = dueDate ? dueDate.id : null;
+            lessonState.taskStatusFieldId = statusField ? statusField.id : null;
+
+            const taskRelationshipsResponse = await fetch(
+              `https://api.quickbase.com/v1/tables/${tasks.id}/relationships`,
+              {
+                method: "GET",
+                headers: {
+                  "QB-Realm-Hostname": REALM,
+                  Authorization: `QB-TEMP-TOKEN ${tasksToken}`,
+                  "Content-Type": "application/json",
+                },
+              },
+            );
+
+            taskRelationships = await taskRelationshipsResponse.json();
+
+            if (!taskRelationshipsResponse.ok) {
+              throw new Error(
+                `HTTP ${taskRelationshipsResponse.status}: ${JSON.stringify(taskRelationships)}`,
+              );
+            }
+
+            if (people) {
+              const peopleTasksRelationship = (
+                taskRelationships.relationships || []
+              ).find(
+                (item) =>
+                  item.parentTableId === people.id &&
+                  item.childTableId === tasks.id,
+              );
+
+              lessonState.peopleTasksRelationshipId = peopleTasksRelationship
+                ? peopleTasksRelationship.id
+                : null;
+            }
+          }
+
+          const state = {
+            peopleExists: Boolean(people),
+            departmentsExists: Boolean(departments),
+            departmentFieldsExist: Boolean(
+              lessonState.departmentNameFieldId &&
+              lessonState.departmentLocationFieldId,
+            ),
+            relationshipExists: Boolean(
+              lessonState.departmentsPeopleRelationshipId,
+            ),
+            tasksExists: Boolean(tasks),
+            taskFieldsExist: Boolean(
+              lessonState.taskNameFieldId &&
+              lessonState.taskDueDateFieldId &&
+              lessonState.taskStatusFieldId,
+            ),
+            peopleTasksRelationshipExists: Boolean(
+              lessonState.peopleTasksRelationshipId,
+            ),
+          };
+
+          setButtonStates(state);
+          renderLessonProgress(state);
+
+          status.classList.add("success");
+          status.textContent =
+            "Lesson status rebuilt from the current Quickbase schema.";
+
+          output.textContent = JSON.stringify(
+            {
+              realm: REALM,
+              appDbid: APP_DBID,
+              detectedState: state,
+              lessonState,
+            },
+            null,
+            2,
+          );
+        } catch (error) {
+          console.error(error);
+
+          status.classList.remove("success");
+          status.textContent = `Unable to inspect lesson schema: ${error.message}`;
+
+          output.textContent = JSON.stringify(
+            {
+              error: error.message,
+              lessonState,
+            },
+            null,
+            2,
+          );
+        }
+      }
+
+      function confirmAppContext() {
+        inspectLessonSchema();
+      }
+
+      /*
+       * ============================================================
+       * COPY JSON
+       * ============================================================
+       */
+
+      async function copyOutputToClipboard() {
+        const status = document.getElementById("status");
+        const output = document.getElementById("output");
+        const text = output.textContent.trim();
+
+        if (!text || text === "No API response yet." || text === "Loading...") {
+          status.classList.remove("success");
+          status.textContent = "There is no JSON output to copy yet.";
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(text);
+
+          status.classList.add("success");
+          status.textContent = "JSON output copied to clipboard.";
+        } catch (error) {
+          console.error(error);
+
+          status.classList.remove("success");
+          status.textContent = "Unable to copy JSON to the clipboard.";
+        }
+      }
+
+      /*
+       * ============================================================
+       * CREATE DEPARTMENTS TABLE
+       * ============================================================
+       *
+       * This is the first schema-changing REST request in Lesson 10.
+       *
+       * Our request creates ONE table.
+       * We then inspect Quickbase's response and capture the Table DBID.
+       *
+       * No custom fields or relationships are created yet.
+       */
+
+      async function createDepartmentsTable() {
+        const status = document.getElementById("status");
+        const output = document.getElementById("output");
+        const button = document.getElementById("createDepartmentsButton");
+
+        if (!APP_DBID) {
+          status.classList.remove("success");
+          status.textContent = "Confirm the Quickbase app context first.";
+          return;
+        }
+
+        status.classList.remove("success");
+        status.textContent = "Creating Departments table in Quickbase...";
+        output.textContent = "Loading...";
+        button.disabled = true;
+
+        try {
+          const temporaryToken = await getTemporaryToken(APP_DBID);
+
+          const endpoint = `https://api.quickbase.com/v1/tables?appId=${APP_DBID}`;
+
+          const payload = {
+            name: "Departments",
+            description: "Departments used in Lesson 10",
+            singleRecordName: "Department",
+            pluralRecordName: "Departments",
+          };
+
+          console.log("Create table endpoint:", endpoint);
+          console.log("Create table payload:", payload);
+
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "QB-Realm-Hostname": REALM,
+              Authorization: `QB-TEMP-TOKEN ${temporaryToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+
+          console.log("Create table response:", data);
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${JSON.stringify(data)}`);
+          }
+
+          /*
+           * Capture the identifier Quickbase assigned.
+           *
+           * We did not choose this DBID.
+           * Quickbase created the table and returned its unique id.
+           */
+          lessonState.departmentsTableDbid = data.id;
+
+          document.getElementById("createDepartmentFieldsButton").disabled =
+            false;
+
+          status.classList.add("success");
+          status.textContent = `HTTP ${response.status} — Departments created. Table DBID captured: ${data.id}`;
+
+          output.textContent = JSON.stringify(
+            {
+              request: {
+                method: "POST",
+                endpoint,
+                payload,
+              },
+              quickbaseResponse: data,
+              capturedLessonState: lessonState,
+            },
+            null,
+            2,
+          );
+
+          await inspectLessonSchema();
+        } catch (error) {
+          console.error(error);
+
+          status.classList.remove("success");
+          status.textContent = `Create table failed: ${error.message}`;
+          output.textContent = JSON.stringify(
+            {
+              error: error.message,
+              lessonState,
+            },
+            null,
+            2,
+          );
+
+          button.disabled = false;
+        }
+      }
+
+      /*
+       * ============================================================
+       * CREATE DEPARTMENT FIELDS
+       * ============================================================
+       *
+       * Now that Quickbase has created the Departments table and
+       * returned its Table DBID, we can target that table directly.
+       *
+       * These are OUR explicit field-creation requests:
+       *
+       *   Department Name
+       *   Location
+       *
+       * Quickbase's default system fields already exist and were
+       * created automatically when the table was created.
+       */
+
+      async function createDepartmentFields() {
+        const status = document.getElementById("status");
+        const output = document.getElementById("output");
+        const button = document.getElementById("createDepartmentFieldsButton");
+
+        if (!lessonState.departmentsTableDbid) {
+          status.classList.remove("success");
+          status.textContent =
+            "Create the Departments table before creating its custom fields.";
+          return;
+        }
+
+        status.classList.remove("success");
+        status.textContent = "Creating Department Name and Location...";
+        output.textContent = "Loading...";
+        button.disabled = true;
+
+        try {
+          const tableDbid = lessonState.departmentsTableDbid;
+          const temporaryToken = await getTemporaryToken(tableDbid);
+          const endpoint = `https://api.quickbase.com/v1/fields?tableId=${tableDbid}`;
+
+          const fieldRequests = [
+            {
+              label: "Department Name",
+              fieldType: "text",
+              appearsByDefault: true,
+              addToForms: true,
+            },
+            {
+              label: "Location",
+              fieldType: "text",
+              appearsByDefault: true,
+              addToForms: true,
+            },
+          ];
+
+          const fieldResults = [];
+
+          /*
+           * Create the fields one at a time.
+           *
+           * This is intentional for the lesson:
+           * each request produces its own Quickbase response,
+           * including the actual Field ID assigned by Quickbase.
+           */
+          for (const payload of fieldRequests) {
+            console.log("Create field endpoint:", endpoint);
+            console.log("Create field payload:", payload);
+
+            const response = await fetch(endpoint, {
+              method: "POST",
+              headers: {
+                "QB-Realm-Hostname": REALM,
+                Authorization: `QB-TEMP-TOKEN ${temporaryToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+
+            console.log(`Create field response for ${payload.label}:`, data);
+
+            if (!response.ok) {
+              throw new Error(
+                `HTTP ${response.status} while creating ${payload.label}: ${JSON.stringify(data)}`,
+              );
+            }
+
+            /*
+             * Capture the Field IDs Quickbase actually assigned.
+             * Never assume a Field ID from nextFieldId alone.
+             */
+            if (payload.label === "Department Name") {
+              lessonState.departmentNameFieldId = data.id;
+            }
+
+            if (payload.label === "Location") {
+              lessonState.departmentLocationFieldId = data.id;
+            }
+
+            fieldResults.push({
+              request: {
+                method: "POST",
+                endpoint,
+                payload,
+              },
+              quickbaseResponse: data,
+            });
+          }
+
+          document.getElementById(
+            "createDepartmentsPeopleRelationshipButton",
+          ).disabled = false;
+
+          status.classList.add("success");
+          status.textContent = `Department fields created — Department Name FID ${lessonState.departmentNameFieldId}, Location FID ${lessonState.departmentLocationFieldId}.`;
+
+          output.textContent = JSON.stringify(
+            {
+              quickbaseAutomaticFieldsAlreadyPresent: [
+                { id: 1, label: "Date Created" },
+                { id: 2, label: "Date Modified" },
+                { id: 3, label: "Record ID#" },
+                { id: 4, label: "Record Owner" },
+                { id: 5, label: "Last Modified By" },
+              ],
+              fieldsCreatedByOurApiRequests: fieldResults,
+              capturedLessonState: lessonState,
+            },
+            null,
+            2,
+          );
+          await inspectLessonSchema();
+        } catch (error) {
+          console.error(error);
+
+          status.classList.remove("success");
+          status.textContent = `Create fields failed: ${error.message}`;
+          output.textContent = JSON.stringify(
+            {
+              error: error.message,
+              lessonState,
+            },
+            null,
+            2,
+          );
+
+          button.disabled = false;
+        }
+      }
+
+      async function discoverPeopleTable() {
+        if (!APP_DBID) {
+          throw new Error("Confirm the Quickbase app context first.");
+        }
+
+        const temporaryToken = await getTemporaryToken(APP_DBID);
+        const endpoint = `https://api.quickbase.com/v1/tables?appId=${APP_DBID}`;
+
+        const response = await fetch(endpoint, {
+          method: "GET",
+          headers: {
+            "QB-Realm-Hostname": REALM,
+            Authorization: `QB-TEMP-TOKEN ${temporaryToken}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${JSON.stringify(data)}`);
+        }
+
+        const peopleTable = data.find(
+          (table) => table.name.trim().toLowerCase() === "people",
+        );
+
+        if (!peopleTable) {
+          throw new Error('Could not find a table named "People".');
+        }
+
+        lessonState.peopleTableDbid = peopleTable.id;
+
+        return {
+          endpoint,
+          matchedTable: peopleTable,
+        };
+      }
+
+      /*
+       * ============================================================
+       * CREATE DEPARTMENTS → PEOPLE RELATIONSHIP
+       * ============================================================
+       *
+       * CHILD:  People
+       * PARENT: Departments
+       *
+       * We explicitly request the relationship, the reference-field
+       * label, and which parent fields should become lookups.
+       *
+       * We do NOT call POST /fields for the relationship helper fields.
+       * Quickbase creates those as part of the relationship itself.
+       */
+
+      async function createDepartmentsPeopleRelationship() {
+        const status = document.getElementById("status");
+        const output = document.getElementById("output");
+        const button = document.getElementById(
+          "createDepartmentsPeopleRelationshipButton",
+        );
+
+        if (
+          !lessonState.departmentsTableDbid ||
+          !lessonState.departmentNameFieldId ||
+          !lessonState.departmentLocationFieldId
+        ) {
+          status.classList.remove("success");
+          status.textContent =
+            "Create the Departments table and its fields first.";
+          return;
+        }
+
+        status.classList.remove("success");
+        status.textContent =
+          "Discovering People and creating the Departments → People relationship...";
+        output.textContent = "Loading...";
+        button.disabled = true;
+
+        try {
+          const peopleDiscovery = await discoverPeopleTable();
+
+          const childTableDbid = lessonState.peopleTableDbid;
+          const temporaryToken = await getTemporaryToken(childTableDbid);
+
+          const endpoint = `https://api.quickbase.com/v1/tables/${childTableDbid}/relationship`;
+
+          const payload = {
+            parentTableId: lessonState.departmentsTableDbid,
+            foreignKeyField: {
+              label: "Related Department",
+            },
+            lookupFieldIds: [
+              lessonState.departmentNameFieldId,
+              lessonState.departmentLocationFieldId,
+            ],
+          };
+
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "QB-Realm-Hostname": REALM,
+              Authorization: `QB-TEMP-TOKEN ${temporaryToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${JSON.stringify(data)}`);
+          }
+
+          lessonState.departmentsPeopleRelationshipId = data.id;
+
+          status.classList.add("success");
+          status.textContent = `HTTP ${response.status} — Departments → People relationship created. Relationship ID ${data.id}.`;
+
+          output.textContent = JSON.stringify(
+            {
+              peopleTableDiscovery: {
+                request: {
+                  method: "GET",
+                  endpoint: peopleDiscovery.endpoint,
+                },
+                matchedPeopleTable: peopleDiscovery.matchedTable,
+              },
+
+              relationshipRequest: {
+                method: "POST",
+                endpoint,
+                payload,
+              },
+
+              whatOurCodeExplicitlyRequested: {
+                relationship: "Departments → People",
+                childTable: "People",
+                parentTable: "Departments",
+                referenceFieldLabelRequested: "Related Department",
+                parentLookupFieldIdsRequested: [
+                  lessonState.departmentNameFieldId,
+                  lessonState.departmentLocationFieldId,
+                ],
+              },
+
+              whatQuickbaseCreatedForTheRelationship:
+                "Inspect quickbaseResponse.foreignKeyField and quickbaseResponse.lookupFields.",
+
+              quickbaseResponse: data,
+              capturedLessonState: lessonState,
+            },
+            null,
+            2,
+          );
+          await inspectLessonSchema();
+        } catch (error) {
+          console.error(error);
+
+          status.classList.remove("success");
+          status.textContent = `Create relationship failed: ${error.message}`;
+
+          output.textContent = JSON.stringify(
+            {
+              error: error.message,
+              capturedLessonState: lessonState,
+            },
+            null,
+            2,
+          );
+
+          button.disabled = false;
+        }
+      }
+
+      /*
+       * ============================================================
+       * CREATE TASK FIELDS
+       * ============================================================
+       *
+       * These are OUR explicit field-creation requests.
+       * Quickbase's default table fields already exist.
+       */
+
+      async function createTaskFields() {
+        const status = document.getElementById("status");
+        const output = document.getElementById("output");
+        const button = document.getElementById("createTaskFieldsButton");
+
+        if (!lessonState.tasksTableDbid) {
+          status.classList.remove("success");
+          status.textContent = "Create the Tasks table first.";
+          return;
+        }
+
+        status.classList.remove("success");
+        status.textContent = "Creating Task Name, Due Date, and Status...";
+        output.textContent = "Loading...";
+        button.disabled = true;
+
+        try {
+          const tableDbid = lessonState.tasksTableDbid;
+          const temporaryToken = await getTemporaryToken(tableDbid);
+          const endpoint = `https://api.quickbase.com/v1/fields?tableId=${tableDbid}`;
+
+          const fieldRequests = [
+            {
+              key: "taskNameFieldId",
+              payload: {
+                label: "Task Name",
+                fieldType: "text",
+                appearsByDefault: true,
+                addToForms: true,
+              },
+            },
+            {
+              key: "taskDueDateFieldId",
+              payload: {
+                label: "Due Date",
+                fieldType: "date",
+                appearsByDefault: true,
+                addToForms: true,
+              },
+            },
+            {
+              key: "taskStatusFieldId",
+              payload: {
+                label: "Status",
+                fieldType: "text-multiple-choice",
+                appearsByDefault: true,
+                addToForms: true,
+                properties: {
+                  choices: ["Not Started", "In Progress", "Complete"],
+                  allowNewChoices: false,
+                },
+              },
+            },
+          ];
+
+          const fieldResults = [];
+
+          for (const fieldRequest of fieldRequests) {
+            const response = await fetch(endpoint, {
+              method: "POST",
+              headers: {
+                "QB-Realm-Hostname": REALM,
+                Authorization: `QB-TEMP-TOKEN ${temporaryToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(fieldRequest.payload),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(
+                `HTTP ${response.status} while creating ${fieldRequest.payload.label}: ${JSON.stringify(data)}`,
+              );
+            }
+
+            lessonState[fieldRequest.key] = data.id;
+
+            fieldResults.push({
+              request: {
+                method: "POST",
+                endpoint,
+                payload: fieldRequest.payload,
+              },
+              quickbaseResponse: data,
+            });
+          }
+
+          status.classList.add("success");
+          status.textContent = `Task fields created — Task Name FID ${lessonState.taskNameFieldId}, Due Date FID ${lessonState.taskDueDateFieldId}, Status FID ${lessonState.taskStatusFieldId}.`;
+
+          output.textContent = JSON.stringify(
+            {
+              fieldsCreatedByOurApiRequests: fieldResults,
+              capturedLessonState: lessonState,
+            },
+            null,
+            2,
+          );
+
+          await inspectLessonSchema();
+        } catch (error) {
+          console.error(error);
+
+          status.classList.remove("success");
+          status.textContent = `Create Task fields failed: ${error.message}`;
+
+          output.textContent = JSON.stringify(
+            {
+              error: error.message,
+              lessonState,
+            },
+            null,
+            2,
+          );
+
+          button.disabled = false;
+        }
+      }
+
+      /*
+       * ============================================================
+       * CREATE PEOPLE → TASKS RELATIONSHIP
+       * ============================================================
+       *
+       * CHILD:  Tasks
+       * PARENT: People
+       *
+       * We ask Quickbase to create:
+       *   - the relationship
+       *   - a reference field labeled "Related Person"
+       *   - a lookup in Tasks based on the People "Name" field
+       *
+       * We do NOT create those helper fields with POST /fields.
+       */
+
+      async function createPeopleTasksRelationship() {
+        const status = document.getElementById("status");
+        const output = document.getElementById("output");
+        const button = document.getElementById(
+          "createPeopleTasksRelationshipButton",
+        );
+
+        if (
+          !lessonState.peopleTableDbid ||
+          !lessonState.tasksTableDbid ||
+          !lessonState.personNameFieldId
+        ) {
+          status.classList.remove("success");
+          status.textContent =
+            "People, Tasks, and the People Name field must be discovered first.";
+          return;
+        }
+
+        status.classList.remove("success");
+        status.textContent = "Creating the People → Tasks relationship...";
+        output.textContent = "Loading...";
+        button.disabled = true;
+
+        try {
+          const childTableDbid = lessonState.tasksTableDbid;
+          const temporaryToken = await getTemporaryToken(childTableDbid);
+
+          const endpoint = `https://api.quickbase.com/v1/tables/${childTableDbid}/relationship`;
+
+          const payload = {
+            parentTableId: lessonState.peopleTableDbid,
+            foreignKeyField: {
+              label: "Related Person",
+            },
+            lookupFieldIds: [lessonState.personNameFieldId],
+          };
+
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "QB-Realm-Hostname": REALM,
+              Authorization: `QB-TEMP-TOKEN ${temporaryToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${JSON.stringify(data)}`);
+          }
+
+          lessonState.peopleTasksRelationshipId = data.id;
+
+          status.classList.add("success");
+          status.textContent = `HTTP ${response.status} — People → Tasks relationship created. Relationship ID ${data.id}.`;
+
+          output.textContent = JSON.stringify(
+            {
+              relationshipPerspective: {
+                selectedChildTable: "Tasks",
+                parentTable: "People",
+                note: "Quickbase relationship metadata is child-oriented because the reference/foreign-key field lives on the child table.",
+              },
+
+              relationshipRequest: {
+                method: "POST",
+                endpoint,
+                payload,
+              },
+
+              whatOurCodeExplicitlyRequested: {
+                relationship: "People → Tasks",
+                referenceFieldLabelRequested: "Related Person",
+                parentLookupFieldIdsRequested: [lessonState.personNameFieldId],
+              },
+
+              whatQuickbaseCreatedForTheRelationship:
+                "Inspect quickbaseResponse.foreignKeyField and quickbaseResponse.lookupFields.",
+
+              quickbaseResponse: data,
+              capturedLessonState: lessonState,
+            },
+            null,
+            2,
+          );
+
+          await inspectLessonSchema();
+        } catch (error) {
+          console.error(error);
+
+          status.classList.remove("success");
+          status.textContent = `Create People → Tasks relationship failed: ${error.message}`;
+
+          output.textContent = JSON.stringify(
+            {
+              error: error.message,
+              lessonState,
+            },
+            null,
+            2,
+          );
+
+          button.disabled = false;
+        }
+      }
+
+      /*
+       * ============================================================
+       * CREATE TASKS TABLE
+       * ============================================================
+       *
+       * This is the next table in the Lesson 10 construction chain.
+       * Only the table is created here. Task fields come later.
+       */
+
+      async function createTasksTable() {
+        const status = document.getElementById("status");
+        const output = document.getElementById("output");
+        const button = document.getElementById("createTasksButton");
+
+        if (!APP_DBID) {
+          status.classList.remove("success");
+          status.textContent = "Refresh Lesson Status first.";
+          return;
+        }
+
+        status.classList.remove("success");
+        status.textContent = "Creating Tasks table in Quickbase...";
+        output.textContent = "Loading...";
+        button.disabled = true;
+
+        try {
+          const temporaryToken = await getTemporaryToken(APP_DBID);
+          const endpoint = `https://api.quickbase.com/v1/tables?appId=${APP_DBID}`;
+
+          const payload = {
+            name: "Tasks",
+            description: "Tasks used in Lesson 10",
+            singleRecordName: "Task",
+            pluralRecordName: "Tasks",
+          };
+
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "QB-Realm-Hostname": REALM,
+              Authorization: `QB-TEMP-TOKEN ${temporaryToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${JSON.stringify(data)}`);
+          }
+
+          lessonState.tasksTableDbid = data.id;
+
+          status.classList.add("success");
+          status.textContent = `HTTP ${response.status} — Tasks created. Table DBID captured: ${data.id}`;
+
+          output.textContent = JSON.stringify(
+            {
+              request: {
+                method: "POST",
+                endpoint,
+                payload,
+              },
+              quickbaseResponse: data,
+              capturedLessonState: lessonState,
+            },
+            null,
+            2,
+          );
+
+          await inspectLessonSchema();
+        } catch (error) {
+          console.error(error);
+
+          status.classList.remove("success");
+          status.textContent = `Create Tasks table failed: ${error.message}`;
+
+          output.textContent = JSON.stringify(
+            {
+              error: error.message,
+              lessonState,
+            },
+            null,
+            2,
+          );
+
+          button.disabled = false;
+        }
+      }
+
+      /*
+       * ============================================================
+       * PAGE STARTUP
+       * ============================================================
+       */
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .getElementById("startButton")
+          .addEventListener("click", confirmAppContext);
+
+        document
+          .getElementById("createDepartmentsButton")
+          .addEventListener("click", createDepartmentsTable);
+
+        document
+          .getElementById("createDepartmentFieldsButton")
+          .addEventListener("click", createDepartmentFields);
+
+        document
+          .getElementById("createDepartmentsPeopleRelationshipButton")
+          .addEventListener("click", createDepartmentsPeopleRelationship);
+
+        document
+          .getElementById("createTasksButton")
+          .addEventListener("click", createTasksTable);
+
+        document
+          .getElementById("createTaskFieldsButton")
+          .addEventListener("click", createTaskFields);
+
+        document
+          .getElementById("createPeopleTasksRelationshipButton")
+          .addEventListener("click", createPeopleTasksRelationship);
+
+        document
+          .getElementById("copyOutputButton")
+          .addEventListener("click", copyOutputToClipboard);
+
+        inspectLessonSchema();
+      });
+    </script>
+  </body>
+</html>

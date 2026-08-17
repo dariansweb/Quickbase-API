@@ -91,7 +91,13 @@ export default function Lesson10Page() {
         <p className="mb-2 font-bold uppercase tracking-wide text-[#1f5c99]">
           Lesson 10
         </p>
-
+        <Link
+          href="/files/DynamicSchema.txt"
+          target="_blank"
+          className="font-bold text-[#1f5c99] underline"
+        >
+          Code Page Here - DynamicSchema.html
+        </Link>
         <h1 className="text-4xl font-extrabold leading-tight text-[#003366] sm:text-5xl">
           Dynamic Quickbase Schema Creation
         </h1>
@@ -111,7 +117,7 @@ export default function Lesson10Page() {
           </Link>
 
           <span className="inline-flex items-center rounded-md bg-[#f3f7fb] px-4 py-2 font-bold text-[#003366]">
-            Working file: DynamicSchema_final.html
+            Working file: QBSchemaExplorer.html
           </span>
         </div>
       </header>
