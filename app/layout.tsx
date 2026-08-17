@@ -76,7 +76,7 @@ export default function RootLayout({
               </Link>
 
               <Link href="/lessons" className="text-white hover:underline">
-                ToC
+                Lessons
               </Link>
               <Link href="/about" className="text-white hover:underline">
                 About

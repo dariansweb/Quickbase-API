@@ -1,73 +1,23 @@
+import Image from "next/image";
 import Link from "next/link";
 
-import { lessons, type LessonStatus } from "./data/lessons";
-import Image from "next/image";
-
-function StatusBadge({ status }: { status: LessonStatus }) {
-  const styles: Record<LessonStatus, string> = {
-    complete: "border-green-700 bg-green-50 text-green-900",
-    next: "border-amber-700 bg-amber-50 text-amber-950",
-    upcoming: "border-gray-400 bg-white text-black",
-  };
-
-  const labels: Record<LessonStatus, string> = {
-    complete: "Complete",
-    next: "Next Lesson",
-    upcoming: "Upcoming",
-  };
-
-  return (
-    <span
-      className={`inline-flex rounded-md border px-3 py-1 text-sm font-bold ${styles[status]}`}
-    >
-      {labels[status]}
-    </span>
-  );
-}
+import { lessons } from "./data/lessons";
 
 export default function Home() {
-  /*
-   * ------------------------------------------------------------
-   * DERIVED CURRICULUM DATA
-   * ------------------------------------------------------------
-   *
-   * Nothing below is manually maintained.
-   *
-   * The page calculates its current state from lessons.ts.
-   */
-
-  const completedLessons = lessons.filter(
-    (lesson) => lesson.status === "complete",
-  );
-
-  const completedCount = completedLessons.length;
-
-  const totalLessons = lessons.length;
-
-  const progressPercent =
-    totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
-
-  const nextLesson = lessons.find((lesson) => lesson.status === "next");
-
-  const mostRecentCompletedLesson = completedLessons.at(-1);
-
   return (
     <main className="min-h-screen bg-white text-black">
       {/* ======================================================
           HEADER
       ====================================================== */}
-
       <header className="border-b border-gray-300 bg-[#1f5c99] text-white">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
           <div className="relative overflow-hidden">
-            {/* Decorative background */}
             <div
               aria-hidden="true"
               className="absolute inset-6 rounded-full bg-cyan-300/20 blur-3xl"
             />
 
             <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
-              {/* LEFT — Hero content */}
               <div className="max-w-5xl">
                 <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-white/80 sm:text-base">
                   Quickbase Tutorials
@@ -83,50 +33,46 @@ export default function Home() {
                 </p>
 
                 <p className="mt-4 max-w-4xl text-base leading-7 text-white/90 sm:text-lg">
-                  Follow the progression from Quickbase table and field
-                  references, through XML and REST API requests, into
-                  client-side data control, searching, filtering, CRUD
-                  operations, relationships, and reusable JavaScript patterns.
+                  Follow a complete lesson plan from Quickbase table and field
+                  references through XML and REST API requests, server-side
+                  queries, CRUD operations, pagination, schema discovery, and
+                  relationships.
                 </p>
 
                 <p className="mt-4 max-w-4xl text-base leading-7 text-white/90">
-                  This lab is being built in public as a personal training
-                  project and learning log. Browse the lessons, inspect the
-                  source, open an issue, or help improve an example.
-                  Contributions are very welcome. ❤️
+                  Each tutorial preserves the working example from that stage of
+                  the lab so you can follow the progression, inspect the code,
+                  and see exactly what changed from one lesson to the next.
                 </p>
 
-                {/* CTA */}
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                   <Link
-                    href="/lessons"
+                    href="/get-started"
                     className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 font-bold text-[#1f5c99] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#eef6fd] hover:shadow-md"
                   >
-                    Browse Lessons →
+                    Start the Tutorial →
+                  </Link>
+
+                  <Link
+                    href="/lessons"
+                    className="inline-flex items-center justify-center rounded-lg border-2 border-white px-5 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:bg-white hover:text-[#1f5c99]"
+                  >
+                    View All Lessons
                   </Link>
 
                   <a
                     href="https://github.com/dariansweb/Quickbase-API"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-lg border-2 border-white px-5 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:bg-white hover:text-[#1f5c99]"
+                    className="inline-flex items-center justify-center rounded-lg border border-white/70 px-5 py-3 font-bold text-white transition hover:border-white hover:bg-white/10"
                   >
                     View on GitHub
                   </a>
-
-                  <Link
-                    href="/about"
-                    className="inline-flex items-center justify-center rounded-lg border border-white/70 px-5 py-3 font-bold text-white transition hover:border-white hover:bg-white/10"
-                  >
-                    About the Project
-                  </Link>
                 </div>
               </div>
 
-              {/* RIGHT — Training logo */}
               <div className="order-first flex justify-center lg:order-last lg:justify-end">
                 <div className="relative">
-                  {/* subtle glow behind logo */}
                   <div
                     aria-hidden="true"
                     className="absolute inset-6 rounded-full bg-cyan-300/20 blur-3xl"
@@ -138,24 +84,9 @@ export default function Home() {
                     width={360}
                     height={360}
                     priority
-                    className="
-            relative
-            h-auto
-            w-40
-            rounded-[2rem]
-            shadow-2xl
-            ring-1
-            ring-white/20
-            transition
-            duration-300
-            hover:-translate-y-1
-            hover:scale-[1.02]
-            sm:w-52
-            lg:w-80
-          "
+                    className="relative h-auto w-40 rounded-[2rem] shadow-2xl ring-1 ring-white/20 transition duration-300 hover:-translate-y-1 hover:scale-[1.02] sm:w-52 lg:w-80"
                   />
 
-                  {/* little label under logo */}
                   <div className="mt-4 text-center">
                     <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-white/80 backdrop-blur">
                       Learn • Build • Experiment
@@ -169,286 +100,161 @@ export default function Home() {
       </header>
 
       {/* ======================================================
-          MAIN CONTENT GRID
+          CURRICULUM INTRODUCTION
       ====================================================== */}
+      <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
+        <div className="max-w-5xl">
+          <p className="mb-2 font-bold uppercase tracking-wide text-[#1f5c99]">
+            Developer Training
+          </p>
 
-      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[280px_1fr]">
-        {/* ====================================================
-            SIDEBAR
-        ==================================================== */}
+          <h2 className="text-3xl font-bold sm:text-4xl">
+            Quickbase Code Pages Learning Roadmap
+          </h2>
 
-        <aside>
-          <div className="sticky top-6 rounded-lg border border-gray-300 bg-[#f7f8fa] p-5">
-            <h2 className="mb-4 text-xl font-bold">Lab Progress</h2>
-            {/* -----------------------------------------------
-                AUTOMATIC PROGRESS
-            ----------------------------------------------- */}
+          <p className="mt-5 text-lg leading-8">
+            The lessons form one continuous curriculum. You begin by identifying
+            the Quickbase objects an API request needs, retrieve records through
+            both legacy XML and modern REST APIs, and then progressively learn
+            how to query, create, update, delete, paginate, and inspect Quickbase
+            application structure.
+          </p>
 
-            <div className="mb-6">
-              <div className="mb-2 flex items-center justify-between text-base">
-                <span>Lessons Completed</span>
+          <p className="mt-4 text-lg leading-8">
+            The goal is not merely to copy finished code. Each lesson isolates a
+            specific Quickbase concept so you can see the request, response, and
+            JavaScript behavior that make the example work.
+          </p>
+        </div>
 
-                <strong>
-                  {completedCount} / {totalLessons}
-                </strong>
-              </div>
+        <div className="mt-8 rounded-2xl border border-gray-300 bg-[#f7f8fa] p-6 sm:p-8">
+          <p className="font-bold text-[#1f5c99]">The progression of the lab</p>
 
-              <div className="h-3 overflow-hidden rounded-full border border-gray-300 bg-white">
-                <div
-                  className="h-full bg-[#216e39] transition-all"
-                  style={{
-                    width: `${progressPercent}%`,
-                  }}
-                />
-              </div>
-
-              <p className="mt-2 text-sm font-semibold">
-                {progressPercent.toFixed(0)}% complete
+          <div className="mt-4 grid gap-3 text-base font-semibold sm:grid-cols-2 lg:grid-cols-3">
+            <div className="rounded-lg border border-gray-200 bg-white px-4 py-3">
+              1. Identify Quickbase objects
+            </div>
+            <div className="rounded-lg border border-gray-200 bg-white px-4 py-3">
+              2. Retrieve Quickbase records
+            </div>
+            <div className="rounded-lg border border-gray-200 bg-white px-4 py-3">
+              3. Understand the response
+            </div>
+            <div className="rounded-lg border border-gray-200 bg-white px-4 py-3">
+              4. Control data with JavaScript
+            </div>
+            <div className="rounded-lg border border-gray-200 bg-white px-4 py-3">
+              5. Change records through the API
+            </div>
+            <div className="rounded-lg border border-gray-200 bg-white px-4 py-3">
+              6. Inspect and build application structure
+            </div>
+          </div>
+          <div className="mt-10 rounded-2xl border-2 border-[#1f5c99] bg-[#eaf3fb] p-6 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-8">
+            <div>
+              <h3 className="text-2xl font-bold">New to the lab?</h3>
+              <p className="mt-2 max-w-3xl leading-7">
+                Begin by creating the small People table used throughout the
+                tutorials and identify the table DBID and Field IDs used by the
+                API examples.
               </p>
             </div>
 
-            {/* -----------------------------------------------
-                LESSON NAVIGATION
-            ----------------------------------------------- */}
-
-            <nav aria-label="Developer Lab lessons">
-              <ul className="space-y-2">
-                {lessons.map((lesson) => (
-                  <li key={lesson.number}>
-                    <a
-                      href={`#lesson-${lesson.number.toLowerCase()}`}
-                      className="block rounded-md border border-transparent px-3 py-2 text-base font-semibold hover:border-gray-300 hover:bg-white"
-                    >
-                      <span className="mr-2 font-bold text-[#1f5c99]">
-                        {lesson.number}
-                      </span>
-
-                      {lesson.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-
-            <div className="mt-6 border-t border-gray-300 pt-5">
-              <Link
-                href="/lessons"
-                className="inline-flex w-full justify-center rounded-md border-2 border-[#1f5c99] px-4 py-2 font-bold text-[#1f5c99] hover:bg-[#eaf3fb]"
-              >
-                Full Table of Contents
-              </Link>
-            </div>
+            <Link
+              href="/get-started"
+              className="mt-5 inline-flex shrink-0 rounded-lg bg-[#1f5c99] px-5 py-3 font-bold text-white transition hover:bg-[#164875] sm:mt-0"
+            >
+              Get Started →
+            </Link>
           </div>
-        </aside>
 
-        {/* ====================================================
-            ROADMAP
-        ==================================================== */}
+        </div>
+      </section>
 
-        <section>
-          <div className="mb-10">
+      {/* ======================================================
+          LESSON DIRECTORY
+
+          Each lesson is now a large tutorial entry point rather than
+          a progress/status card.
+      ====================================================== */}
+      <section className="border-t border-gray-200 bg-[#f7f8fa]">
+        <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
+          <div className="mb-8 max-w-4xl">
             <p className="mb-2 font-bold uppercase tracking-wide text-[#1f5c99]">
-              Developer Training
+              Lesson Plan
             </p>
-
-            <h2 className="text-3xl font-bold">
-              Quickbase Code Pages Learning Roadmap
-            </h2>
-
-            <p className="mt-4 max-w-4xl">
-              This lab is built around one continuous idea: first understand how
-              Quickbase objects are represented in code, then retrieve those
-              objects through the API, and finally decide what your application
-              should do with the returned data.
+            <h2 className="text-3xl font-bold sm:text-4xl">Choose a lesson</h2>
+            <p className="mt-4 text-lg leading-8 text-gray-700">
+              Start at the beginning for the full progression, or open any lesson
+              directly as a reference. Every lesson is a self-contained tutorial
+              page with its own explanation and working example.
             </p>
-
-            <p className="mt-4 max-w-4xl">
-              The early lessons concentrate on the Quickbase-specific pieces
-              that make API development work: table DBIDs, Field IDs,
-              application and session authorization, XML and JSON request
-              structures, REST endpoints, and the way Quickbase records are
-              represented when they return to JavaScript.
-            </p>
-
-            <p className="mt-4 max-w-4xl">
-              Once the records are in JavaScript, the focus changes. The browser
-              is no longer just displaying Quickbase data — it can retain that
-              data and begin working with it. Sorting is the first simple
-              example, followed by searching and filtering. Later lessons move
-              into creating, editing, and deleting records, pagination,
-              relationships, and reusable JavaScript patterns.
-            </p>
-
-            <div className="mt-6 rounded-lg border border-gray-300 bg-[#f7f8fa] p-5">
-              <p className="font-bold">The progression of the lab:</p>
-
-              <div className="mt-3 font-mono leading-8">
-                <div>Identify Quickbase objects</div>
-                <div>↓</div>
-
-                <div>Retrieve Quickbase records</div>
-                <div>↓</div>
-
-                <div>Understand the returned structure</div>
-                <div>↓</div>
-
-                <div>Retain the records in JavaScript</div>
-                <div>↓</div>
-
-                <div>Manipulate the client-side data</div>
-                <div>↓</div>
-
-                <div>Use the API to change Quickbase data</div>
-              </div>
-            </div>
-
-            <p className="mt-6 max-w-4xl">
-              Each lesson introduces one new Quickbase development concept and
-              builds upon a previously working example. Completed examples
-              remain available so that you can compare how the code evolves from
-              one lesson to the next instead of replacing earlier work.
-            </p>
-
-            <p className="mt-4 max-w-4xl">
-              New to the lab? Begin with the small Quickbase{" "}
-              <strong>People</strong> table used throughout the tutorials.
-              You&apos;ll create the Name, Age, and Favorite Color fields, add a
-              few sample records, and identify the table DBID and Field IDs that
-              the API examples will use.
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href="/get-started"
-                className="inline-flex rounded-md bg-[#1f5c99] px-5 py-3 font-bold text-white hover:bg-[#164875]"
-              >
-                Get Started →
-              </Link>
-
-              <Link
-                href="/lessons"
-                className="inline-flex rounded-md border-2 border-[#1f5c99] px-5 py-3 font-bold text-[#1f5c99] hover:bg-[#eaf3fb]"
-              >
-                View Table of Contents →
-              </Link>
-            </div>
           </div>
-
-          {/* ==================================================
-              CURRENT POSITION
-
-              This section also derives itself from lessons.ts.
-          ================================================== */}
-
-          <div className="mb-10 rounded-lg border-2 border-[#1f5c99] bg-[#eaf3fb] p-6">
-            <h2 className="text-2xl font-bold">Current Position</h2>
-
-            {mostRecentCompletedLesson && (
-              <p className="mt-3">
-                Lesson <strong>{mostRecentCompletedLesson.number}</strong> is
-                complete: <strong>{mostRecentCompletedLesson.title}</strong>.
-                {mostRecentCompletedLesson.workingExample && (
-                  <>
-                    {" "}
-                    The working example is{" "}
-                    <code className="mx-1 rounded border border-gray-300 bg-white px-2 py-1">
-                      {mostRecentCompletedLesson.workingExample}
-                    </code>
-                    .
-                  </>
-                )}
-              </p>
-            )}
-
-            {nextLesson ? (
-              <p className="mt-3">
-                Next is Lesson <strong>{nextLesson.number}</strong>:{" "}
-                <strong>{nextLesson.title}</strong>.
-                {nextLesson.nextObjective && <> {nextLesson.nextObjective}</>}
-              </p>
-            ) : (
-              <p className="mt-3">
-                All currently defined lessons are complete.
-              </p>
-            )}
-          </div>
-
-          {/* ==================================================
-              LESSON CARDS
-
-              Every card comes from lessons.ts.
-          ================================================== */}
-
-          <div className="space-y-5">
+          <div className="grid gap-6 lg:grid-cols-2">
             {lessons.map((lesson) => (
-              <article
+              <Link
                 key={lesson.number}
-                id={`lesson-${lesson.number.toLowerCase()}`}
-                className="scroll-mt-6 rounded-lg border border-gray-300 bg-white p-6 shadow-sm"
+                href={lesson.link}
+                className="group block h-full rounded-2xl border border-gray-300 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#1f5c99] hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#1f5c99]/20"
+                aria-label={`Open Lesson ${lesson.number}: ${lesson.title}`}
               >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="mb-1 text-base font-bold text-[#1f5c99]">
-                      Lesson {lesson.number}
-                    </p>
+                <article className="flex h-full flex-col p-6 sm:p-7">
+                  <div className="flex items-start gap-5">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#1f5c99] text-lg font-extrabold text-white shadow-sm transition group-hover:bg-[#164875]">
+                      {lesson.number}
+                    </div>
 
-                    <h3 className="text-2xl font-bold">{lesson.title}</h3>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold uppercase tracking-[0.14em] text-[#1f5c99]">
+                        Lesson {lesson.number}
+                      </p>
+                      <h3 className="mt-1 text-2xl font-bold leading-tight text-gray-950 group-hover:text-[#1f5c99]">
+                        {lesson.title}
+                      </h3>
+                    </div>
                   </div>
 
-                  <StatusBadge status={lesson.status} />
-                </div>
+                  <p className="mt-5 flex-1 leading-7 text-gray-700">
+                    {lesson.description}
+                  </p>
 
-                <p className="mt-4">{lesson.description}</p>
+                  {lesson.workingExample && (
+                    <div className="mt-5 rounded-lg border border-gray-200 bg-[#f7f8fa] px-4 py-3 text-sm">
+                      <span className="font-bold text-gray-800">
+                        Working example:
+                      </span>{" "}
+                      <code className="break-all text-[#164875]">
+                        {lesson.workingExample}
+                      </code>
+                    </div>
+                  )}
 
-                {/* -------------------------------------------
-                    OPTIONAL WORKING EXAMPLE
-                ------------------------------------------- */}
-
-                {lesson.workingExample && (
-                  <div className="mt-5 border-t border-gray-200 pt-4">
-                    <strong>Working example:</strong>{" "}
-                    <code className="rounded bg-[#f7f8fa] px-2 py-1">
-                      {lesson.workingExample}
-                    </code>
+                  <div className="mt-6 flex items-center justify-between border-t border-gray-200 pt-5">
+                    <span className="font-bold text-[#1f5c99]">
+                      Open tutorial
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="text-2xl font-bold text-[#1f5c99] transition-transform group-hover:translate-x-1"
+                    >
+                      →
+                    </span>
                   </div>
-                )}
-
-                {/* -------------------------------------------
-                    OPTIONAL NEXT OBJECTIVE
-                ------------------------------------------- */}
-
-                {lesson.nextObjective && (
-                  <div className="mt-5 border-t border-gray-200 pt-4">
-                    <strong>Next objective:</strong> {lesson.nextObjective}
-                  </div>
-                )}
-
-                {/* -------------------------------------------
-                    LESSON LINK
-                ------------------------------------------- */}
-
-                <div className="mt-5">
-                  <Link
-                    href={lesson.link}
-                    className="inline-flex rounded-md bg-[#1f5c99] px-4 py-2 font-bold text-white hover:bg-[#164875]"
-                  >
-                    Open Lesson {lesson.number} →
-                  </Link>
-                </div>
-              </article>
+                </article>
+              </Link>
             ))}
           </div>
-        </section>
-      </div>
+
+
+        </div>
+      </section>
 
       {/* ======================================================
           FOOTER
       ====================================================== */}
-
-      <footer className="mt-10 border-t border-gray-300 bg-[#f7f8fa]">
-        <div className="mx-auto max-w-7xl px-6 py-8">
+      <footer className="border-t border-gray-300 bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
           <p className="font-semibold">Quickbase Code Pages Developer Lab</p>
-
           <p className="mt-1 text-base">
             Build it. Inspect it. Understand why it works.
           </p>
