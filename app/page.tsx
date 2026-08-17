@@ -158,7 +158,7 @@ export default function Home() {
                 tutorials and identify the table DBID and Field IDs used by the
                 API examples.
               </p>
-            </div>
+            </div> 
 
             <Link
               href="/get-started"
