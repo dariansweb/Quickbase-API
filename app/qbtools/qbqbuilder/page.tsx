@@ -2,18 +2,24 @@
 
 import { useMemo, useState } from "react";
 
-type Severity = "error" | "warning";
+type Severity = "error" | "warning" | "info";
 
 type Diagnostic = {
   severity: Severity;
   code: string;
   message: string;
   condition?: string;
+  quickbaseRule?: string;
+  suggestedFix?: string;
+  example?: string;
+  documentationBasis?: string;
 };
 
 type ParsedCondition = {
   raw: string;
   validShape: boolean;
+  fidText: string | null;
+  quotedFid: boolean;
   fid: number | string | null;
   operator: string | null;
   operatorMeaning: string | null;
@@ -53,6 +59,30 @@ type JinjaComment = {
   comment: string;
 };
 
+type ConnectorDetail = {
+  raw: string | null;
+  normalized: "AND" | "OR" | null;
+  validCase: boolean | null;
+};
+
+type MalformedQueryCondition = {
+  raw: string;
+  start: number;
+  end: number;
+  reason: "unterminated";
+};
+
+type QueryIsland = {
+  id: number;
+  start: number;
+  end: number;
+  raw: string;
+  conditionIndexes: number[];
+  malformedConditions: MalformedQueryCondition[];
+  connectors: Array<string | null>;
+  connectorDetails: ConnectorDetail[];
+};
+
 type QueryDiagnostic = {
   generatedAt: string;
   source: string;
@@ -64,6 +94,8 @@ type QueryDiagnostic = {
     | "Unknown / Plain Text";
   conditions: ParsedCondition[];
   connectors: Array<string | null>;
+  connectorDetails: ConnectorDetail[];
+  queryIslands: QueryIsland[];
   jinjaExpressions: JinjaExpression[];
   jinjaStatements: JinjaStatement[];
   jinjaComments: JinjaComment[];
@@ -132,6 +164,39 @@ const EXAMPLES = [
     label: "Broken Query",
     value: "{6.EX.'Alice'}AND{7.GTE.'18'",
   },
+  {
+    label: "Lowercase AND / OR",
+    value:
+      "({'12'.EX.'6500'} and ({'13'.EX.'6500'} or {'13'.SW.'1532'}))",
+  },
+  {
+    label: "Python-Style Date Format",
+    value:
+      `{87.BF.'{{ "{:%Y-%m-%d}".format(time.now - time.delta(days=30)) }}'}`,
+  },
+  {
+    label: "Documented Date Arithmetic",
+    value:
+      `{87.BF.'{{time.today - time.delta(days=30)}}'}`,
+  },
+  {
+    label: "Documented strftime",
+    value:
+      `{87.BF.'{{(time.now - time.delta(days=30)).strftime('%Y-%m-%d')}}'}`,
+  },
+  {
+    label: "Documented date_ymd",
+    value:
+      `{87.BF.'{{time.today | date_ymd}}'}`,
+  },
+  {
+    label: "$prev in Advanced Query",
+    value: `{87.EX.'{{$prev.field_87}}'}`,
+  },
+  {
+    label: "Unknown Operator",
+    value: "{87.BANANA.'Something'}",
+  },
 ];
 
 function safeValue(value: unknown) {
@@ -140,9 +205,156 @@ function safeValue(value: unknown) {
     : String(value);
 }
 
+function classifyQueryGap(gap: string) {
+  /*
+   * Two query fragments belong to the same Query Island only when
+   * the material between them is limited to grouping parentheses,
+   * whitespace, and optionally one AND/OR connector.
+   *
+   * Jinja blocks, comments, prose, labels, and unrelated template
+   * text therefore become natural island boundaries.
+   */
+  const connectorMatch = gap.match(
+    /^\s*\)*\s*(AND|OR)\s*\(*\s*$/i,
+  );
+
+  if (connectorMatch) {
+    const raw = connectorMatch[1];
+    const normalized = raw.toUpperCase() as "AND" | "OR";
+
+    return {
+      belongsTogether: true,
+      connector: normalized,
+      detail: {
+        raw,
+        normalized,
+        validCase: raw === normalized,
+      } satisfies ConnectorDetail,
+    };
+  }
+
+  if (/^\s*\)*\s*\(*\s*$/.test(gap)) {
+    return {
+      belongsTogether: true,
+      connector: null,
+      detail: {
+        raw: null,
+        normalized: null,
+        validCase: null,
+      } satisfies ConnectorDetail,
+    };
+  }
+
+  return {
+    belongsTogether: false,
+    connector: null,
+    detail: null,
+  };
+}
+
+function buildQueryIslands(
+  input: string,
+  conditions: Array<{ raw: string; start: number; end: number }>,
+  malformedConditions: MalformedQueryCondition[],
+): QueryIsland[] {
+  type QueryNode =
+    | {
+        kind: "condition";
+        start: number;
+        end: number;
+        conditionIndex: number;
+        raw: string;
+      }
+    | {
+        kind: "malformed";
+        start: number;
+        end: number;
+        malformed: MalformedQueryCondition;
+        raw: string;
+      };
+
+  const nodes: QueryNode[] = [
+    ...conditions.map((condition, conditionIndex) => ({
+      kind: "condition" as const,
+      start: condition.start,
+      end: condition.end,
+      conditionIndex,
+      raw: condition.raw,
+    })),
+    ...malformedConditions.map((malformed) => ({
+      kind: "malformed" as const,
+      start: malformed.start,
+      end: malformed.end,
+      malformed,
+      raw: malformed.raw,
+    })),
+  ].sort((a, b) => a.start - b.start);
+
+  const islands: QueryIsland[] = [];
+
+  for (const node of nodes) {
+    const current = islands[islands.length - 1];
+
+    if (!current) {
+      islands.push({
+        id: 1,
+        start: node.start,
+        end: node.end,
+        raw: node.raw,
+        conditionIndexes:
+          node.kind === "condition" ? [node.conditionIndex] : [],
+        malformedConditions:
+          node.kind === "malformed" ? [node.malformed] : [],
+        connectors: [],
+        connectorDetails: [],
+      });
+      continue;
+    }
+
+    const gap = input.slice(current.end + 1, node.start);
+    const gapInfo = classifyQueryGap(gap);
+
+    if (!gapInfo.belongsTogether) {
+      islands.push({
+        id: islands.length + 1,
+        start: node.start,
+        end: node.end,
+        raw: node.raw,
+        conditionIndexes:
+          node.kind === "condition" ? [node.conditionIndex] : [],
+        malformedConditions:
+          node.kind === "malformed" ? [node.malformed] : [],
+        connectors: [],
+        connectorDetails: [],
+      });
+      continue;
+    }
+
+    current.connectors.push(gapInfo.connector);
+    current.connectorDetails.push(
+      gapInfo.detail || {
+        raw: null,
+        normalized: null,
+        validCase: null,
+      },
+    );
+
+    current.end = node.end;
+    current.raw = input.slice(current.start, current.end + 1);
+
+    if (node.kind === "condition") {
+      current.conditionIndexes.push(node.conditionIndex);
+    } else {
+      current.malformedConditions.push(node.malformed);
+    }
+  }
+
+  return islands;
+}
+
 function scanQueryConditions(input: string) {
   const conditions: Array<{ raw: string; start: number; end: number }> = [];
-  const connectors: Array<string | null> = [];
+  const malformedConditions: MalformedQueryCondition[] = [];
   let i = 0;
 
   while (i < input.length) {
@@ -164,17 +376,81 @@ function scanQueryConditions(input: string) {
       continue;
     }
 
-    if (input[i] === "{") {
+    /*
+     * Only treat a single "{" as the start of a Quickbase condition
+     * when it actually looks like:
+     *
+     *   {87.BF.
+     *   {'87'.EX.
+     *
+     * This prevents ordinary template text from entering the query parser.
+     */
+    const rest = input.slice(i);
+    const queryStartMatch = rest.match(
+      /^\{\s*(?:['"]?\d+['"]?)\s*\.[A-Za-z]+\s*\./,
+    );
+
+    if (queryStartMatch) {
       const start = i;
       let quote: string | null = null;
       let jinjaExprDepth = 0;
       let jinjaStmtDepth = 0;
       let end = -1;
+      let boundaryBreak = false;
 
       i += 1;
 
       while (i < input.length) {
         const ch = input[i];
+
+        /*
+         * PATCH 9 — malformed-condition recovery
+         *
+         * A Quickbase condition can be unfinished even when its matching-
+         * value quote has already closed. Example:
+         *
+         *   {7.GTE.'18'
+         *
+         * The value quote is complete, but the outer Quickbase "}" is
+         * missing. Patch 9 only stopped at a new language boundary when
+         * `quote` was still open, which allowed a later query/Jinja closing
+         * brace to be stolen as this condition's terminator.
+         *
+         * While the outer Quickbase condition is still unfinished, crossing
+         * a newline into a new Jinja expression, Jinja statement, Jinja
+         * comment, or another Quickbase-looking condition is therefore a
+         * hard recovery boundary regardless of quote state.
+         */
+        if (ch === "\n") {
+          let lookAhead = i + 1;
+
+          while (
+            lookAhead < input.length &&
+            /\s/.test(input[lookAhead])
+          ) {
+            lookAhead += 1;
+          }
+
+          const upcoming = input.slice(lookAhead);
+
+          const startsNewLanguageRegion =
+            upcoming.startsWith("{#") ||
+            upcoming.startsWith("{%") ||
+            upcoming.startsWith("{{");
+
+          const startsAnotherQuickbaseCondition =
+            /^\{\s*(?:['"]?\d+['"]?)\s*\.[A-Za-z]+\s*\./.test(
+              upcoming,
+            );
+
+          if (
+            startsNewLanguageRegion ||
+            startsAnotherQuickbaseCondition
+          ) {
+            boundaryBreak = true;
+            break;
+          }
+        }
 
         if (
           (ch === "'" || ch === '"') &&
@@ -238,21 +514,54 @@ function scanQueryConditions(input: string) {
         i = end + 1;
         continue;
       }
+
+      /*
+       * Preserve malformed query-looking text as its own node.
+       * Limit it to the current physical line so following comments,
+       * Jinja blocks, and later queries remain independently parseable.
+       */
+      const lineEnd = input.indexOf("\n", start);
+      const malformedEnd =
+        lineEnd >= 0 ? lineEnd - 1 : input.length - 1;
+
+      malformedConditions.push({
+        raw: input.slice(start, malformedEnd + 1).trimEnd(),
+        start,
+        end: malformedEnd,
+        reason: "unterminated",
+      });
+
+      i = boundaryBreak
+        ? Math.max(i, malformedEnd + 1)
+        : malformedEnd + 1;
+
+      continue;
     }
 
     i += 1;
   }
 
-  for (let x = 0; x < conditions.length - 1; x += 1) {
-    const between = input.slice(
-      conditions[x].end + 1,
-      conditions[x + 1].start,
-    );
-    const match = between.match(/\b(AND|OR)\b/i);
-    connectors.push(match ? match[1].toUpperCase() : null);
-  }
+  const queryIslands = buildQueryIslands(
+    input,
+    conditions,
+    malformedConditions,
+  );
 
-  return { conditions, connectors };
+  const connectors = queryIslands.flatMap(
+    (island) => island.connectors,
+  );
+
+  const connectorDetails = queryIslands.flatMap(
+    (island) => island.connectorDetails,
+  );
+
+  return {
+    conditions,
+    malformedConditions,
+    queryIslands,
+    connectors,
+    connectorDetails,
+  };
 }
 
 function parseCondition(raw: string) {
@@ -264,6 +573,8 @@ function parseCondition(raw: string) {
     return {
       raw,
       validShape: false,
+      fidText: null,
+      quotedFid: false,
       fid: null,
       operator: null,
       rawValue: null,
@@ -276,6 +587,9 @@ function parseCondition(raw: string) {
     .trim()
     .toUpperCase();
 
+  const quotedFid =
+    /^'\d+'$/.test(fidText) || /^"\d+"$/.test(fidText);
+
   let rawValue = inner.slice(secondDot + 1).trim();
 
   if (
@@ -285,10 +599,20 @@ function parseCondition(raw: string) {
     rawValue = rawValue.slice(1, -1);
   }
 
+  const fid = /^\d+$/.test(fidText)
+    ? Number(fidText)
+    : quotedFid
+      ? Number(fidText.slice(1, -1))
+      : fidText;
+
   return {
     raw,
-    validShape: /^\d+$/.test(fidText) && /^[A-Z]+$/.test(operator),
-    fid: /^\d+$/.test(fidText) ? Number(fidText) : fidText,
+    validShape:
+      (/^\d+$/.test(fidText) || quotedFid) &&
+      /^[A-Z]+$/.test(operator),
+    fidText,
+    quotedFid,
+    fid,
     operator,
     rawValue,
   };
@@ -427,12 +751,128 @@ function classifyConditionValue(
   return "static";
 }
 
+function analyzeDocumentedJinjaRules(
+  expression: string,
+): Diagnostic[] {
+  const diagnostics: Diagnostic[] = [];
+
+  const usesPythonStyleDateFormat =
+    /["'][^"']*%Y[^"']*["']\.format\s*\(/.test(expression) ||
+    /\{:%[A-Za-z%\-]+\}["']?\.format\s*\(/.test(expression);
+
+  if (usesPythonStyleDateFormat) {
+    diagnostics.push({
+      severity: "error",
+      code: "PIPELINES_DATE_FORMAT_METHOD_MISMATCH",
+      message:
+        "Python-style string .format(...) was detected for date formatting.",
+      quickbaseRule:
+        "The supplied Quickbase Pipelines documentation documents date formatting with .strftime(...) or date filters such as date_ymd, date_mdy, and date_dmy.",
+      suggestedFix:
+        "Use a documented Quickbase Pipelines date-formatting pattern instead of formatting the date through a Python-style string template.",
+      example:
+        "{{(time.now - time.delta(days=30)).strftime('%Y-%m-%d')}}",
+      documentationBasis:
+        "Quickbase Pipelines Jinja reference: date/time helpers, date_ymd/date_mdy/date_dmy, and .strftime(format).",
+    });
+  }
+
+  const usesStrftime = /\.strftime\s*\(\s*['"][^'"]+['"]\s*\)/.test(
+    expression,
+  );
+
+  const dateFilterMatch = expression.match(
+    /\|\s*(date_ymd|date_mdy|date_dmy)\b/,
+  );
+
+  const usesTimeDelta = /\btime\.delta\s*\(/.test(expression);
+  const usesTimeToday = /\btime\.today\b/.test(expression);
+  const usesTimeNow = /\btime\.now\b/.test(expression);
+  const usesTimeParse = /\btime\.parse\s*\(/.test(expression);
+  const usesDateArithmetic =
+    /\btime\.(today|now)\b[\s\S]*[+-][\s\S]*time\.delta\s*\(/.test(
+      expression,
+    );
+
+  if (!usesPythonStyleDateFormat && usesDateArithmetic) {
+    diagnostics.push({
+      severity: "info",
+      code: "DOCUMENTED_PIPELINES_DATE_ARITHMETIC",
+      message:
+        "Quickbase-documented Pipelines date arithmetic was recognized.",
+      quickbaseRule:
+        "Quickbase documents time.today/time.now with time.delta(...) for adding or subtracting relative time intervals.",
+      suggestedFix:
+        "No syntax change is suggested for this date-arithmetic pattern. Keep runtime context and target field expectations in mind.",
+      example: "{{time.today - time.delta(days=30)}}",
+      documentationBasis:
+        "Quickbase Common Jinja expressions: add or subtract days from today; Jinja reference: time.delta(...).",
+    });
+  }
+
+  if (!usesPythonStyleDateFormat && usesStrftime) {
+    diagnostics.push({
+      severity: "info",
+      code: "DOCUMENTED_PIPELINES_STRFTIME",
+      message:
+        "A Quickbase-documented .strftime(...) date-formatting pattern was recognized.",
+      quickbaseRule:
+        "Quickbase Pipelines documents .strftime(format) as the method for custom date formatting.",
+      suggestedFix:
+        "No syntax change is suggested for the .strftime(...) portion.",
+      example: "{{time.now.strftime('%Y-%m-%d')}}",
+      documentationBasis:
+        "Quickbase Pipelines Jinja reference: .strftime(format), including %Y, %m, and %d format codes.",
+    });
+  }
+
+  if (!usesPythonStyleDateFormat && dateFilterMatch) {
+    diagnostics.push({
+      severity: "info",
+      code: "DOCUMENTED_PIPELINES_DATE_FILTER",
+      message:
+        `A Quickbase-documented ${dateFilterMatch[1]} date-formatting filter was recognized.`,
+      quickbaseRule:
+        "Quickbase Pipelines documents date_ymd, date_mdy, and date_dmy for converting dates to formatted strings.",
+      suggestedFix:
+        "No syntax change is suggested for this documented date filter.",
+      example: "{{time.today | date_ymd}}",
+      documentationBasis:
+        "Quickbase Pipelines Jinja reference: date_ymd/date_mdy/date_dmy.",
+    });
+  }
+
+  if (
+    !usesPythonStyleDateFormat &&
+    (usesTimeToday || usesTimeNow || usesTimeParse || usesTimeDelta) &&
+    !usesDateArithmetic &&
+    !usesStrftime &&
+    !dateFilterMatch
+  ) {
+    diagnostics.push({
+      severity: "info",
+      code: "DOCUMENTED_PIPELINES_TIME_HELPER",
+      message:
+        "Quickbase-documented Pipelines time helper usage was recognized.",
+      quickbaseRule:
+        "Quickbase Pipelines documents time.today, time.now, time.delta(...), and time.parse(...).",
+      suggestedFix:
+        "No syntax change is suggested for the documented time helper itself.",
+      documentationBasis:
+        "Quickbase Pipelines Jinja reference: date/time helpers.",
+    });
+  }
+
+  return diagnostics;
+}
+
 function detectLanguage(
   conditions: ParsedCondition[],
   expressions: JinjaExpression[],
   statements: JinjaStatement[],
+  queryIslandCount = 0,
 ): QueryDiagnostic["detectedLanguage"] {
-  const hasQuery = conditions.length > 0;
+  const hasQuery = conditions.length > 0 || queryIslandCount > 0;
   const hasJinja = expressions.length > 0 || statements.length > 0;
 
   if (hasQuery && hasJinja) {
@@ -446,51 +886,27 @@ function detectLanguage(
 }
 
 function findQueryStructuralIssues(
-  input: string,
   scan: ReturnType<typeof scanQueryConditions>,
 ): Diagnostic[] {
   const issues: Diagnostic[] = [];
-  let residual = input;
 
-  for (const condition of [...scan.conditions].sort(
-    (a, b) => b.start - a.start,
-  )) {
-    residual =
-      residual.slice(0, condition.start) +
-      " ".repeat(condition.end - condition.start + 1) +
-      residual.slice(condition.end + 1);
-  }
-
-  residual = residual
-    .replace(/\{\{[\s\S]*?\}\}/g, "")
-    .replace(/\{%[\s\S]*?%\}/g, "")
-    .replace(/\{#[\s\S]*?#\}/g, "");
-
-  const looksQueryLike =
-    scan.conditions.length > 0 ||
-    /\{\s*\d+\s*\.[A-Za-z]+\s*\./.test(input);
-
-  if (!looksQueryLike) return issues;
-
-  if (residual.includes("{") || residual.includes("}")) {
+  for (const malformed of scan.malformedConditions) {
     issues.push({
       severity: "error",
-      code: "UNTERMINATED_QUERY_CONDITION",
+      code: "QUICKBASE_CONDITION_UNTERMINATED",
       message:
-        "The input contains an opening or closing query brace that was not part of a complete {fid.OPERATOR.'matching_value'} condition. Check for a missing { or }.",
-    });
-  }
-
-  const allowedRemainder = residual
-    .replace(/\bAND\b|\bOR\b/gi, "")
-    .replace(/[()\s]/g, "");
-
-  if (allowedRemainder.length > 0) {
-    issues.push({
-      severity: "error",
-      code: "UNPARSED_QUERY_CONTENT",
-      message:
-        `Part of the input could not be reconciled with complete Quickbase conditions, AND/OR connectors, or grouping parentheses: ${allowedRemainder}`,
+        `A Quickbase-looking condition starts here but does not close before the next language/document boundary: ${malformed.raw}`,
+      condition: malformed.raw,
+      quickbaseRule:
+        "A Quickbase Advanced Query condition must close its outer curly brace after the matching value.",
+      suggestedFix:
+        "Close the condition before continuing into another Jinja block, comment, template-text region, or separate query.",
+      example:
+        malformed.raw.trim().endsWith("}")
+          ? malformed.raw.trim()
+          : `${malformed.raw.trim()}}`,
+      documentationBasis:
+        "Quickbase Advanced Query condition shape: {fid.OPERATOR.'matching_value'}.",
     });
   }
 
@@ -528,27 +944,91 @@ function analyzeInput(
   const jinjaComments = extractJinjaComments(trimmed);
   const diagnostics: Diagnostic[] = [];
 
-  diagnostics.push(...findQueryStructuralIssues(trimmed, scan));
+  diagnostics.push(...findQueryStructuralIssues(scan));
+
+  for (const connector of scan.connectorDetails) {
+    if (connector.raw && connector.validCase === false) {
+      diagnostics.push({
+        severity: "error",
+        code: "QUICKBASE_LOGICAL_CONNECTOR_CASE",
+        message:
+          `Logical connector "${connector.raw}" was detected.`,
+        quickbaseRule:
+          `Quickbase Advanced Query documentation specifies uppercase logical connectors. Use "${connector.normalized}".`,
+        suggestedFix:
+          `Replace "${connector.raw}" with "${connector.normalized}".`,
+        example:
+          "({12.EX.'6500'}AND({13.EX.'6500'}OR{13.SW.'1532'}))",
+        documentationBasis:
+          "Quickbase Advanced Query syntax: combine conditions with AND or OR, always uppercase.",
+      });
+    }
+  }
+
+  const quotedFids = [
+    ...new Set(
+      conditions
+        .filter((condition) => condition.quotedFid)
+        .map((condition) => Number(condition.fid)),
+    ),
+  ];
+
+  if (quotedFids.length) {
+    diagnostics.push({
+      severity: "warning",
+      code: "QUICKBASE_FID_SYNTAX_VARIATION",
+      message:
+        `Quoted Field IDs were detected (${quotedFids.join(", ")}).`,
+      quickbaseRule:
+        "The supplied Quickbase material shows the canonical query grammar with a numeric FID, but other supplied Quickbase examples also show quoted FIDs. The Workbench therefore treats this as a documented syntax variation rather than a universal failure.",
+      suggestedFix:
+        "Prefer the canonical numeric form when writing new expressions unless your specific Quickbase context or documentation shows the quoted form.",
+      example: "{13.EX.'today'}",
+      documentationBasis:
+        "Supplied Quickbase Advanced Query documentation contains both unquoted canonical examples and quoted date-query examples.",
+    });
+  }
+
+  for (const jinja of jinjaExpressions) {
+    diagnostics.push(
+      ...analyzeDocumentedJinjaRules(jinja.expression),
+    );
+  }
 
   if (conditions.length) {
     for (const condition of conditions) {
       if (!condition.validShape) {
         diagnostics.push({
           severity: "error",
-          code: "QUERY_SHAPE",
+          code: "QUICKBASE_QUERY_SHAPE_MISMATCH",
           message:
-            "Condition does not match {fid.OPERATOR.'matching_value'} structure.",
+            "The condition does not match the documented Quickbase Advanced Query structure.",
           condition: condition.raw,
+          quickbaseRule:
+            "Each condition uses {fid.OPERATOR.'matching_value'} with three period-separated parts inside curly braces.",
+          suggestedFix:
+            "Check the braces, periods, Field ID, operator, and quoted matching value.",
+          example: "{6.EX.'Open'}",
+          documentationBasis:
+            "Quickbase Advanced Query syntax reference.",
         });
       }
 
       if (!condition.operatorKnown) {
         diagnostics.push({
-          severity: "warning",
-          code: "UNKNOWN_OPERATOR",
+          severity: "error",
+          code: "QUICKBASE_OPERATOR_NOT_DOCUMENTED",
           message:
-            `Operator ${safeValue(condition.operator)} is not in this Workbench's current documented operator set.`,
+            `Operator "${safeValue(condition.operator)}" is not in the Workbench's documented Quickbase operator set.`,
           condition: condition.raw,
+          quickbaseRule:
+            "Advanced Query operators are a defined Quickbase grammar. The current documented set in this Workbench includes EX, XEX, CT, SW, BF, AF, OAF, LT, LTE, GT, GTE, HAS, and IR.",
+          suggestedFix:
+            "Replace the operator with the Quickbase operator that matches the comparison you intend.",
+          example:
+            "{87.EX.'Something'} or {87.CT.'Something'} depending on the intended comparison.",
+          documentationBasis:
+            "Quickbase Advanced Query common operators.",
         });
       }
 
@@ -557,22 +1037,55 @@ function analyzeInput(
       ) {
         diagnostics.push({
           severity: "error",
-          code: "JINJA_STATEMENT_IN_QUERY",
+          code: "JINJA_STATEMENT_NOT_ALLOWED_IN_ADVANCED_QUERY",
           message:
-            "Quickbase Pipelines Advanced Query values should use a single {{ ... }} Jinja expression; {% ... %} statements are not supported inside the query string.",
+            "A {% ... %} Jinja statement block was detected inside an Advanced Query matching value.",
           condition: condition.raw,
+          quickbaseRule:
+            "Quickbase documentation says Advanced Query may embed a single {{ ... }} Jinja expression in the matching value, but multi-line {% ... %} statement logic is not supported inside the query string.",
+          suggestedFix:
+            "Compute conditional logic in another pipeline step, then reference the resulting value with a single {{ ... }} expression inside Advanced Query.",
+          example: "{6.EX.'{{a.customer_id}}'}",
+          documentationBasis:
+            "Quickbase Jinja reference: Embed Jinja inside a query; multi-line Jinja statements do not work inside query strings.",
         });
       }
 
       for (const jinja of condition.jinja) {
-        if (jinja.analysis.hasPrev) {
+        const containsPrev = /\$prev\b/.test(jinja.expression);
+
+        if (containsPrev) {
           diagnostics.push({
             severity: "error",
-            code: "PREV_IN_ADVANCED_QUERY",
+            code: "PREV_NOT_SUPPORTED_IN_ADVANCED_QUERY",
             message:
-              "$prev is available on Record Updated trigger expressions but is not supported inside Quickbase Advanced Query filter strings.",
+              "$prev was detected inside a Quickbase Advanced Query value.",
             condition: condition.raw,
+            quickbaseRule:
+              "Quickbase documentation states that $prev is available on Record Updated trigger expressions but does not work inside Advanced Query filter strings.",
+            suggestedFix:
+              "Move the previous-value comparison into a regular Pipelines Jinja expression, or use a current-step value inside the Advanced Query.",
+            example:
+              "Outside Advanced Query, the documented form is a.$prev.field_name.",
+            documentationBasis:
+              "Quickbase Start with Jinja in Pipelines and Jinja reference: $prev does not work inside Quickbase Advanced Query filter strings.",
           });
+
+          if (!/\b[a-z]\.\$prev\./.test(jinja.expression)) {
+            diagnostics.push({
+              severity: "info",
+              code: "PREV_REFERENCE_FORM_NOTE",
+              message:
+                "The detected $prev reference also does not use the documented step-letter form.",
+              quickbaseRule:
+                "Outside Advanced Query, Quickbase documents $prev between the step letter and field name.",
+              suggestedFix:
+                "When $prev is used in a supported Record Updated trigger expression, use a.$prev.field_name.",
+              example: "{{a.$prev.status}}",
+              documentationBasis:
+                "Quickbase Pipelines $prev syntax.",
+            });
+          }
         }
       }
     }
@@ -582,10 +1095,17 @@ function analyzeInput(
       conditions.length > 1
     ) {
       diagnostics.push({
-        severity: "warning",
-        code: "MISSING_CONNECTOR",
+        severity: "error",
+        code: "QUICKBASE_CONNECTOR_MISSING",
         message:
-          "Multiple query conditions were detected without a clear AND or OR between every condition.",
+          "Multiple Quickbase conditions were detected without a logical connector between every condition.",
+        quickbaseRule:
+          "Quickbase Advanced Query combines multiple conditions with AND or OR.",
+        suggestedFix:
+          "Add an uppercase AND or OR between adjacent conditions.",
+        example: "{6.EX.'Open'}AND{7.GTE.'18'}",
+        documentationBasis:
+          "Quickbase Advanced Query combination syntax.",
       });
     }
   }
@@ -593,27 +1113,70 @@ function analyzeInput(
   if (/\{%\s*(break|continue)\b/i.test(trimmed)) {
     diagnostics.push({
       severity: "error",
-      code: "UNSUPPORTED_LOOP_CONTROL",
+      code: "PIPELINES_LOOP_CONTROL_NOT_SUPPORTED",
       message:
-        "Quickbase Pipelines Jinja does not support {% break %} or {% continue %}. Use select/reject filters or guard the loop body with an if statement.",
+        "A {% break %} or {% continue %} statement was detected.",
+      quickbaseRule:
+        "Quickbase Pipelines does not support break or continue inside Jinja loops.",
+      suggestedFix:
+        "Filter the list before looping with select/reject, or guard the loop body with an if statement.",
+      documentationBasis:
+        "Quickbase Jinja reference: unsupported constructs.",
     });
   }
 
   if (/\{%\s*(include|import|extends)\b/i.test(trimmed)) {
     diagnostics.push({
       severity: "error",
-      code: "UNSUPPORTED_TEMPLATE_FEATURE",
+      code: "PIPELINES_TEMPLATE_INHERITANCE_NOT_SUPPORTED",
       message:
-        "Quickbase Pipelines does not support include, import, or extends template inheritance.",
+        "A Jinja include, import, or extends statement was detected.",
+      quickbaseRule:
+        "Quickbase Pipelines does not allow template inheritance or importing templates/modules in Jinja.",
+      suggestedFix:
+        "Keep the required logic directly inside the pipeline expression or step.",
+      documentationBasis:
+        "Quickbase Jinja reference: unsupported constructs and limited environment.",
     });
   }
 
   if (/\{%\s*do\b/i.test(trimmed)) {
     diagnostics.push({
       severity: "error",
-      code: "UNSUPPORTED_DO_EXTENSION",
+      code: "PIPELINES_DO_EXTENSION_NOT_SUPPORTED",
       message:
+        "A Jinja {% do ... %} statement was detected.",
+      quickbaseRule:
         "Quickbase Pipelines does not support the Jinja do extension.",
+      suggestedFix:
+        "Use supported set/namespace patterns or filters instead.",
+      documentationBasis:
+        "Quickbase Jinja reference: unsupported constructs.",
+    });
+  }
+
+  const hasJinjaError = diagnostics.some(
+    (item) =>
+      item.severity === "error" &&
+      (
+        item.code.includes("JINJA") ||
+        item.code.includes("PIPELINES") ||
+        item.code.includes("PREV")
+      ),
+  );
+
+  if (jinjaExpressions.length > 0 && !hasJinjaError) {
+    diagnostics.push({
+      severity: "warning",
+      code: "PIPELINES_RUNTIME_NOT_EXECUTED",
+      message:
+        "The Workbench recognized Jinja syntax and any applicable documented patterns, but did not execute the expression.",
+      quickbaseRule:
+        "This public tool performs local static analysis only. Quickbase Pipelines runtime behavior can depend on actual step data, scope, field values, and execution context.",
+      suggestedFix:
+        "Use the Workbench findings as preflight guidance, then verify the expression in Pipelines and inspect the activity log if runtime behavior matters.",
+      documentationBasis:
+        "Quickbase Pipelines troubleshooting guidance distinguishes design-time validation from runtime errors.",
     });
   }
 
@@ -621,6 +1184,7 @@ function analyzeInput(
     conditions,
     jinjaExpressions,
     jinjaStatements,
+    scan.queryIslands.length,
   );
 
   const errors = diagnostics.filter(
@@ -654,6 +1218,8 @@ function analyzeInput(
     detectedLanguage,
     conditions,
     connectors: scan.connectors,
+    connectorDetails: scan.connectorDetails,
+    queryIslands: scan.queryIslands,
     jinjaExpressions,
     jinjaStatements,
     jinjaComments,
@@ -689,33 +1255,62 @@ function summarizeCondition(condition: ParsedCondition) {
 }
 
 function buildQueryStructure(diagnostic: QueryDiagnostic) {
-  if (!diagnostic.conditions.length) return null;
+  return diagnostic.queryIslands.map((island) => {
+    let structure = island.raw;
+    let plain = island.raw;
 
-  let structure = diagnostic.input;
-  let plain = diagnostic.input;
+    for (const conditionIndex of island.conditionIndexes) {
+      const condition = diagnostic.conditions[conditionIndex];
 
-  diagnostic.conditions.forEach((condition, index) => {
-    structure = structure.replace(
-      condition.raw,
-      `[Condition ${index + 1}]`,
+      if (!condition) continue;
+
+      structure = structure.replace(
+        condition.raw,
+        `[Condition ${conditionIndex + 1}]`,
+      );
+
+      plain = plain.replace(
+        condition.raw,
+        `[${summarizeCondition(condition)}]`,
+      );
+    }
+
+    for (const malformed of island.malformedConditions) {
+      structure = structure.replace(
+        malformed.raw,
+        "[Malformed / Unterminated Condition]",
+      );
+
+      plain = plain.replace(
+        malformed.raw,
+        `[unterminated Quickbase condition: ${malformed.raw}]`,
+      );
+    }
+
+    const connectors = island.connectorDetails.map(
+      (connector, index) => {
+        if (!connector.raw) {
+          return `${index + 1} → Missing connector`;
+        }
+
+        if (connector.validCase === false) {
+          return `${index + 1} → ${connector.raw} (should be ${connector.normalized})`;
+        }
+
+        return `${index + 1} → ${connector.raw}`;
+      },
     );
 
-    plain = plain.replace(
-      condition.raw,
-      `[${summarizeCondition(condition)}]`,
-    );
+    return {
+      islandId: island.id,
+      raw: island.raw,
+      structure,
+      plain,
+      connectors,
+      conditionCount: island.conditionIndexes.length,
+      malformedCount: island.malformedConditions.length,
+    };
   });
-
-  const connectors = diagnostic.connectors.map(
-    (connector, index) =>
-      `${index + 1} → ${connector || "Not detected"}`,
-  );
-
-  return {
-    structure,
-    plain,
-    connectors,
-  };
 }
 
 function buildWorkbenchReport(diagnostic: QueryDiagnostic) {
@@ -790,23 +1385,40 @@ function buildWorkbenchReport(diagnostic: QueryDiagnostic) {
     lines.push("");
   });
 
-  if (structure) {
-    lines.push("QUERY STRUCTURE");
+  if (structure.length) {
+    lines.push("QUICKBASE QUERY ISLANDS");
     lines.push("-".repeat(76));
-    lines.push(structure.structure);
-    lines.push("");
     lines.push(
-      `Connectors: ${structure.connectors.join(" | ") || "None"}`,
+      "Independent Quickbase query regions are analyzed separately from Jinja blocks, comments, and ordinary template text.",
     );
     lines.push("");
-    lines.push("PLAIN-LANGUAGE LOGIC");
-    lines.push("-".repeat(76));
-    lines.push(structure.plain);
-    lines.push("");
+
+    structure.forEach((island) => {
+      lines.push(`Query Island ${island.islandId}`);
+      lines.push(
+        `  Complete Conditions: ${island.conditionCount}`,
+      );
+      lines.push(
+        `  Malformed Conditions: ${island.malformedCount}`,
+      );
+      lines.push(`  Structure: ${island.structure}`);
+      lines.push(
+        `  Connectors: ${island.connectors.join(" | ") || "None"}`,
+      );
+      lines.push(`  Logic: ${island.plain}`);
+      lines.push("");
+    });
   }
 
   lines.push("JINJA ANALYSIS");
   lines.push("-".repeat(76));
+  lines.push(
+    "Validation scope: supplied Quickbase/Pipelines documentation plus local static analysis.",
+  );
+  lines.push(
+    "The public Workbench does not execute Pipelines; runtime verification remains a separate step.",
+  );
+  lines.push("");
 
   if (!diagnostic.jinjaExpressions.length) {
     lines.push("No {{ ... }} Jinja expressions detected.");
@@ -873,12 +1485,36 @@ function buildWorkbenchReport(diagnostic: QueryDiagnostic) {
 
   if (!diagnostic.diagnostics.length) {
     lines.push(
-      "🟢 No diagnostics triggered by the current Workbench rules.",
+      "🟢 No findings were triggered by the current documented/local Workbench rules. Runtime execution in Quickbase/Pipelines was not performed.",
     );
   } else {
     diagnostic.diagnostics.forEach((item) => {
-      const icon = item.severity === "error" ? "🔴" : "🟠";
+      const icon =
+        item.severity === "error"
+          ? "🔴"
+          : item.severity === "warning"
+            ? "🟠"
+            : "🔵";
+
       lines.push(`${icon} ${item.code}: ${item.message}`);
+
+      if (item.quickbaseRule) {
+        lines.push(`   Quickbase rule: ${item.quickbaseRule}`);
+      }
+
+      if (item.suggestedFix) {
+        lines.push(`   Suggested action: ${item.suggestedFix}`);
+      }
+
+      if (item.example) {
+        lines.push(`   Example: ${item.example}`);
+      }
+
+      if (item.documentationBasis) {
+        lines.push(
+          `   Documentation basis: ${item.documentationBasis}`,
+        );
+      }
     });
   }
 
@@ -927,6 +1563,10 @@ export default function QueryJinjaWorkbenchPage() {
 
   const warningCount = diagnostic.diagnostics.filter(
     (item) => item.severity === "warning",
+  ).length;
+
+  const infoCount = diagnostic.diagnostics.filter(
+    (item) => item.severity === "info",
   ).length;
 
   const runAnalysis = () => {
@@ -1001,10 +1641,15 @@ export default function QueryJinjaWorkbenchPage() {
             </h2>
             <p className="mt-2 max-w-4xl text-slate-600">
               This public edition deliberately removes all schema-aware
-              Quickbase API calls. FIDs remain numeric identifiers, but
-              the parser can still inspect query structure, operators,
-              Jinja references, unsupported Pipelines constructs, and
-              malformed syntax.
+              Quickbase API calls. FIDs are inspected as syntax only, so
+              the Workbench never claims that a Field ID exists or does
+              not exist in someone else&apos;s app. Findings are based on
+              supplied Quickbase/Pipelines documentation plus local static
+              analysis of query structure, operators, connector casing,
+              Jinja references, documented date/time patterns, and known
+              unsupported constructs. Patch 9 also isolates independent
+              Quickbase Query Islands inside larger mixed Jinja/template
+              documents instead of treating the entire textarea as one query.
             </p>
           </div>
 
@@ -1095,7 +1740,11 @@ export default function QueryJinjaWorkbenchPage() {
             </div>
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+            <Metric
+              value={diagnostic.queryIslands.length}
+              label="Query Islands"
+            />
             <Metric
               value={diagnostic.conditions.length}
               label="Query Conditions"
@@ -1116,6 +1765,11 @@ export default function QueryJinjaWorkbenchPage() {
               value={warningCount}
               label="Warnings"
               tone={warningCount ? "warn" : "good"}
+            />
+            <Metric
+              value={infoCount}
+              label="Info"
+              tone={infoCount ? "info" : "good"}
             />
           </div>
 
@@ -1140,29 +1794,56 @@ export default function QueryJinjaWorkbenchPage() {
               ? ` ${errorCount} error(s) and ${warningCount} warning(s) detected.`
               : warningCount
                 ? ` ${warningCount} warning(s) detected.`
-                : " no Workbench diagnostics were triggered by the current rule set."}
+                : " no error or warning findings were triggered by the current documented/local rule set. Runtime execution in Quickbase/Pipelines was not performed."}
           </div>
 
-          {structure && (
+          {structure.length > 0 && (
             <div className="mt-5 rounded-xl border border-blue-200 bg-blue-50/50 p-4">
               <h3 className="font-bold text-[#184a7b]">
-                Query Structure
+                Quickbase Query Islands
               </h3>
 
-              <pre className="mt-3 overflow-x-auto whitespace-pre-wrap rounded-lg bg-slate-900 p-4 font-mono text-sm text-slate-100">
-                {structure.structure}
-              </pre>
-
-              <p className="mt-3 text-sm font-bold text-slate-600">
-                Connectors:{" "}
-                {structure.connectors.join(" · ") || "None"}
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Quickbase query regions are analyzed independently from
+                surrounding Jinja blocks, comments, and ordinary template
+                text. This prevents unrelated prose from being mistaken
+                for query connectors or malformed query content.
               </p>
 
-              <div className="mt-3 border-l-4 border-[#1f5c99] bg-white p-3">
-                <strong>Plain-language logic:</strong>
-                <div className="mt-1 font-mono text-sm">
-                  {structure.plain}
-                </div>
+              <div className="mt-4 space-y-4">
+                {structure.map((island) => (
+                  <article
+                    key={island.islandId}
+                    className="rounded-xl border border-blue-200 bg-white p-4"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h4 className="font-extrabold text-[#184a7b]">
+                        Query Island {island.islandId}
+                      </h4>
+
+                      <div className="text-xs font-bold text-slate-500">
+                        {island.conditionCount} complete ·{" "}
+                        {island.malformedCount} malformed
+                      </div>
+                    </div>
+
+                    <pre className="mt-3 overflow-x-auto whitespace-pre-wrap rounded-lg bg-slate-900 p-4 font-mono text-sm text-slate-100">
+                      {island.structure}
+                    </pre>
+
+                    <p className="mt-3 text-sm font-bold text-slate-600">
+                      Connectors:{" "}
+                      {island.connectors.join(" · ") || "None"}
+                    </p>
+
+                    <div className="mt-3 border-l-4 border-[#1f5c99] bg-blue-50/40 p-3">
+                      <strong>Plain-language logic:</strong>
+                      <div className="mt-1 font-mono text-sm">
+                        {island.plain}
+                      </div>
+                    </div>
+                  </article>
+                ))}
               </div>
             </div>
           )}
@@ -1279,6 +1960,13 @@ export default function QueryJinjaWorkbenchPage() {
                       ? "Detected"
                       : "Not detected"}
                   </dd>
+
+                  <dt className="font-bold text-slate-600">
+                    Validation Scope
+                  </dt>
+                  <dd>
+                    Supplied Quickbase/Pipelines documentation plus local static analysis — no runtime execution.
+                  </dd>
                 </dl>
               </article>
             ))}
@@ -1316,25 +2004,76 @@ export default function QueryJinjaWorkbenchPage() {
                 className={`rounded-xl border p-4 ${
                   item.severity === "error"
                     ? "border-red-200 bg-red-50"
-                    : "border-amber-200 bg-amber-50"
+                    : item.severity === "warning"
+                      ? "border-amber-200 bg-amber-50"
+                      : "border-blue-200 bg-blue-50"
                 }`}
               >
                 <p
                   className={`text-xs font-extrabold uppercase tracking-wider ${
                     item.severity === "error"
                       ? "text-red-700"
-                      : "text-amber-700"
+                      : item.severity === "warning"
+                        ? "text-amber-700"
+                        : "text-blue-700"
                   }`}
                 >
                   {item.severity === "error"
                     ? "Error"
-                    : "Warning"}
+                    : item.severity === "warning"
+                      ? "Warning"
+                      : "Info"}
                 </p>
 
                 <h3 className="mt-2 font-bold">{item.code}</h3>
                 <p className="mt-2 text-sm leading-6">
                   {item.message}
                 </p>
+
+                {(item.quickbaseRule ||
+                  item.suggestedFix ||
+                  item.example ||
+                  item.documentationBasis) && (
+                  <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-[170px_1fr]">
+                    {item.quickbaseRule && (
+                      <>
+                        <dt className="font-bold text-slate-600">
+                          Quickbase Rule
+                        </dt>
+                        <dd>{item.quickbaseRule}</dd>
+                      </>
+                    )}
+
+                    {item.suggestedFix && (
+                      <>
+                        <dt className="font-bold text-slate-600">
+                          Suggested Action
+                        </dt>
+                        <dd>{item.suggestedFix}</dd>
+                      </>
+                    )}
+
+                    {item.example && (
+                      <>
+                        <dt className="font-bold text-slate-600">
+                          Example
+                        </dt>
+                        <dd className="wrap-break-word font-mono">
+                          {item.example}
+                        </dd>
+                      </>
+                    )}
+
+                    {item.documentationBasis && (
+                      <>
+                        <dt className="font-bold text-slate-600">
+                          Documentation Basis
+                        </dt>
+                        <dd>{item.documentationBasis}</dd>
+                      </>
+                    )}
+                  </dl>
+                )}
               </article>
             ))}
           </div>
@@ -1384,9 +2123,11 @@ export default function QueryJinjaWorkbenchPage() {
             This version deliberately does not connect to a Quickbase
             realm, read an application schema, resolve FIDs to field
             names, execute REST queries, or execute Jinja. It is a
-            parser, explainer, and linter intended for public testing.
-            The schema-aware Code Page edition can remain the integrated
-            Quickbase developer version.
+            parser, explainer, and documentation-backed linter intended
+            for public testing. It can identify documented Quickbase and
+            Pipelines patterns, but it does not replace actual execution or
+            the Pipelines activity log. The schema-aware Code Page edition
+            can remain the integrated Quickbase developer version.
           </p>
         </section>
       </div>
@@ -1401,13 +2142,14 @@ function Metric({
 }: {
   value: number;
   label: string;
-  tone?: "normal" | "good" | "warn" | "bad";
+  tone?: "normal" | "good" | "warn" | "bad" | "info";
 }) {
   const toneClasses = {
     normal: "border-slate-200 bg-slate-50 text-slate-900",
     good: "border-green-200 bg-green-50 text-green-900",
     warn: "border-amber-200 bg-amber-50 text-amber-900",
     bad: "border-red-200 bg-red-50 text-red-900",
+    info: "border-blue-200 bg-blue-50 text-blue-900",
   };
 
   return (
