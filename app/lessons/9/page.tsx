@@ -619,7 +619,7 @@ const APP_DBID = getAppDbid();`}
                 <td className="px-4 py-3 font-bold">Table DBID</td>
                 <td className="px-4 py-3">One table inside the application</td>
                 <td className="px-4 py-3">
-                  <code>bv9j6j4n5</code>
+                  <code>TABLE_ID_HERE</code>
                 </td>
               </tr>
             </tbody>

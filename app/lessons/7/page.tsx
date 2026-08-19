@@ -374,7 +374,7 @@ deleteButton.addEventListener("click", () => {
         ↓
 
 {
-  from: "bv9j6j4n5",
+  from: "TABLE_ID_HERE",
   where: "{3.EX.'14'}"
 }`}
           </pre>

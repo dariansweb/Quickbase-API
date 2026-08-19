@@ -11,7 +11,7 @@ const quickbaseObjects = [
   {
     object: "People table",
     identity: "Table DBID",
-    value: "bv9j6j4n5",
+    value: "TABLE_ID_HERE",
     purpose:
       "Identifies the Quickbase table used for temporary authorization and the records query.",
   },
@@ -112,7 +112,7 @@ const REALM = window.location.hostname;
  * The visible table name is "People", but REST API requests
  * identify the table using its DBID.
  */
-const TABLE_DBID = "bv9j6j4n5";
+const TABLE_DBID = "TABLE_ID_HERE";
 
 
 /*
@@ -523,7 +523,7 @@ export default function Lesson1BPage() {
         </h2>
 
         <pre className="mt-5 overflow-x-auto rounded-lg border border-gray-300 bg-[#f7f8fa] p-5 text-base">
-          <code>{`const TABLE_DBID = "bv9j6j4n5";
+          <code>{`const TABLE_DBID = "TABLE_ID_HERE";
 
 const FIELD_IDS = {
   recordId: 3,
@@ -541,7 +541,7 @@ const FIELD_IDS = {
         <div className="mt-6 rounded-lg border border-gray-300 bg-[#f7f8fa] p-6 font-mono leading-8">
           <div>People</div>
           <div className="ml-6">↓</div>
-          <div className="ml-6 font-bold">bv9j6j4n5</div>
+          <div className="ml-6 font-bold">TABLE_ID_HERE</div>
 
           <div className="mt-4">Name</div>
           <div className="ml-6">↓</div>
@@ -1043,13 +1043,13 @@ const renderTime = endTime - startTime;`}</code>
           <div>↓</div>
 
           <div>REALM = window.location.hostname</div>
-          <div>TABLE_DBID = bv9j6j4n5</div>
+          <div>TABLE_DBID = TABLE_ID_HERE</div>
 
           <div>↓</div>
 
           <div className="font-bold">Temporary Authorization Request</div>
 
-          <div className="ml-6">GET /v1/auth/temporary/bv9j6j4n5</div>
+          <div className="ml-6">GET /v1/auth/temporary/TABLE_ID_HERE</div>
 
           <div className="ml-6">credentials: include</div>
 
@@ -1075,7 +1075,7 @@ const renderTime = endTime - startTime;`}</code>
 
           <div>JSON Query</div>
 
-          <div className="ml-6">from: bv9j6j4n5</div>
+          <div className="ml-6">from: TABLE_ID_HERE</div>
 
           <div className="ml-6">select: [3, 6, 7, 8]</div>
 

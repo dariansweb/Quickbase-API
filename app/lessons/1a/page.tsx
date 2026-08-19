@@ -913,10 +913,10 @@ export default function Lesson1APage() {
           <div>People Code Page</div>
           <div>↓</div>
 
-          <div>TABLE_DBID = bv9j6j4n5</div>
+          <div>TABLE_DBID = TABLE_ID_HERE</div>
           <div>↓</div>
 
-          <div>POST /db/bv9j6j4n5</div>
+          <div>POST /db/TABLE_ID_HERE</div>
           <div>↓</div>
 
           <div>QUICKBASE-ACTION: API_DoQuery</div>
