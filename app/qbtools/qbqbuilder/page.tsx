@@ -109,10 +109,7 @@ type QueryDiagnostic = {
     | "Review Input";
 };
 
-const OPERATOR_DEFS: Record<
-  string,
-  { label: string; families: string[] }
-> = {
+const OPERATOR_DEFS: Record<string, { label: string; families: string[] }> = {
   EX: { label: "Equals exactly", families: ["all"] },
   XEX: { label: "Not equal", families: ["all"] },
   CT: { label: "Contains substring", families: ["text"] },
@@ -128,8 +125,7 @@ const OPERATOR_DEFS: Record<
   IR: { label: "In relative date range", families: ["date"] },
 };
 
-const DEFAULT_INPUT =
-  "({6.EX.'Alice'}OR{6.EX.'Bob'})AND{7.GTE.'18'}";
+const DEFAULT_INPUT = "({6.EX.'Alice'}OR{6.EX.'Bob'})AND{7.GTE.'18'}";
 
 const EXAMPLES = [
   {
@@ -166,28 +162,23 @@ const EXAMPLES = [
   },
   {
     label: "Lowercase AND / OR",
-    value:
-      "({'12'.EX.'6500'} and ({'13'.EX.'6500'} or {'13'.SW.'1532'}))",
+    value: "({'12'.EX.'6500'} and ({'13'.EX.'6500'} or {'13'.SW.'1532'}))",
   },
   {
     label: "Python-Style Date Format",
-    value:
-      `{87.BF.'{{ "{:%Y-%m-%d}".format(time.now - time.delta(days=30)) }}'}`,
+    value: `{87.BF.'{{ "{:%Y-%m-%d}".format(time.now - time.delta(days=30)) }}'}`,
   },
   {
     label: "Documented Date Arithmetic",
-    value:
-      `{87.BF.'{{time.today - time.delta(days=30)}}'}`,
+    value: `{87.BF.'{{time.today - time.delta(days=30)}}'}`,
   },
   {
     label: "Documented strftime",
-    value:
-      `{87.BF.'{{(time.now - time.delta(days=30)).strftime('%Y-%m-%d')}}'}`,
+    value: `{87.BF.'{{(time.now - time.delta(days=30)).strftime('%Y-%m-%d')}}'}`,
   },
   {
     label: "Documented date_ymd",
-    value:
-      `{87.BF.'{{time.today | date_ymd}}'}`,
+    value: `{87.BF.'{{time.today | date_ymd}}'}`,
   },
   {
     label: "$prev in Advanced Query",
@@ -214,9 +205,7 @@ function classifyQueryGap(gap: string) {
    * Jinja blocks, comments, prose, labels, and unrelated template
    * text therefore become natural island boundaries.
    */
-  const connectorMatch = gap.match(
-    /^\s*\)*\s*(AND|OR)\s*\(*\s*$/i,
-  );
+  const connectorMatch = gap.match(/^\s*\)*\s*(AND|OR)\s*\(*\s*$/i);
 
   if (connectorMatch) {
     const raw = connectorMatch[1];
@@ -303,8 +292,7 @@ function buildQueryIslands(
         raw: node.raw,
         conditionIndexes:
           node.kind === "condition" ? [node.conditionIndex] : [],
-        malformedConditions:
-          node.kind === "malformed" ? [node.malformed] : [],
+        malformedConditions: node.kind === "malformed" ? [node.malformed] : [],
         connectors: [],
         connectorDetails: [],
       });
@@ -322,8 +310,7 @@ function buildQueryIslands(
         raw: node.raw,
         conditionIndexes:
           node.kind === "condition" ? [node.conditionIndex] : [],
-        malformedConditions:
-          node.kind === "malformed" ? [node.malformed] : [],
+        malformedConditions: node.kind === "malformed" ? [node.malformed] : [],
         connectors: [],
         connectorDetails: [],
       });
@@ -424,10 +411,7 @@ function scanQueryConditions(input: string) {
         if (ch === "\n") {
           let lookAhead = i + 1;
 
-          while (
-            lookAhead < input.length &&
-            /\s/.test(input[lookAhead])
-          ) {
+          while (lookAhead < input.length && /\s/.test(input[lookAhead])) {
             lookAhead += 1;
           }
 
@@ -439,23 +423,15 @@ function scanQueryConditions(input: string) {
             upcoming.startsWith("{{");
 
           const startsAnotherQuickbaseCondition =
-            /^\{\s*(?:['"]?\d+['"]?)\s*\.[A-Za-z]+\s*\./.test(
-              upcoming,
-            );
+            /^\{\s*(?:['"]?\d+['"]?)\s*\.[A-Za-z]+\s*\./.test(upcoming);
 
-          if (
-            startsNewLanguageRegion ||
-            startsAnotherQuickbaseCondition
-          ) {
+          if (startsNewLanguageRegion || startsAnotherQuickbaseCondition) {
             boundaryBreak = true;
             break;
           }
         }
 
-        if (
-          (ch === "'" || ch === '"') &&
-          input[i - 1] !== "\\"
-        ) {
+        if ((ch === "'" || ch === '"') && input[i - 1] !== "\\") {
           quote = quote === ch ? null : quote || ch;
         }
 
@@ -465,11 +441,7 @@ function scanQueryConditions(input: string) {
           continue;
         }
 
-        if (
-          ch === "}" &&
-          input[i + 1] === "}" &&
-          jinjaExprDepth > 0
-        ) {
+        if (ch === "}" && input[i + 1] === "}" && jinjaExprDepth > 0) {
           jinjaExprDepth -= 1;
           i += 2;
           continue;
@@ -481,11 +453,7 @@ function scanQueryConditions(input: string) {
           continue;
         }
 
-        if (
-          ch === "%" &&
-          input[i + 1] === "}" &&
-          jinjaStmtDepth > 0
-        ) {
+        if (ch === "%" && input[i + 1] === "}" && jinjaStmtDepth > 0) {
           jinjaStmtDepth -= 1;
           i += 2;
           continue;
@@ -521,8 +489,7 @@ function scanQueryConditions(input: string) {
        * Jinja blocks, and later queries remain independently parseable.
        */
       const lineEnd = input.indexOf("\n", start);
-      const malformedEnd =
-        lineEnd >= 0 ? lineEnd - 1 : input.length - 1;
+      const malformedEnd = lineEnd >= 0 ? lineEnd - 1 : input.length - 1;
 
       malformedConditions.push({
         raw: input.slice(start, malformedEnd + 1).trimEnd(),
@@ -531,9 +498,7 @@ function scanQueryConditions(input: string) {
         reason: "unterminated",
       });
 
-      i = boundaryBreak
-        ? Math.max(i, malformedEnd + 1)
-        : malformedEnd + 1;
+      i = boundaryBreak ? Math.max(i, malformedEnd + 1) : malformedEnd + 1;
 
       continue;
     }
@@ -547,9 +512,7 @@ function scanQueryConditions(input: string) {
     malformedConditions,
   );
 
-  const connectors = queryIslands.flatMap(
-    (island) => island.connectors,
-  );
+  const connectors = queryIslands.flatMap((island) => island.connectors);
 
   const connectorDetails = queryIslands.flatMap(
     (island) => island.connectorDetails,
@@ -587,8 +550,7 @@ function parseCondition(raw: string) {
     .trim()
     .toUpperCase();
 
-  const quotedFid =
-    /^'\d+'$/.test(fidText) || /^"\d+"$/.test(fidText);
+  const quotedFid = /^'\d+'$/.test(fidText) || /^"\d+"$/.test(fidText);
 
   let rawValue = inner.slice(secondDot + 1).trim();
 
@@ -608,8 +570,7 @@ function parseCondition(raw: string) {
   return {
     raw,
     validShape:
-      (/^\d+$/.test(fidText) || quotedFid) &&
-      /^[A-Z]+$/.test(operator),
+      (/^\d+$/.test(fidText) || quotedFid) && /^[A-Z]+$/.test(operator),
     fidText,
     quotedFid,
     fid,
@@ -641,8 +602,7 @@ function extractJinjaStatements(text: string): JinjaStatement[] {
 
   while ((match = regex.exec(text))) {
     const body = match[1].trim();
-    const keyword =
-      body.match(/^([A-Za-z_][A-Za-z0-9_]*)/)?.[1] || "unknown";
+    const keyword = body.match(/^([A-Za-z_][A-Za-z0-9_]*)/)?.[1] || "unknown";
 
     statements.push({
       raw: match[0],
@@ -707,13 +667,10 @@ function classifyJinjaExpression(expression: string) {
     info.runtimeReferences.push(match[1]);
   }
 
-  const context =
-    /\b([a-z])\.context\.([A-Za-z_][A-Za-z0-9_]*)/g;
+  const context = /\b([a-z])\.context\.([A-Za-z_][A-Za-z0-9_]*)/g;
 
   while ((match = context.exec(expression))) {
-    info.contextReferences.push(
-      `${match[1]}.context.${match[2]}`,
-    );
+    info.contextReferences.push(`${match[1]}.context.${match[2]}`);
   }
 
   const time = /\btime\.(now|today|delta|parse)\b/g;
@@ -751,9 +708,7 @@ function classifyConditionValue(
   return "static";
 }
 
-function analyzeDocumentedJinjaRules(
-  expression: string,
-): Diagnostic[] {
+function analyzeDocumentedJinjaRules(expression: string): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
 
   const usesPythonStyleDateFormat =
@@ -770,16 +725,13 @@ function analyzeDocumentedJinjaRules(
         "The supplied Quickbase Pipelines documentation documents date formatting with .strftime(...) or date filters such as date_ymd, date_mdy, and date_dmy.",
       suggestedFix:
         "Use a documented Quickbase Pipelines date-formatting pattern instead of formatting the date through a Python-style string template.",
-      example:
-        "{{(time.now - time.delta(days=30)).strftime('%Y-%m-%d')}}",
+      example: "{{(time.now - time.delta(days=30)).strftime('%Y-%m-%d')}}",
       documentationBasis:
         "Quickbase Pipelines Jinja reference: date/time helpers, date_ymd/date_mdy/date_dmy, and .strftime(format).",
     });
   }
 
-  const usesStrftime = /\.strftime\s*\(\s*['"][^'"]+['"]\s*\)/.test(
-    expression,
-  );
+  const usesStrftime = /\.strftime\s*\(\s*['"][^'"]+['"]\s*\)/.test(expression);
 
   const dateFilterMatch = expression.match(
     /\|\s*(date_ymd|date_mdy|date_dmy)\b/,
@@ -790,16 +742,13 @@ function analyzeDocumentedJinjaRules(
   const usesTimeNow = /\btime\.now\b/.test(expression);
   const usesTimeParse = /\btime\.parse\s*\(/.test(expression);
   const usesDateArithmetic =
-    /\btime\.(today|now)\b[\s\S]*[+-][\s\S]*time\.delta\s*\(/.test(
-      expression,
-    );
+    /\btime\.(today|now)\b[\s\S]*[+-][\s\S]*time\.delta\s*\(/.test(expression);
 
   if (!usesPythonStyleDateFormat && usesDateArithmetic) {
     diagnostics.push({
       severity: "info",
       code: "DOCUMENTED_PIPELINES_DATE_ARITHMETIC",
-      message:
-        "Quickbase-documented Pipelines date arithmetic was recognized.",
+      message: "Quickbase-documented Pipelines date arithmetic was recognized.",
       quickbaseRule:
         "Quickbase documents time.today/time.now with time.delta(...) for adding or subtracting relative time intervals.",
       suggestedFix:
@@ -830,8 +779,7 @@ function analyzeDocumentedJinjaRules(
     diagnostics.push({
       severity: "info",
       code: "DOCUMENTED_PIPELINES_DATE_FILTER",
-      message:
-        `A Quickbase-documented ${dateFilterMatch[1]} date-formatting filter was recognized.`,
+      message: `A Quickbase-documented ${dateFilterMatch[1]} date-formatting filter was recognized.`,
       quickbaseRule:
         "Quickbase Pipelines documents date_ymd, date_mdy, and date_dmy for converting dates to formatted strings.",
       suggestedFix:
@@ -894,17 +842,15 @@ function findQueryStructuralIssues(
     issues.push({
       severity: "error",
       code: "QUICKBASE_CONDITION_UNTERMINATED",
-      message:
-        `A Quickbase-looking condition starts here but does not close before the next language/document boundary: ${malformed.raw}`,
+      message: `A Quickbase-looking condition starts here but does not close before the next language/document boundary: ${malformed.raw}`,
       condition: malformed.raw,
       quickbaseRule:
         "A Quickbase Advanced Query condition must close its outer curly brace after the matching value.",
       suggestedFix:
         "Close the condition before continuing into another Jinja block, comment, template-text region, or separate query.",
-      example:
-        malformed.raw.trim().endsWith("}")
-          ? malformed.raw.trim()
-          : `${malformed.raw.trim()}}`,
+      example: malformed.raw.trim().endsWith("}")
+        ? malformed.raw.trim()
+        : `${malformed.raw.trim()}}`,
       documentationBasis:
         "Quickbase Advanced Query condition shape: {fid.OPERATOR.'matching_value'}.",
     });
@@ -920,24 +866,22 @@ function analyzeInput(
   const trimmed = input.trim();
   const scan = scanQueryConditions(trimmed);
 
-  const conditions: ParsedCondition[] = scan.conditions.map(
-    (condition) => {
-      const parsed = parseCondition(condition.raw);
-      const operatorDef = parsed.operator
-        ? OPERATOR_DEFS[parsed.operator]
-        : undefined;
+  const conditions: ParsedCondition[] = scan.conditions.map((condition) => {
+    const parsed = parseCondition(condition.raw);
+    const operatorDef = parsed.operator
+      ? OPERATOR_DEFS[parsed.operator]
+      : undefined;
 
-      const jinja = extractJinjaExpressions(parsed.rawValue || "");
+    const jinja = extractJinjaExpressions(parsed.rawValue || "");
 
-      return {
-        ...parsed,
-        operatorMeaning: operatorDef?.label || null,
-        operatorKnown: Boolean(operatorDef),
-        valueType: classifyConditionValue(parsed.rawValue),
-        jinja,
-      };
-    },
-  );
+    return {
+      ...parsed,
+      operatorMeaning: operatorDef?.label || null,
+      operatorKnown: Boolean(operatorDef),
+      valueType: classifyConditionValue(parsed.rawValue),
+      jinja,
+    };
+  });
 
   const jinjaExpressions = extractJinjaExpressions(trimmed);
   const jinjaStatements = extractJinjaStatements(trimmed);
@@ -951,14 +895,10 @@ function analyzeInput(
       diagnostics.push({
         severity: "error",
         code: "QUICKBASE_LOGICAL_CONNECTOR_CASE",
-        message:
-          `Logical connector "${connector.raw}" was detected.`,
-        quickbaseRule:
-          `Quickbase Advanced Query documentation specifies uppercase logical connectors. Use "${connector.normalized}".`,
-        suggestedFix:
-          `Replace "${connector.raw}" with "${connector.normalized}".`,
-        example:
-          "({12.EX.'6500'}AND({13.EX.'6500'}OR{13.SW.'1532'}))",
+        message: `Logical connector "${connector.raw}" was detected.`,
+        quickbaseRule: `Quickbase Advanced Query documentation specifies uppercase logical connectors. Use "${connector.normalized}".`,
+        suggestedFix: `Replace "${connector.raw}" with "${connector.normalized}".`,
+        example: "({12.EX.'6500'}AND({13.EX.'6500'}OR{13.SW.'1532'}))",
         documentationBasis:
           "Quickbase Advanced Query syntax: combine conditions with AND or OR, always uppercase.",
       });
@@ -977,8 +917,7 @@ function analyzeInput(
     diagnostics.push({
       severity: "warning",
       code: "QUICKBASE_FID_SYNTAX_VARIATION",
-      message:
-        `Quoted Field IDs were detected (${quotedFids.join(", ")}).`,
+      message: `Quoted Field IDs were detected (${quotedFids.join(", ")}).`,
       quickbaseRule:
         "The supplied Quickbase material shows the canonical query grammar with a numeric FID, but other supplied Quickbase examples also show quoted FIDs. The Workbench therefore treats this as a documented syntax variation rather than a universal failure.",
       suggestedFix:
@@ -990,9 +929,7 @@ function analyzeInput(
   }
 
   for (const jinja of jinjaExpressions) {
-    diagnostics.push(
-      ...analyzeDocumentedJinjaRules(jinja.expression),
-    );
+    diagnostics.push(...analyzeDocumentedJinjaRules(jinja.expression));
   }
 
   if (conditions.length) {
@@ -1009,8 +946,7 @@ function analyzeInput(
           suggestedFix:
             "Check the braces, periods, Field ID, operator, and quoted matching value.",
           example: "{6.EX.'Open'}",
-          documentationBasis:
-            "Quickbase Advanced Query syntax reference.",
+          documentationBasis: "Quickbase Advanced Query syntax reference.",
         });
       }
 
@@ -1018,8 +954,7 @@ function analyzeInput(
         diagnostics.push({
           severity: "error",
           code: "QUICKBASE_OPERATOR_NOT_DOCUMENTED",
-          message:
-            `Operator "${safeValue(condition.operator)}" is not in the Workbench's documented Quickbase operator set.`,
+          message: `Operator "${safeValue(condition.operator)}" is not in the Workbench's documented Quickbase operator set.`,
           condition: condition.raw,
           quickbaseRule:
             "Advanced Query operators are a defined Quickbase grammar. The current documented set in this Workbench includes EX, XEX, CT, SW, BF, AF, OAF, LT, LTE, GT, GTE, HAS, and IR.",
@@ -1027,14 +962,11 @@ function analyzeInput(
             "Replace the operator with the Quickbase operator that matches the comparison you intend.",
           example:
             "{87.EX.'Something'} or {87.CT.'Something'} depending on the intended comparison.",
-          documentationBasis:
-            "Quickbase Advanced Query common operators.",
+          documentationBasis: "Quickbase Advanced Query common operators.",
         });
       }
 
-      if (
-        /\{%\s*[\s\S]*?%\}/.test(condition.rawValue || "")
-      ) {
+      if (/\{%\s*[\s\S]*?%\}/.test(condition.rawValue || "")) {
         diagnostics.push({
           severity: "error",
           code: "JINJA_STATEMENT_NOT_ALLOWED_IN_ADVANCED_QUERY",
@@ -1082,8 +1014,7 @@ function analyzeInput(
               suggestedFix:
                 "When $prev is used in a supported Record Updated trigger expression, use a.$prev.field_name.",
               example: "{{a.$prev.status}}",
-              documentationBasis:
-                "Quickbase Pipelines $prev syntax.",
+              documentationBasis: "Quickbase Pipelines $prev syntax.",
             });
           }
         }
@@ -1101,11 +1032,9 @@ function analyzeInput(
           "Multiple Quickbase conditions were detected without a logical connector between every condition.",
         quickbaseRule:
           "Quickbase Advanced Query combines multiple conditions with AND or OR.",
-        suggestedFix:
-          "Add an uppercase AND or OR between adjacent conditions.",
+        suggestedFix: "Add an uppercase AND or OR between adjacent conditions.",
         example: "{6.EX.'Open'}AND{7.GTE.'18'}",
-        documentationBasis:
-          "Quickbase Advanced Query combination syntax.",
+        documentationBasis: "Quickbase Advanced Query combination syntax.",
       });
     }
   }
@@ -1114,14 +1043,12 @@ function analyzeInput(
     diagnostics.push({
       severity: "error",
       code: "PIPELINES_LOOP_CONTROL_NOT_SUPPORTED",
-      message:
-        "A {% break %} or {% continue %} statement was detected.",
+      message: "A {% break %} or {% continue %} statement was detected.",
       quickbaseRule:
         "Quickbase Pipelines does not support break or continue inside Jinja loops.",
       suggestedFix:
         "Filter the list before looping with select/reject, or guard the loop body with an if statement.",
-      documentationBasis:
-        "Quickbase Jinja reference: unsupported constructs.",
+      documentationBasis: "Quickbase Jinja reference: unsupported constructs.",
     });
   }
 
@@ -1129,8 +1056,7 @@ function analyzeInput(
     diagnostics.push({
       severity: "error",
       code: "PIPELINES_TEMPLATE_INHERITANCE_NOT_SUPPORTED",
-      message:
-        "A Jinja include, import, or extends statement was detected.",
+      message: "A Jinja include, import, or extends statement was detected.",
       quickbaseRule:
         "Quickbase Pipelines does not allow template inheritance or importing templates/modules in Jinja.",
       suggestedFix:
@@ -1144,25 +1070,20 @@ function analyzeInput(
     diagnostics.push({
       severity: "error",
       code: "PIPELINES_DO_EXTENSION_NOT_SUPPORTED",
-      message:
-        "A Jinja {% do ... %} statement was detected.",
+      message: "A Jinja {% do ... %} statement was detected.",
       quickbaseRule:
         "Quickbase Pipelines does not support the Jinja do extension.",
-      suggestedFix:
-        "Use supported set/namespace patterns or filters instead.",
-      documentationBasis:
-        "Quickbase Jinja reference: unsupported constructs.",
+      suggestedFix: "Use supported set/namespace patterns or filters instead.",
+      documentationBasis: "Quickbase Jinja reference: unsupported constructs.",
     });
   }
 
   const hasJinjaError = diagnostics.some(
     (item) =>
       item.severity === "error" &&
-      (
-        item.code.includes("JINJA") ||
+      (item.code.includes("JINJA") ||
         item.code.includes("PIPELINES") ||
-        item.code.includes("PREV")
-      ),
+        item.code.includes("PREV")),
   );
 
   if (jinjaExpressions.length > 0 && !hasJinjaError) {
@@ -1201,9 +1122,7 @@ function analyzeInput(
     overall = "Invalid / Fix Required";
   } else if (warnings) {
     overall = "Review Recommended";
-  } else if (
-    detectedLanguage === "Hybrid Pipeline Advanced Query"
-  ) {
+  } else if (detectedLanguage === "Hybrid Pipeline Advanced Query") {
     overall = "Valid Hybrid Query";
   } else if (detectedLanguage === "Quickbase Query") {
     overall = "Valid Query";
@@ -1231,9 +1150,7 @@ function analyzeInput(
 function summarizeCondition(condition: ParsedCondition) {
   const field = `FID ${safeValue(condition.fid)}`;
   const operator =
-    condition.operatorMeaning ||
-    condition.operator ||
-    "Unknown operator";
+    condition.operatorMeaning || condition.operator || "Unknown operator";
 
   let value = safeValue(condition.rawValue);
 
@@ -1241,9 +1158,7 @@ function summarizeCondition(condition: ParsedCondition) {
     value = `Jinja value ${value}`;
   }
 
-  if (
-    condition.valueType === "unsupported-jinja-statement"
-  ) {
+  if (condition.valueType === "unsupported-jinja-statement") {
     value = `unsupported Jinja statement ${value}`;
   }
 
@@ -1287,19 +1202,17 @@ function buildQueryStructure(diagnostic: QueryDiagnostic) {
       );
     }
 
-    const connectors = island.connectorDetails.map(
-      (connector, index) => {
-        if (!connector.raw) {
-          return `${index + 1} → Missing connector`;
-        }
+    const connectors = island.connectorDetails.map((connector, index) => {
+      if (!connector.raw) {
+        return `${index + 1} → Missing connector`;
+      }
 
-        if (connector.validCase === false) {
-          return `${index + 1} → ${connector.raw} (should be ${connector.normalized})`;
-        }
+      if (connector.validCase === false) {
+        return `${index + 1} → ${connector.raw} (should be ${connector.normalized})`;
+      }
 
-        return `${index + 1} → ${connector.raw}`;
-      },
-    );
+      return `${index + 1} → ${connector.raw}`;
+    });
 
     return {
       islandId: island.id,
@@ -1368,19 +1281,13 @@ function buildWorkbenchReport(diagnostic: QueryDiagnostic) {
     lines.push(`Condition ${index + 1}`);
     lines.push(`  Raw: ${condition.raw}`);
     lines.push(`  FID: ${safeValue(condition.fid)}`);
-    lines.push(
-      "  Field: Schema-free mode — field name/type not resolved",
-    );
+    lines.push("  Field: Schema-free mode — field name/type not resolved");
     lines.push(
       `  Operator: ${safeValue(condition.operator)}${
-        condition.operatorMeaning
-          ? ` — ${condition.operatorMeaning}`
-          : ""
+        condition.operatorMeaning ? ` — ${condition.operatorMeaning}` : ""
       }`,
     );
-    lines.push(
-      `  Matching Value: ${safeValue(condition.rawValue)}`,
-    );
+    lines.push(`  Matching Value: ${safeValue(condition.rawValue)}`);
     lines.push(`  Value Type: ${condition.valueType}`);
     lines.push("");
   });
@@ -1395,16 +1302,10 @@ function buildWorkbenchReport(diagnostic: QueryDiagnostic) {
 
     structure.forEach((island) => {
       lines.push(`Query Island ${island.islandId}`);
-      lines.push(
-        `  Complete Conditions: ${island.conditionCount}`,
-      );
-      lines.push(
-        `  Malformed Conditions: ${island.malformedCount}`,
-      );
+      lines.push(`  Complete Conditions: ${island.conditionCount}`);
+      lines.push(`  Malformed Conditions: ${island.malformedCount}`);
       lines.push(`  Structure: ${island.structure}`);
-      lines.push(
-        `  Connectors: ${island.connectors.join(" | ") || "None"}`,
-      );
+      lines.push(`  Connectors: ${island.connectors.join(" | ") || "None"}`);
       lines.push(`  Logic: ${island.plain}`);
       lines.push("");
     });
@@ -1429,14 +1330,10 @@ function buildWorkbenchReport(diagnostic: QueryDiagnostic) {
 
     lines.push(`Expression ${index + 1}: ${jinja.raw}`);
     lines.push(
-      `  Step References: ${
-        analysis.stepReferences.join(", ") || "None"
-      }`,
+      `  Step References: ${analysis.stepReferences.join(", ") || "None"}`,
     );
     lines.push(
-      `  Field References: ${
-        analysis.fieldReferences.join(", ") || "None"
-      }`,
+      `  Field References: ${analysis.fieldReferences.join(", ") || "None"}`,
     );
     lines.push(
       `  Context References: ${
@@ -1449,9 +1346,7 @@ function buildWorkbenchReport(diagnostic: QueryDiagnostic) {
       }`,
     );
     lines.push(
-      `  Time Helpers: ${
-        analysis.timeReferences.join(", ") || "None"
-      }`,
+      `  Time Helpers: ${analysis.timeReferences.join(", ") || "None"}`,
     );
     lines.push(`  $prev: ${analysis.hasPrev ? "Detected" : "No"}`);
     lines.push("");
@@ -1511,9 +1406,7 @@ function buildWorkbenchReport(diagnostic: QueryDiagnostic) {
       }
 
       if (item.documentationBasis) {
-        lines.push(
-          `   Documentation basis: ${item.documentationBasis}`,
-        );
+        lines.push(`   Documentation basis: ${item.documentationBasis}`);
       }
     });
   }
@@ -1547,10 +1440,7 @@ export default function QueryJinjaWorkbenchPage() {
     [diagnostic],
   );
 
-  const report = useMemo(
-    () => buildWorkbenchReport(diagnostic),
-    [diagnostic],
-  );
+  const report = useMemo(() => buildWorkbenchReport(diagnostic), [diagnostic]);
 
   const diagnosticJson = useMemo(
     () => JSON.stringify(diagnostic, null, 2),
@@ -1574,10 +1464,7 @@ export default function QueryJinjaWorkbenchPage() {
     setCopyMessage("");
   };
 
-  const handleCopy = async (
-    text: string,
-    successMessage: string,
-  ) => {
+  const handleCopy = async (text: string, successMessage: string) => {
     const copied = await copyText(text);
     setCopyMessage(
       copied
@@ -1599,10 +1486,9 @@ export default function QueryJinjaWorkbenchPage() {
           </h1>
 
           <p className="mt-4 max-w-4xl text-lg leading-8 text-blue-50">
-            Public schema-free tester for Quickbase Advanced Query
-            syntax, Pipelines Jinja, and hybrid query/Jinja expressions.
-            Try a good expression. Try a terrible expression. See if you
-            can break it.
+            Public schema-free tester for Quickbase Advanced Query syntax,
+            Pipelines Jinja, and hybrid query/Jinja expressions. Try a good
+            expression. Try a terrible expression. See if you can break it.
           </p>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -1641,15 +1527,15 @@ export default function QueryJinjaWorkbenchPage() {
             </h2>
             <p className="mt-2 max-w-4xl text-slate-600">
               This public edition deliberately removes all schema-aware
-              Quickbase API calls. FIDs are inspected as syntax only, so
-              the Workbench never claims that a Field ID exists or does
-              not exist in someone else&apos;s app. Findings are based on
-              supplied Quickbase/Pipelines documentation plus local static
-              analysis of query structure, operators, connector casing,
-              Jinja references, documented date/time patterns, and known
-              unsupported constructs. Patch 9 also isolates independent
-              Quickbase Query Islands inside larger mixed Jinja/template
-              documents instead of treating the entire textarea as one query.
+              Quickbase API calls. FIDs are inspected as syntax only, so the
+              Workbench never claims that a Field ID exists or does not exist in
+              someone else&apos;s app. Findings are based on supplied
+              Quickbase/Pipelines documentation plus local static analysis of
+              query structure, operators, connector casing, Jinja references,
+              documented date/time patterns, and known unsupported constructs.
+              Patch 9 also isolates independent Quickbase Query Islands inside
+              larger mixed Jinja/template documents instead of treating the
+              entire textarea as one query.
             </p>
           </div>
 
@@ -1671,8 +1557,8 @@ export default function QueryJinjaWorkbenchPage() {
             />
 
             <p className="mt-2 text-sm font-medium text-slate-600">
-              Examples can be loaded below. Nothing you type here is sent
-              to Quickbase.
+              Examples can be loaded below. Nothing you type here is sent to
+              Quickbase.
             </p>
           </div>
 
@@ -1718,9 +1604,7 @@ export default function QueryJinjaWorkbenchPage() {
               <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#1f5c99]">
                 Workbench Analysis
               </p>
-              <h2 className="mt-2 text-2xl font-bold">
-                {diagnostic.overall}
-              </h2>
+              <h2 className="mt-2 text-2xl font-bold">{diagnostic.overall}</h2>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -1805,9 +1689,9 @@ export default function QueryJinjaWorkbenchPage() {
 
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 Quickbase query regions are analyzed independently from
-                surrounding Jinja blocks, comments, and ordinary template
-                text. This prevents unrelated prose from being mistaken
-                for query connectors or malformed query content.
+                surrounding Jinja blocks, comments, and ordinary template text.
+                This prevents unrelated prose from being mistaken for query
+                connectors or malformed query content.
               </p>
 
               <div className="mt-4 space-y-4">
@@ -1832,8 +1716,7 @@ export default function QueryJinjaWorkbenchPage() {
                     </pre>
 
                     <p className="mt-3 text-sm font-bold text-slate-600">
-                      Connectors:{" "}
-                      {island.connectors.join(" · ") || "None"}
+                      Connectors: {island.connectors.join(" · ") || "None"}
                     </p>
 
                     <div className="mt-3 border-l-4 border-[#1f5c99] bg-blue-50/40 p-3">
@@ -1866,16 +1749,10 @@ export default function QueryJinjaWorkbenchPage() {
                   <dt className="font-bold text-slate-600">FID</dt>
                   <dd>{safeValue(condition.fid)}</dd>
 
-                  <dt className="font-bold text-slate-600">
-                    Field
-                  </dt>
-                  <dd>
-                    Schema-free mode — field name/type not resolved
-                  </dd>
+                  <dt className="font-bold text-slate-600">Field</dt>
+                  <dd>Schema-free mode — field name/type not resolved</dd>
 
-                  <dt className="font-bold text-slate-600">
-                    Operator
-                  </dt>
+                  <dt className="font-bold text-slate-600">Operator</dt>
                   <dd>
                     {safeValue(condition.operator)}
                     {condition.operatorMeaning
@@ -1883,16 +1760,12 @@ export default function QueryJinjaWorkbenchPage() {
                       : ""}
                   </dd>
 
-                  <dt className="font-bold text-slate-600">
-                    Matching Value
-                  </dt>
+                  <dt className="font-bold text-slate-600">Matching Value</dt>
                   <dd className="wrap-break-word font-mono">
                     {safeValue(condition.rawValue)}
                   </dd>
 
-                  <dt className="font-bold text-slate-600">
-                    Value Type
-                  </dt>
+                  <dt className="font-bold text-slate-600">Value Type</dt>
                   <dd>{condition.valueType}</dd>
                 </dl>
               </article>
@@ -1912,60 +1785,34 @@ export default function QueryJinjaWorkbenchPage() {
                 </code>
 
                 <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-[170px_1fr]">
-                  <dt className="font-bold text-slate-600">
-                    Step References
-                  </dt>
+                  <dt className="font-bold text-slate-600">Step References</dt>
+                  <dd>{jinja.analysis.stepReferences.join(", ") || "None"}</dd>
+
+                  <dt className="font-bold text-slate-600">Field References</dt>
+                  <dd>{jinja.analysis.fieldReferences.join(", ") || "None"}</dd>
+
+                  <dt className="font-bold text-slate-600">Trigger Context</dt>
                   <dd>
-                    {jinja.analysis.stepReferences.join(", ") ||
-                      "None"}
+                    {jinja.analysis.contextReferences.join(", ") || "None"}
                   </dd>
 
-                  <dt className="font-bold text-slate-600">
-                    Field References
-                  </dt>
+                  <dt className="font-bold text-slate-600">Runtime Object</dt>
                   <dd>
-                    {jinja.analysis.fieldReferences.join(", ") ||
-                      "None"}
+                    {jinja.analysis.runtimeReferences.join(", ") || "None"}
                   </dd>
 
-                  <dt className="font-bold text-slate-600">
-                    Trigger Context
-                  </dt>
+                  <dt className="font-bold text-slate-600">Time Helpers</dt>
+                  <dd>{jinja.analysis.timeReferences.join(", ") || "None"}</dd>
+
+                  <dt className="font-bold text-slate-600">$prev</dt>
                   <dd>
-                    {jinja.analysis.contextReferences.join(", ") ||
-                      "None"}
+                    {jinja.analysis.hasPrev ? "Detected" : "Not detected"}
                   </dd>
 
-                  <dt className="font-bold text-slate-600">
-                    Runtime Object
-                  </dt>
+                  <dt className="font-bold text-slate-600">Validation Scope</dt>
                   <dd>
-                    {jinja.analysis.runtimeReferences.join(", ") ||
-                      "None"}
-                  </dd>
-
-                  <dt className="font-bold text-slate-600">
-                    Time Helpers
-                  </dt>
-                  <dd>
-                    {jinja.analysis.timeReferences.join(", ") ||
-                      "None"}
-                  </dd>
-
-                  <dt className="font-bold text-slate-600">
-                    $prev
-                  </dt>
-                  <dd>
-                    {jinja.analysis.hasPrev
-                      ? "Detected"
-                      : "Not detected"}
-                  </dd>
-
-                  <dt className="font-bold text-slate-600">
-                    Validation Scope
-                  </dt>
-                  <dd>
-                    Supplied Quickbase/Pipelines documentation plus local static analysis — no runtime execution.
+                    Supplied Quickbase/Pipelines documentation plus local static
+                    analysis — no runtime execution.
                   </dd>
                 </dl>
               </article>
@@ -1985,14 +1832,10 @@ export default function QueryJinjaWorkbenchPage() {
                 </code>
 
                 <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-[170px_1fr]">
-                  <dt className="font-bold text-slate-600">
-                    Keyword
-                  </dt>
+                  <dt className="font-bold text-slate-600">Keyword</dt>
                   <dd>{statement.keyword}</dd>
 
-                  <dt className="font-bold text-slate-600">
-                    Body
-                  </dt>
+                  <dt className="font-bold text-slate-600">Body</dt>
                   <dd>{statement.body}</dd>
                 </dl>
               </article>
@@ -2026,9 +1869,7 @@ export default function QueryJinjaWorkbenchPage() {
                 </p>
 
                 <h3 className="mt-2 font-bold">{item.code}</h3>
-                <p className="mt-2 text-sm leading-6">
-                  {item.message}
-                </p>
+                <p className="mt-2 text-sm leading-6">{item.message}</p>
 
                 {(item.quickbaseRule ||
                   item.suggestedFix ||
@@ -2055,9 +1896,7 @@ export default function QueryJinjaWorkbenchPage() {
 
                     {item.example && (
                       <>
-                        <dt className="font-bold text-slate-600">
-                          Example
-                        </dt>
+                        <dt className="font-bold text-slate-600">Example</dt>
                         <dd className="wrap-break-word font-mono">
                           {item.example}
                         </dd>
@@ -2083,30 +1922,20 @@ export default function QueryJinjaWorkbenchPage() {
           <CopyPanel
             title="Workbench Report"
             text={report}
-            onCopy={() =>
-              handleCopy(report, "Workbench report copied.")
-            }
+            onCopy={() => handleCopy(report, "Workbench report copied.")}
           />
 
           <CopyPanel
             title="Diagnostic JSON"
             text={diagnosticJson}
-            onCopy={() =>
-              handleCopy(
-                diagnosticJson,
-                "Diagnostic JSON copied.",
-              )
-            }
+            onCopy={() => handleCopy(diagnosticJson, "Diagnostic JSON copied.")}
           />
 
           <CopyPanel
             title="Analyzed Input"
             text={diagnostic.input || "No input."}
             onCopy={() =>
-              handleCopy(
-                diagnostic.input || "",
-                "Analyzed input copied.",
-              )
+              handleCopy(diagnostic.input || "", "Analyzed input copied.")
             }
           />
         </section>
@@ -2118,17 +1947,263 @@ export default function QueryJinjaWorkbenchPage() {
         )}
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-          <h2 className="text-xl font-bold">What this public tester does not do</h2>
+          <h2 className="text-xl font-bold">
+            What this public tester does not do
+          </h2>
           <p className="mt-3 leading-7 text-slate-600">
-            This version deliberately does not connect to a Quickbase
-            realm, read an application schema, resolve FIDs to field
-            names, execute REST queries, or execute Jinja. It is a
-            parser, explainer, and documentation-backed linter intended
-            for public testing. It can identify documented Quickbase and
-            Pipelines patterns, but it does not replace actual execution or
-            the Pipelines activity log. The schema-aware Code Page edition
-            can remain the integrated Quickbase developer version.
+            This version deliberately does not connect to a Quickbase realm,
+            read an application schema, resolve FIDs to field names, execute
+            REST queries, or execute Jinja. It is a parser, explainer, and
+            documentation-backed linter intended for public testing. It can
+            identify documented Quickbase and Pipelines patterns, but it does
+            not replace actual execution or the Pipelines activity log. The
+            schema-aware Code Page edition can remain the integrated Quickbase
+            developer version.
           </p>
+        </section>
+        <section className="mt-16 border-t border-slate-200 pt-12">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm sm:p-8">
+            <div className="mb-8">
+              <p className="mb-2 text-sm font-bold uppercase tracking-[0.18em] text-blue-700">
+                Patch 9 Review
+              </p>
+
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                From Validator to Diagnostic Workbench
+              </h2>
+
+              <p className="mt-4 max-w-4xl leading-7 text-slate-700">
+                The Workbench began as a small parser for Quickbase Advanced
+                Query syntax and Pipelines Jinja. Real-world testing exposed
+                increasingly subtle cases involving connector casing, mixed
+                Jinja/query documents, date formatting,{" "}
+                <code className="font-mono text-sm">$prev</code>, malformed
+                conditions, and schema context.
+              </p>
+
+              <p className="mt-3 max-w-4xl leading-7 text-slate-700">
+                Rather than patching individual examples, the parser evolved
+                into a documentation-backed diagnostic system with Query
+                Islands, fault recovery, live schema awareness, and separate
+                Error, Warning, and Informational findings.
+              </p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">
+                  Schema-Aware Validation
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  The Quickbase Code Page now uses live table metadata to
+                  resolve Field IDs into actual field names and types instead of
+                  assuming that a FID has the same meaning in every table.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">
+                  Connector Case Detection
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Lowercase <code className="font-mono">and</code> and{" "}
+                  <code className="font-mono">or</code> are preserved during
+                  parsing so the Workbench can recommend Quickbase&apos;s
+                  documented uppercase <code className="font-mono">AND</code>{" "}
+                  and <code className="font-mono">OR</code> syntax.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">
+                  Documented Syntax Variations
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Quoted FIDs are no longer treated as universally invalid. When
+                  Quickbase documentation demonstrates more than one form, the
+                  Workbench reports the variation without weakening the
+                  canonical grammar.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">
+                  Pipelines Date Intelligence
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Date arithmetic, <code className="font-mono">strftime()</code>
+                  , Quickbase date filters, and time helpers can now be
+                  recognized against documented Pipelines patterns instead of
+                  receiving a vague runtime warning.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">
+                  Better Jinja Diagnostics
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  The parser distinguishes documented patterns, unknown
+                  patterns, unsupported constructs, and expressions that simply
+                  cannot be runtime-tested by the Workbench.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">
+                  Error, Warning &amp; Info
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Findings are no longer merely pass or fail. Errors identify
+                  invalid syntax, warnings identify concerns or uncertainty, and
+                  informational findings positively recognize documented
+                  Quickbase patterns.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">
+                  Stronger $prev Detection
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  References to <code className="font-mono">$prev</code> are
+                  detected anywhere inside Advanced Query values, including
+                  malformed forms, with guidance explaining where Quickbase
+                  actually supports them.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">
+                  Quickbase-Specific Errors
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Unknown operators, unsupported Jinja statements, loop
+                  controls, template inheritance, and other constructs now
+                  produce descriptive Quickbase-specific diagnostics with
+                  suggested actions.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">Query Islands</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Mixed documents can contain several independent Quickbase
+                  queries, Jinja expressions, comments, and ordinary text. Query
+                  Islands isolate those regions so unrelated content is no
+                  longer interpreted as one enormous query.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">
+                  Smarter Connector Parsing
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Words such as AND and OR inside comments or ordinary prose no
+                  longer become fake logical connectors. Conditions are joined
+                  only when the text between them is legitimate query structure.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">Fault Recovery</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  An unterminated condition no longer consumes everything that
+                  follows it. The parser can recover at a new query boundary,
+                  report the malformed condition, and continue analyzing later
+                  Query Islands.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h3 className="font-bold text-slate-900">
+                  Large Jinja Programs
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Larger Pipelines templates containing loops, conditions,
+                  namespaces, filters, variables, date operations, and runtime
+                  metadata can now be parsed without collapsing the surrounding
+                  analysis.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-10">
+              <h3 className="text-lg font-bold text-slate-900">
+                How the Workbench Evolved
+              </h3>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                    Original
+                  </p>
+                  <p className="mt-2 font-semibold text-slate-900">
+                    Syntax checking
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                    Patch 5
+                  </p>
+                  <p className="mt-2 font-semibold text-slate-900">
+                    Connector &amp; Jinja detection
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                    Patches 6–7
+                  </p>
+                  <p className="mt-2 font-semibold text-slate-900">
+                    Quickbase diagnostic guidance
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                    Patch 8
+                  </p>
+                  <p className="mt-2 font-semibold text-slate-900">
+                    Query Islands
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+                  <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
+                    Patch 9
+                  </p>
+                  <p className="mt-2 font-semibold text-slate-900">
+                    Fault-tolerant + schema-aware
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-10 rounded-xl border-l-4 border-blue-600 bg-white p-5">
+              <p className="text-sm font-bold uppercase tracking-[0.15em] text-blue-700">
+                Patch 9 Design Principle
+              </p>
+
+              <p className="mt-3 text-lg font-semibold leading-8 text-slate-900">
+                Do not make the validator more permissive just to accommodate a
+                strange example. First determine what Quickbase actually
+                documents, then make the diagnostic more descriptive.
+              </p>
+            </div>
+
+            <div className="mt-8 border-t border-slate-200 pt-6">
+              <p className="text-sm leading-6 text-slate-600">
+                Patch 9 marks the point where the Query &amp; Jinja Workbench
+                became more than a syntax parser. It now attempts to explain
+                what was detected, which Quickbase rule applies, why the finding
+                matters, and what the developer should investigate or change
+                next.
+              </p>
+            </div>
+          </div>
         </section>
       </div>
     </main>
@@ -2153,13 +2228,9 @@ function Metric({
   };
 
   return (
-    <div
-      className={`rounded-xl border p-4 ${toneClasses[tone]}`}
-    >
+    <div className={`rounded-xl border p-4 ${toneClasses[tone]}`}>
       <div className="text-2xl font-extrabold">{value}</div>
-      <div className="mt-1 text-sm font-bold opacity-75">
-        {label}
-      </div>
+      <div className="mt-1 text-sm font-bold opacity-75">{label}</div>
     </div>
   );
 }
