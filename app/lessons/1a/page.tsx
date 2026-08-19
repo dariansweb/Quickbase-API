@@ -4,7 +4,7 @@ const quickbaseObjects = [
   {
     object: "People table",
     quickbaseIdentity: "Table DBID",
-    value: "bv9j6j4n5",
+    value: "TABLE ID HERE",
     purpose: "Identifies the Quickbase table targeted by the API request.",
   },
   {
@@ -49,9 +49,9 @@ const sourceCode = `<script>
    *
    * This value later becomes part of the API URL:
    *
-   *     /db/bv9j6j4n5
+   *     /db/DBTABLEID
    */
-  const TABLE_DBID = "bv9j6j4n5";
+  const TABLE_DBID = "TABLE ID HERE";
 
 
   /*
@@ -253,7 +253,7 @@ const sourceCode = `<script>
        *
        * The URL becomes:
        *
-       *     /db/bv9j6j4n5
+       *     /db/tableid
        */
       const response =
         await fetch(\`/db/\${TABLE_DBID}\`, {
@@ -514,7 +514,7 @@ export default function Lesson1APage() {
         </p>
 
         <pre className="mt-5 overflow-x-auto rounded-lg border border-gray-300 bg-[#f7f8fa] p-5 text-base">
-          <code>{`const TABLE_DBID = "bv9j6j4n5";`}</code>
+          <code>{`const TABLE_DBID = "TABLE ID HERE";`}</code>
         </pre>
 
         <p className="mt-4">
@@ -522,7 +522,7 @@ export default function Lesson1APage() {
         </p>
 
         <pre className="mt-5 overflow-x-auto rounded-lg border border-gray-300 bg-[#f7f8fa] p-5 text-base">
-          <code>{`/db/bv9j6j4n5`}</code>
+          <code>{`/db/TABLEIDHERE`}</code>
         </pre>
 
         <p className="mt-4">
@@ -723,7 +723,7 @@ export default function Lesson1APage() {
 
         <div className="mt-6 rounded-lg border border-gray-300 bg-[#f7f8fa] p-6 font-mono">
           <div>Table:</div>
-          <div className="ml-6 font-bold">/db/bv9j6j4n5</div>
+          <div className="ml-6 font-bold">/db/TABLEIDHERE</div>
 
           <div className="mt-4">Operation:</div>
 

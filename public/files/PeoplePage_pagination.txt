@@ -119,7 +119,7 @@
 
     <script>
       const REALM = window.location.hostname;
-      const TABLE_DBID = "bv9j6j4n5";
+      const TABLE_DBID = "ENTER YOUR TABLE ID HERE";
 
       /*
         Paste your newly generated application token here.

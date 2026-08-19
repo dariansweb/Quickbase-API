@@ -287,7 +287,7 @@
       const REALM = window.location.hostname.includes("quickbase.com")
         ? window.location.hostname
         : "YOUR_REALM.quickbase.com";
-      const TABLE_DBID = "bv9j6j4n5";
+      const TABLE_DBID = "ENTER YOUR TABLE ID HERE";
       const APP_TOKEN = "";
       let peopleRecords = [];
       let nameSortDirection = "asc";
