@@ -1,0 +1,1840 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quickbase REST-API Utilities — Query & Jinja Workbench</title>
+    <style>
+      :root {
+        --navy: #1f5c99;
+        --navy-dark: #184a7b;
+        --page: #f3f6f9;
+        --panel: #f8fafc;
+        --border: #d8e0e7;
+        --ink: #243746;
+        --muted: #667788;
+        --white: #fff;
+        --green-bg: #edf7ef;
+        --green: #216e39;
+        --amber-bg: #fff8e8;
+        --amber: #835a00;
+        --red-bg: #fff1f1;
+        --red: #8b1e1e;
+        --purple-bg: #f6f0ff;
+        --purple: #68408a;
+        --blue-bg: #eef4fa;
+        --blue: #31597a;
+        --shadow: 0 14px 40px rgba(31, 55, 75, 0.1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          Inter,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: var(--page);
+        color: var(--ink);
+        line-height: 1.55;
+      }
+      code,
+      pre,
+      textarea {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+      .app {
+        max-width: 1220px;
+        margin: 0 auto;
+        padding: 32px 18px 64px;
+      }
+      .hero {
+        padding: 28px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+        color: #fff;
+        box-shadow: var(--shadow);
+      }
+      .eyebrow {
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        opacity: 0.92;
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        line-height: 1.15;
+      }
+      h1 {
+        font-size: clamp(28px, 5vw, 46px);
+      }
+      h2 {
+        font-size: 24px;
+      }
+      h3 {
+        font-size: 17px;
+      }
+      .hero p {
+        max-width: 900px;
+        margin: 14px 0 0;
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 17px;
+      }
+      .context-grid,
+      .summary-grid,
+      .copy-grid,
+      .builder-grid {
+        display: grid;
+        gap: 14px;
+      }
+      .context-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        margin-top: 18px;
+      }
+      .context-card {
+        padding: 14px 16px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+      .context-label {
+        display: block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0.78;
+      }
+      .context-value {
+        display: block;
+        margin-top: 4px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+      .panel {
+        margin-top: 22px;
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--white);
+        box-shadow: 0 5px 18px rgba(41, 63, 83, 0.05);
+      }
+      .panel-head {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .panel-head p {
+        margin: 6px 0 0;
+        color: var(--muted);
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        font-weight: 800;
+        color: #415466;
+      }
+      select,
+      input,
+      textarea {
+        width: 100%;
+        margin-top: 6px;
+        border: 1px solid #b9c6d1;
+        border-radius: 9px;
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+      }
+      select,
+      input {
+        min-height: 44px;
+        padding: 9px 11px;
+      }
+      textarea {
+        min-height: 120px;
+        padding: 12px;
+        resize: vertical;
+      }
+      button {
+        min-height: 42px;
+        padding: 9px 14px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--navy);
+        color: #fff;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      button:hover {
+        background: var(--navy-dark);
+      }
+      button.secondary {
+        background: #48667f;
+      }
+      button.ghost {
+        background: #edf3f8;
+        color: #284860;
+        border: 1px solid #cbd7e1;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .builder-grid {
+        grid-template-columns: 1.4fr 1fr 1fr 1.6fr;
+        align-items: end;
+      }
+      .condition-card {
+        margin-top: 12px;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--panel);
+      }
+      .condition-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .condition-header span {
+        font-weight: 800;
+        color: #3e5264;
+      }
+      .condition-header button {
+        min-height: 32px;
+        padding: 6px 9px;
+        font-size: 12px;
+      }
+      .query-preview {
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 10px;
+        background: #162b3c;
+        color: #ecf7ff;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+      }
+      .language-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 9px;
+        border-radius: 999px;
+        border: 1px solid #cfd8df;
+        background: #f4f7f9;
+        color: #425466;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .badge.query {
+        background: var(--blue-bg);
+        color: var(--blue);
+        border-color: #bfd0df;
+      }
+      .badge.jinja {
+        background: var(--purple-bg);
+        color: var(--purple);
+        border-color: #d6c5e8;
+      }
+      .badge.good {
+        background: var(--green-bg);
+        color: var(--green);
+        border-color: #afd0b6;
+      }
+      .badge.warn {
+        background: var(--amber-bg);
+        color: var(--amber);
+        border-color: #e4d0a1;
+      }
+      .badge.bad {
+        background: var(--red-bg);
+        color: var(--red);
+        border-color: #dba3a3;
+      }
+      .summary-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        margin-top: 14px;
+      }
+      .metric {
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--panel);
+      }
+      .metric strong {
+        display: block;
+        font-size: 23px;
+        line-height: 1.1;
+      }
+      .metric span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .analysis-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .analysis-card {
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #fff;
+      }
+      .analysis-card.warning {
+        border-color: #e4d0a1;
+        background: #fffaf0;
+      }
+      .analysis-card.error {
+        border-color: #dba3a3;
+        background: #fff6f6;
+      }
+      .analysis-card dl {
+        display: grid;
+        grid-template-columns: minmax(130px, 180px) 1fr;
+        gap: 7px 14px;
+        margin: 12px 0 0;
+      }
+      .analysis-card dt {
+        font-weight: 800;
+        color: #4b6072;
+      }
+      .analysis-card dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      .health-box {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 10px;
+        border: 1px solid #afd0b6;
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .health-box.warn {
+        border-color: #e4d0a1;
+        background: var(--amber-bg);
+        color: var(--amber);
+      }
+      .health-box.bad {
+        border-color: #dba3a3;
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .copy-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 20px;
+      }
+      .copy-panel {
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #fff;
+      }
+      .copy-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 12px;
+        background: #f3f7fb;
+        border-bottom: 1px solid var(--border);
+      }
+      .copy-panel-header button {
+        min-height: 34px;
+        padding: 6px 9px;
+        font-size: 12px;
+      }
+      pre {
+        margin: 0;
+        padding: 14px;
+        max-height: 480px;
+        overflow: auto;
+        background: #182633;
+        color: #f4f7fa;
+        font-size: 12px;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      .status {
+        margin-top: 14px;
+        padding: 12px 14px;
+        border-radius: 9px;
+        background: #eef4fa;
+        color: #31597a;
+        font-weight: 700;
+      }
+      .status.error {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .status.success {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .query-input-panel {
+        padding: 18px;
+        border: 2px solid var(--navy);
+        border-radius: 12px;
+        background: #f5f9fd;
+        box-shadow: 0 0 0 4px rgba(31, 92, 153, 0.06);
+      }
+      .query-input-panel label {
+        font-size: 15px;
+        color: var(--navy-dark);
+      }
+      .query-input-panel textarea {
+        min-height: 190px;
+        border: 2px solid #7fa7c8;
+        background: #fff;
+        font-size: 15px;
+        line-height: 1.6;
+        padding: 15px;
+      }
+      .query-input-panel textarea:focus {
+        outline: 3px solid rgba(31, 92, 153, 0.18);
+        border-color: var(--navy);
+      }
+      .query-input-hint {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .query-structure {
+        margin-top: 16px;
+        padding: 16px;
+        border: 1px solid #bfd0df;
+        border-radius: 10px;
+        background: #f5f9fd;
+      }
+      .query-structure h3 {
+        color: #31597a;
+      }
+      .structure-code {
+        margin-top: 10px;
+        padding: 12px;
+        border-radius: 8px;
+        background: #172b3a;
+        color: #eef7ff;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      .plain-logic {
+        margin-top: 10px;
+        padding: 12px;
+        border-left: 4px solid var(--navy);
+        background: #fff;
+        color: #344b5d;
+      }
+      .connector-line {
+        margin-top: 8px;
+        color: #4d6070;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .note {
+        margin-top: 12px;
+        padding: 12px 14px;
+        border-left: 4px solid var(--navy);
+        background: #f2f7fb;
+        color: #40576a;
+      }
+      @media (max-width: 950px) {
+        .builder-grid,
+        .copy-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 680px) {
+        .app {
+          padding: 18px 12px 40px;
+        }
+        .hero,
+        .panel {
+          padding: 18px;
+        }
+        .analysis-card dl {
+          grid-template-columns: 1fr;
+        }
+        .panel-head {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="hero">
+        <div class="eyebrow">Quickbase REST-API Utilities</div>
+        <h1>Query &amp; Jinja Workbench</h1>
+        <div style="margin-top: 8px; font-weight: 800; opacity: 0.9">
+          Version 1 · Patch 5
+        </div>
+        <p>
+          Build, paste, explain, and diagnose Quickbase Advanced Query syntax
+          and Quickbase Pipelines Jinja in the context of the current
+          application. The Workbench discovers the app and table schema
+          dynamically so the same Code Page can be used in different Quickbase
+          applications.
+        </p>
+        <div class="context-grid">
+          <div class="context-card">
+            <span class="context-label">Realm</span
+            ><span id="realmContext" class="context-value">Detecting…</span>
+          </div>
+          <div class="context-card">
+            <span class="context-label">App DBID</span
+            ><span id="appContext" class="context-value">Detecting…</span>
+          </div>
+          <div class="context-card">
+            <span class="context-label">Mode</span
+            ><span class="context-value"
+              >Live schema + local query diagnostics</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Application Context</h2>
+            <p>
+              Choose a live table from the current Quickbase app. Its field
+              metadata drives query explanation and validation.
+            </p>
+          </div>
+        </div>
+        <label
+          >Quickbase Table<select id="tableSelect">
+            <option>Loading tables…</option>
+          </select></label
+        >
+        <div id="schemaStatus" class="status">Connecting to Quickbase…</div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Visual Query Builder</h2>
+            <p>
+              Start with a simple Quickbase condition, then add more only when
+              needed.
+            </p>
+          </div>
+          <span class="badge query">Quickbase Query</span>
+        </div>
+        <div id="conditions"></div>
+        <div class="actions">
+          <button id="addConditionButton" type="button" class="ghost">
+            + Add Condition</button
+          ><button id="generateButton" type="button">
+            Generate &amp; Explain
+          </button>
+        </div>
+        <div class="note">
+          Value mode can be Static or Jinja. For Pipeline Advanced Query fields,
+          the outer syntax remains Quickbase query syntax while a single
+          <code>{{ ... }}</code> Jinja expression may supply the matching value.
+        </div>
+        <div class="query-preview" id="generatedQuery">
+          No query generated yet.
+        </div>
+        <div class="actions">
+          <button id="copyGeneratedButton" type="button" class="secondary">
+            Copy Generated Query
+          </button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Paste Existing Query or Jinja</h2>
+            <p>
+              Reverse-engineer inherited Quickbase queries, Pipelines Jinja
+              expressions, or hybrid Advanced Query strings.
+            </p>
+          </div>
+        </div>
+        <div class="query-input-panel">
+          <label for="pasteInput"
+            >⌨ Query / Jinja Input — Paste or Type Here</label
+          >
+          <textarea
+            id="pasteInput"
+            placeholder="{6.EX.'{{a.customer_id}}'}"
+          ></textarea>
+          <div class="query-input-hint">
+            This is the main Workbench input. Paste a Quickbase query, a
+            Pipelines Jinja expression, or a hybrid Advanced Query here, then
+            select Analyze Input.
+          </div>
+        </div>
+        <div class="actions">
+          <button id="analyzePasteButton" type="button">Analyze Input</button
+          ><button id="loadGeneratedButton" type="button" class="ghost">
+            Load Generated Query Here
+          </button>
+        </div>
+      </section>
+
+      <section class="panel" id="analysisPanel">
+        <div class="panel-head">
+          <div>
+            <h2>Workbench Analysis</h2>
+            <p>
+              Language detection, parsed conditions, schema-aware explanations,
+              and Pipeline compatibility checks.
+            </p>
+          </div>
+        </div>
+        <div class="language-badges" id="languageBadges">
+          <span class="badge">Waiting for input</span>
+        </div>
+        <div
+          id="queryStructurePanel"
+          class="query-structure"
+          style="display: none"
+        ></div>
+        <div class="summary-grid">
+          <div class="metric">
+            <strong id="conditionCount">0</strong><span>Query Conditions</span>
+          </div>
+          <div class="metric">
+            <strong id="jinjaCount">0</strong><span>Jinja Expressions</span>
+          </div>
+          <div class="metric">
+            <strong id="diagnosticCount">0</strong><span>Diagnostics</span>
+          </div>
+          <div class="metric">
+            <strong id="overallState">—</strong><span>Overall State</span>
+          </div>
+        </div>
+        <div id="healthBox" class="health-box">
+          Run an analysis to see query health.
+        </div>
+        <div id="analysisList" class="analysis-list"></div>
+        <div class="copy-grid">
+          <section class="copy-panel">
+            <div class="copy-panel-header">
+              <h3>Workbench Report</h3>
+              <button id="copyReportButton" type="button">Copy Report</button>
+            </div>
+            <pre id="reportOutput">No report yet.</pre>
+          </section>
+          <section class="copy-panel">
+            <div class="copy-panel-header">
+              <h3>Diagnostic JSON</h3>
+              <button id="copyJsonButton" type="button">
+                Copy Diagnostic JSON
+              </button>
+            </div>
+            <pre id="jsonOutput">No diagnostic JSON yet.</pre>
+          </section>
+          <section class="copy-panel">
+            <div class="copy-panel-header">
+              <h3>Analyzed Input</h3>
+              <button id="copyInputButton" type="button">Copy Input</button>
+            </div>
+            <pre id="inputOutput">No input analyzed yet.</pre>
+          </section>
+        </div>
+      </section>
+    </main>
+    <script>
+      (() => {
+        "use strict";
+        const APP_TOKEN = "";
+        const REALM = window.location.hostname.includes(".quickbase.com")
+          ? window.location.hostname
+          : "YOUR_REALM.quickbase.com";
+        const appState = {
+          appDbid: null,
+          tables: [],
+          tablesById: {},
+          fieldsByTable: {},
+          selectedTableId: null,
+          currentDiagnostic: null,
+          currentInput: "",
+          currentGeneratedQuery: "",
+        };
+        const OPERATOR_DEFS = {
+          EX: { label: "Equals exactly", families: ["all"] },
+          XEX: { label: "Not equal", families: ["all"] },
+          CT: { label: "Contains substring", families: ["text"] },
+          SW: { label: "Starts with", families: ["text"] },
+          BF: { label: "Before", families: ["date"] },
+          AF: { label: "After", families: ["date"] },
+          OAF: { label: "On or after", families: ["date"] },
+          LT: { label: "Less than", families: ["numeric", "date"] },
+          LTE: { label: "Less than or equal", families: ["numeric", "date"] },
+          GT: { label: "Greater than", families: ["numeric", "date"] },
+          GTE: {
+            label: "Greater than or equal",
+            families: ["numeric", "date"],
+          },
+          HAS: { label: "Contains a value", families: ["multi"] },
+          IR: { label: "In relative date range", families: ["date"] },
+        };
+        function escapeHtml(v) {
+          return String(v ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
+        function safeValue(v) {
+          return v === undefined || v === null || v === ""
+            ? "Not returned"
+            : String(v);
+        }
+        function setStatus(m, t = "") {
+          const e = document.getElementById("schemaStatus");
+          e.textContent = m;
+          e.className = `status ${t}`.trim();
+        }
+        function getAppDbid() {
+          const m = window.location.pathname.match(/\/db\/([^/?#]+)/i);
+          if (m) return m[1];
+          const p = new URLSearchParams(window.location.search);
+          return p.get("dbid") || null;
+        }
+        async function getTemporaryToken(dbid) {
+          const headers = { "QB-Realm-Hostname": REALM };
+          if (APP_TOKEN.trim()) headers["QB-App-Token"] = APP_TOKEN;
+          const response = await fetch(
+            `https://api.quickbase.com/v1/auth/temporary/${dbid}`,
+            { method: "GET", credentials: "include", headers },
+          );
+          const data = await response.json();
+          if (!response.ok)
+            throw new Error(
+              `Temporary token HTTP ${response.status}: ${JSON.stringify(data)}`,
+            );
+          if (!data.temporaryAuthorization)
+            throw new Error("Quickbase did not return temporaryAuthorization.");
+          return data.temporaryAuthorization;
+        }
+        function authHeaders(token) {
+          const h = {
+            "QB-Realm-Hostname": REALM,
+            Authorization: `QB-TEMP-TOKEN ${token}`,
+            "Content-Type": "application/json",
+          };
+          if (APP_TOKEN) h["QB-App-Token"] = APP_TOKEN;
+          return h;
+        }
+        async function loadTables() {
+          setStatus("Loading tables from the current Quickbase application…");
+          const token = await getTemporaryToken(appState.appDbid);
+          const response = await fetch(
+            `https://api.quickbase.com/v1/tables?appId=${appState.appDbid}`,
+            { method: "GET", headers: authHeaders(token) },
+          );
+          const data = await response.json();
+          if (!response.ok)
+            throw new Error(
+              `Tables HTTP ${response.status}: ${JSON.stringify(data)}`,
+            );
+          appState.tables = data;
+          appState.tablesById = Object.fromEntries(data.map((t) => [t.id, t]));
+          const select = document.getElementById("tableSelect");
+          select.replaceChildren();
+          for (const table of data) {
+            const option = document.createElement("option");
+            option.value = table.id;
+            option.textContent = `${table.name} — ${table.id}`;
+            select.appendChild(option);
+          }
+          if (data.length) {
+            appState.selectedTableId = data[0].id;
+            await loadFields(data[0].id);
+          }
+          setStatus(
+            `${data.length} table(s) loaded. Field metadata is ready for query analysis.`,
+            "success",
+          );
+        }
+        async function loadFields(tableDbid) {
+          setStatus(`Loading field metadata for ${tableDbid}…`);
+          const token = await getTemporaryToken(tableDbid);
+          const response = await fetch(
+            `https://api.quickbase.com/v1/fields?tableId=${tableDbid}`,
+            { method: "GET", headers: authHeaders(token) },
+          );
+          const data = await response.json();
+          if (!response.ok)
+            throw new Error(
+              `Fields HTTP ${response.status}: ${JSON.stringify(data)}`,
+            );
+          appState.fieldsByTable[tableDbid] = data;
+          appState.selectedTableId = tableDbid;
+          refreshConditionFieldOptions();
+          const tableName = appState.tablesById[tableDbid]?.name || tableDbid;
+          setStatus(
+            `${data.length} field(s) loaded for ${tableName}.`,
+            "success",
+          );
+        }
+        function getSelectedFields() {
+          return appState.fieldsByTable[appState.selectedTableId] || [];
+        }
+        function findField(fid) {
+          return (
+            getSelectedFields().find((f) => Number(f.id) === Number(fid)) ||
+            null
+          );
+        }
+        function fieldFamily(field) {
+          const type = String(field?.fieldType || "").toLowerCase();
+          if (type.includes("date") || type.includes("timestamp"))
+            return "date";
+          if (
+            type.includes("numeric") ||
+            type.includes("currency") ||
+            type.includes("percent") ||
+            type.includes("duration") ||
+            type.includes("rating")
+          )
+            return "numeric";
+          if (type.includes("multi") || type.includes("list-user"))
+            return "multi";
+          return "text";
+        }
+        function operatorIsCompatible(field, operator) {
+          const def = OPERATOR_DEFS[operator];
+          if (!def || !field) return null;
+          if (def.families.includes("all")) return true;
+          return def.families.includes(fieldFamily(field));
+        }
+        function getOperatorOptions(field) {
+          const family = fieldFamily(field);
+          const allowed = Object.entries(OPERATOR_DEFS).filter(
+            ([, d]) =>
+              d.families.includes("all") || d.families.includes(family),
+          );
+          return allowed.length ? allowed : Object.entries(OPERATOR_DEFS);
+        }
+        function createConditionRow(index) {
+          const wrap = document.createElement("div");
+          wrap.className = "condition-card";
+          wrap.dataset.index = String(index);
+          wrap.innerHTML = `<div class="condition-header"><span>Condition ${index + 1}</span><button type="button" class="ghost remove-condition">Remove</button></div><div class="builder-grid"><label>Field<select class="field-select"></select></label><label>Operator<select class="operator-select"></select></label><label>Value Mode<select class="value-mode"><option value="static">Static</option><option value="jinja">Jinja</option></select></label><label>Matching Value<input class="value-input" type="text" placeholder="Open" /></label></div><label style="margin-top:10px;">Join to Next Condition<select class="join-select"><option value="AND">AND</option><option value="OR">OR</option></select></label>`;
+          wrap
+            .querySelector(".remove-condition")
+            .addEventListener("click", () => {
+              wrap.remove();
+              renumberConditions();
+            });
+          wrap
+            .querySelector(".field-select")
+            .addEventListener("change", () => refreshOperatorForRow(wrap));
+          wrap.querySelector(".value-mode").addEventListener("change", () => {
+            const mode = wrap.querySelector(".value-mode").value;
+            wrap.querySelector(".value-input").placeholder =
+              mode === "jinja" ? "a.customer_id" : "Open";
+          });
+          return wrap;
+        }
+        function addCondition() {
+          const c = document.getElementById("conditions");
+          const row = createConditionRow(c.children.length);
+          c.appendChild(row);
+          populateFieldSelect(row.querySelector(".field-select"));
+          refreshOperatorForRow(row);
+          renumberConditions();
+        }
+        function renumberConditions() {
+          const rows = [...document.querySelectorAll(".condition-card")];
+          rows.forEach((row, i) => {
+            row.dataset.index = String(i);
+            row.querySelector(".condition-header span").textContent =
+              `Condition ${i + 1}`;
+            row.querySelector(".remove-condition").style.display =
+              rows.length === 1 ? "none" : "inline-block";
+            row.querySelector(".join-select").disabled = i === rows.length - 1;
+          });
+        }
+        function populateFieldSelect(select) {
+          const fields = [...getSelectedFields()].sort(
+            (a, b) => Number(a.id) - Number(b.id),
+          );
+          select.replaceChildren();
+          for (const field of fields) {
+            const o = document.createElement("option");
+            o.value = field.id;
+            o.textContent = `${field.label} — FID ${field.id} (${field.fieldType})`;
+            select.appendChild(o);
+          }
+        }
+        function refreshConditionFieldOptions() {
+          document
+            .querySelectorAll(".condition-card .field-select")
+            .forEach((select) => {
+              const old = select.value;
+              populateFieldSelect(select);
+              if ([...select.options].some((o) => o.value === old))
+                select.value = old;
+              refreshOperatorForRow(select.closest(".condition-card"));
+            });
+        }
+        function refreshOperatorForRow(row) {
+          const field = findField(row.querySelector(".field-select").value);
+          const s = row.querySelector(".operator-select");
+          const old = s.value;
+          s.replaceChildren();
+          for (const [code, def] of getOperatorOptions(field)) {
+            const o = document.createElement("option");
+            o.value = code;
+            o.textContent = `${code} — ${def.label}`;
+            s.appendChild(o);
+          }
+          if ([...s.options].some((o) => o.value === old)) s.value = old;
+        }
+        function escapeQueryValue(value) {
+          return String(value).replace(/'/g, "\\'");
+        }
+        function generateQueryFromBuilder() {
+          const rows = [...document.querySelectorAll(".condition-card")];
+          const parts = [];
+          rows.forEach((row, i) => {
+            const fid = row.querySelector(".field-select").value,
+              op = row.querySelector(".operator-select").value,
+              mode = row.querySelector(".value-mode").value,
+              raw = row.querySelector(".value-input").value.trim();
+            const value =
+              mode === "jinja" ? `{{${raw}}}` : escapeQueryValue(raw);
+            parts.push(`{${fid}.${op}.'${value}'}`);
+            if (i < rows.length - 1)
+              parts.push(row.querySelector(".join-select").value);
+          });
+          const query = parts.join("");
+          appState.currentGeneratedQuery = query;
+          document.getElementById("generatedQuery").textContent =
+            query || "No query generated.";
+          analyzeInput(query, "Visual Builder");
+        }
+        function scanQueryConditions(input) {
+          const conditions = [],
+            connectors = [];
+          let i = 0;
+          while (i < input.length) {
+            if (input[i] === "{" && input[i + 1] === "%") {
+              const close = input.indexOf("%}", i + 2);
+              i = close >= 0 ? close + 2 : i + 2;
+              continue;
+            }
+            if (input[i] === "{" && input[i + 1] === "#") {
+              const close = input.indexOf("#}", i + 2);
+              i = close >= 0 ? close + 2 : i + 2;
+              continue;
+            }
+            if (input[i] === "{" && input[i + 1] === "{") {
+              const close = input.indexOf("}}", i + 2);
+              i = close >= 0 ? close + 2 : i + 2;
+              continue;
+            }
+            if (input[i] === "{") {
+              const start = i;
+              let quote = null,
+                jinjaExprDepth = 0,
+                jinjaStmtDepth = 0,
+                end = -1;
+              i += 1;
+              while (i < input.length) {
+                const ch = input[i];
+                if ((ch === "'" || ch === '"') && input[i - 1] !== "\\") {
+                  quote = quote === ch ? null : quote || ch;
+                }
+                if (ch === "{" && input[i + 1] === "{") {
+                  jinjaExprDepth += 1;
+                  i += 2;
+                  continue;
+                }
+                if (ch === "}" && input[i + 1] === "}" && jinjaExprDepth > 0) {
+                  jinjaExprDepth -= 1;
+                  i += 2;
+                  continue;
+                }
+                if (ch === "{" && input[i + 1] === "%") {
+                  jinjaStmtDepth += 1;
+                  i += 2;
+                  continue;
+                }
+                if (ch === "%" && input[i + 1] === "}" && jinjaStmtDepth > 0) {
+                  jinjaStmtDepth -= 1;
+                  i += 2;
+                  continue;
+                }
+                if (
+                  ch === "}" &&
+                  !quote &&
+                  jinjaExprDepth === 0 &&
+                  jinjaStmtDepth === 0
+                ) {
+                  end = i;
+                  break;
+                }
+                i += 1;
+              }
+              if (end >= 0) {
+                conditions.push({
+                  raw: input.slice(start, end + 1),
+                  start,
+                  end,
+                });
+                i = end + 1;
+                continue;
+              }
+            }
+            i += 1;
+          }
+          const connectorDetails = [];
+
+          for (let x = 0; x < conditions.length - 1; x++) {
+            const between = input.slice(
+                conditions[x].end + 1,
+                conditions[x + 1].start,
+              ),
+              match = between.match(/\b(AND|OR)\b/i),
+              rawConnector = match ? match[1] : null,
+              normalizedConnector = rawConnector
+                ? rawConnector.toUpperCase()
+                : null;
+
+            connectors.push(normalizedConnector);
+
+            connectorDetails.push({
+              raw: rawConnector,
+              normalized: normalizedConnector,
+              validCase:
+                rawConnector === null
+                  ? null
+                  : rawConnector === normalizedConnector,
+              between,
+            });
+          }
+
+          return { conditions, connectors, connectorDetails };
+        }
+        function parseCondition(raw) {
+          const inner = raw.slice(1, -1),
+            firstDot = inner.indexOf("."),
+            secondDot = inner.indexOf(".", firstDot + 1);
+          if (firstDot < 1 || secondDot < 0)
+            return {
+              raw,
+              validShape: false,
+              fidText: null,
+              quotedFid: false,
+              fid: null,
+              operator: null,
+              rawValue: null,
+            };
+
+          const fidText = inner.slice(0, firstDot).trim(),
+            operator = inner.slice(firstDot + 1, secondDot).trim(),
+            quotedFid = /^'\d+'$/.test(fidText) || /^"\d+"$/.test(fidText);
+
+          let rawValue = inner.slice(secondDot + 1).trim();
+          if (
+            (rawValue.startsWith("'") && rawValue.endsWith("'")) ||
+            (rawValue.startsWith('"') && rawValue.endsWith('"'))
+          )
+            rawValue = rawValue.slice(1, -1);
+
+          const numericFid = /^\d+$/.test(fidText)
+            ? Number(fidText)
+            : quotedFid
+              ? Number(fidText.slice(1, -1))
+              : fidText;
+
+          return {
+            raw,
+            validShape: /^\d+$/.test(fidText) && /^[A-Z]+$/.test(operator),
+            fidText,
+            quotedFid,
+            fid: numericFid,
+            operator,
+            rawValue,
+          };
+        }
+        function extractJinjaExpressions(text) {
+          const expressions = [],
+            regex = /\{\{\s*([\s\S]*?)\s*\}\}/g;
+          let m;
+          while ((m = regex.exec(text)))
+            expressions.push({ raw: m[0], expression: m[1].trim() });
+          return expressions;
+        }
+        function classifyJinjaExpression(expression) {
+          const info = {
+            raw: expression,
+            stepReferences: [],
+            fieldReferences: [],
+            runtimeReferences: [],
+            contextReferences: [],
+            timeReferences: [],
+            hasPrev: /\.\$prev\./.test(expression),
+            hasClear: /\bCLEAR\b/.test(expression),
+            hasRaiseError: /\braise_error\s*\(/.test(expression),
+          };
+          let m;
+          const stepDot = /\b([a-z])\.([A-Za-z_][A-Za-z0-9_]*)\b/g;
+          while ((m = stepDot.exec(expression))) {
+            const step = m[1],
+              field = m[2];
+            if (!["time", "runtime"].includes(step)) {
+              info.stepReferences.push(step);
+              info.fieldReferences.push(`${step}.${field}`);
+            }
+          }
+          const stepBracket = /\b([a-z])\[['\"]([^'\"]+)['\"]\]/g;
+          while ((m = stepBracket.exec(expression))) {
+            info.stepReferences.push(m[1]);
+            info.fieldReferences.push(`${m[1]}['${m[2]}']`);
+          }
+          const runtime = /\bruntime\.([A-Za-z_][A-Za-z0-9_]*)/g;
+          while ((m = runtime.exec(expression)))
+            info.runtimeReferences.push(m[1]);
+          const context = /\b([a-z])\.context\.([A-Za-z_][A-Za-z0-9_]*)/g;
+          while ((m = context.exec(expression)))
+            info.contextReferences.push(`${m[1]}.context.${m[2]}`);
+          const time = /\btime\.(now|today|delta|parse)\b/g;
+          while ((m = time.exec(expression))) info.timeReferences.push(m[1]);
+          for (const k of [
+            "stepReferences",
+            "fieldReferences",
+            "runtimeReferences",
+            "contextReferences",
+            "timeReferences",
+          ])
+            info[k] = [...new Set(info[k])];
+          return info;
+        }
+        function extractJinjaStatements(text) {
+          const statements = [],
+            regex = /\{%\s*([\s\S]*?)\s*%\}/g;
+          let m;
+          while ((m = regex.exec(text))) {
+            const body = m[1].trim(),
+              keyword =
+                (body.match(/^([A-Za-z_][A-Za-z0-9_]*)/) || [])[1] || "unknown";
+            statements.push({ raw: m[0], body, keyword });
+          }
+          return statements;
+        }
+        function extractJinjaComments(text) {
+          const comments = [],
+            regex = /\{#\s*([\s\S]*?)\s*#\}/g;
+          let m;
+          while ((m = regex.exec(text)))
+            comments.push({ raw: m[0], comment: m[1].trim() });
+          return comments;
+        }
+        function classifyConditionValue(rawValue) {
+          const value = String(rawValue || "");
+          if (/\{%\s*[\s\S]*?%\}/.test(value))
+            return "unsupported-jinja-statement";
+          if (/\{\{\s*[\s\S]*?\s*\}\}/.test(value)) return "jinja";
+          if (/^_FID_\d+$/i.test(value)) return "field-reference";
+          return "static";
+        }
+        function detectLanguage(
+          input,
+          conditions,
+          jinjaExpressions,
+          jinjaStatements,
+        ) {
+          const hasStatements = jinjaStatements.length > 0,
+            hasQuery = conditions.length > 0,
+            hasJinja = jinjaExpressions.length > 0 || hasStatements;
+          if (hasQuery && hasJinja) return "Hybrid Pipeline Advanced Query";
+          if (hasQuery) return "Quickbase Query";
+          if (hasJinja) return "Pipelines Jinja";
+          return "Unknown / Plain Text";
+        }
+        function currentTableContext() {
+          const t = appState.tablesById[appState.selectedTableId] || {};
+          return {
+            name: t.name || "Unknown",
+            dbid: t.id || appState.selectedTableId || null,
+            fieldCount: getSelectedFields().length,
+          };
+        }
+        function getOverallState(d) {
+          const errors = d.diagnostics.filter(
+              (x) => x.severity === "error",
+            ).length,
+            warnings = d.diagnostics.filter(
+              (x) => x.severity === "warning",
+            ).length;
+          if (errors) return "Invalid / Fix Required";
+          if (warnings) return "Review Recommended";
+          if (d.detectedLanguage === "Hybrid Pipeline Advanced Query")
+            return "Valid Hybrid Query";
+          if (d.detectedLanguage === "Quickbase Query") return "Valid Query";
+          if (d.detectedLanguage === "Pipelines Jinja")
+            return "Recognized Jinja";
+          return "Review Input";
+        }
+        function findQueryStructuralIssues(input, scan) {
+          const issues = [];
+          let residual = String(input || "");
+
+          /* Remove the complete Quickbase conditions the scanner successfully recognized. */
+          for (const condition of [...(scan.conditions || [])].sort(
+            (a, b) => b.start - a.start,
+          )) {
+            residual =
+              residual.slice(0, condition.start) +
+              " ".repeat(condition.end - condition.start + 1) +
+              residual.slice(condition.end + 1);
+          }
+
+          /* Remove standalone Jinja constructs so they are not mistaken for query braces. */
+          residual = residual
+            .replace(/\{\{[\s\S]*?\}\}/g, "")
+            .replace(/\{%[\s\S]*?%\}/g, "")
+            .replace(/\{#[\s\S]*?#\}/g, "");
+
+          const looksQueryLike =
+            (scan.conditions || []).length > 0 ||
+            /\{\s*\d+\s*\.[A-Za-z]+\s*\./.test(input);
+
+          if (looksQueryLike) {
+            if (residual.includes("{") || residual.includes("}")) {
+              issues.push({
+                severity: "error",
+                code: "UNTERMINATED_QUERY_CONDITION",
+                message:
+                  "The input contains an opening or closing query brace that was not part of a complete {fid.OPERATOR.'matching_value'} condition. Check for a missing { or }.",
+              });
+            }
+
+            const allowedRemainder = residual
+              .replace(/\bAND\b|\bOR\b/gi, "")
+              .replace(/[()\s]/g, "");
+
+            if (allowedRemainder.length > 0) {
+              issues.push({
+                severity: "error",
+                code: "UNPARSED_QUERY_CONTENT",
+                message: `Part of the input could not be reconciled with complete Quickbase conditions, AND/OR connectors, or grouping parentheses: ${allowedRemainder}`,
+              });
+            }
+          }
+          return issues;
+        }
+        function analyzeInput(input, source = "Paste Input") {
+          const trimmed = String(input || "").trim();
+          appState.currentInput = trimmed;
+          if (!trimmed) {
+            const d = {
+              generatedAt: new Date().toISOString(),
+              source,
+              input: "",
+              detectedLanguage: "Unknown / Plain Text",
+              table: currentTableContext(),
+              conditions: [],
+              connectors: [],
+              jinjaExpressions: [],
+              diagnostics: [
+                {
+                  severity: "error",
+                  code: "EMPTY_INPUT",
+                  message: "No query or Jinja input was provided.",
+                },
+              ],
+            };
+            d.overall = getOverallState(d);
+            appState.currentDiagnostic = d;
+            renderDiagnostic(d);
+            return;
+          }
+          const scan = scanQueryConditions(trimmed);
+          const conditions = scan.conditions.map((c) => {
+            const p = parseCondition(c.raw),
+              field = findField(p.fid),
+              def = OPERATOR_DEFS[p.operator] || null,
+              compatible =
+                field && def ? operatorIsCompatible(field, p.operator) : null,
+              jinja = extractJinjaExpressions(p.rawValue || "").map((item) => ({
+                ...item,
+                analysis: classifyJinjaExpression(item.expression),
+              }));
+            return {
+              ...p,
+              field: field
+                ? {
+                    id: field.id,
+                    label: field.label,
+                    fieldType: field.fieldType,
+                    mode: field.mode,
+                  }
+                : null,
+              operatorMeaning: def?.label || null,
+              operatorKnown: Boolean(def),
+              operatorCompatible: compatible,
+              valueType: classifyConditionValue(p.rawValue),
+              jinja,
+            };
+          });
+          const allJinja = extractJinjaExpressions(trimmed).map((item) => ({
+              ...item,
+              analysis: classifyJinjaExpression(item.expression),
+            })),
+            jinjaStatements = extractJinjaStatements(trimmed),
+            jinjaComments = extractJinjaComments(trimmed),
+            diagnostics = [];
+          diagnostics.push(...findQueryStructuralIssues(trimmed, scan));
+
+          /*
+           * Quickbase Advanced Query connectors are documented as uppercase
+           * AND / OR. Detect the spelling without losing the rest of the
+           * query analysis.
+           */
+          for (const connector of scan.connectorDetails || []) {
+            if (connector.raw && connector.validCase === false) {
+              diagnostics.push({
+                severity: "error",
+                code: "LOGICAL_OPERATOR_CASE",
+                message:
+                  `Logical connector "${connector.raw}" must be uppercase "${connector.normalized}" in Quickbase Advanced Query syntax.`,
+                found: connector.raw,
+                expected: connector.normalized,
+              });
+            }
+          }
+
+          /*
+           * The Workbench follows the documented numeric FID grammar:
+           * {fid.OPERATOR.'matching_value'}.
+           * Report quoted FIDs specifically rather than silently accepting
+           * a quirk or producing only a generic shape error.
+           */
+          for (const condition of conditions) {
+            if (condition.quotedFid) {
+              diagnostics.push({
+                severity: "error",
+                code: "QUOTED_FID",
+                message:
+                  `FID ${condition.fid} is quoted. The Workbench validates against the documented numeric form {fid.OPERATOR.'matching_value'}, so use {${condition.fid}.${condition.operator}.'...'} unless your specific Quickbase context explicitly documents otherwise.`,
+                condition: condition.raw,
+              });
+            }
+          }
+
+          /*
+           * {{ ... }} introduces a second language inside the query value.
+           * We can inspect references and known rules, but this browser-side
+           * Workbench is not the Quickbase Pipelines runtime.
+           */
+          if (allJinja.length > 0) {
+            diagnostics.push({
+              severity: "warning",
+              code: "JINJA_RUNTIME_NOT_VALIDATED",
+              message:
+                "Embedded Pipelines Jinja was detected. The surrounding Quickbase query can be structurally analyzed, but this Workbench does not certify that every Jinja function, filter, argument, or runtime expression is supported by Quickbase Pipelines. Test the embedded expression in Pipelines or verify it against Quickbase documentation.",
+            });
+          }
+
+          if (conditions.length) {
+            for (const c of conditions) {
+              if (!c.validShape && !c.quotedFid)
+                diagnostics.push({
+                  severity: "error",
+                  code: "QUERY_SHAPE",
+                  message:
+                    "Condition does not match {fid.OPERATOR.'matching_value'} structure.",
+                  condition: c.raw,
+                });
+              if (!c.field)
+                diagnostics.push({
+                  severity: "error",
+                  code: "UNKNOWN_FID",
+                  message: `FID ${c.fid} does not exist in the selected table.`,
+                  condition: c.raw,
+                });
+              if (!c.operatorKnown)
+                diagnostics.push({
+                  severity: "warning",
+                  code: "UNKNOWN_OPERATOR",
+                  message: `Operator ${c.operator} is not in the Workbench's current documented operator set.`,
+                  condition: c.raw,
+                });
+              else if (c.operatorCompatible === false)
+                diagnostics.push({
+                  severity: "warning",
+                  code: "OPERATOR_FIELD_TYPE",
+                  message: `${c.operator} (${c.operatorMeaning}) is unusual for ${c.field?.fieldType || "this field type"}. Review the intended comparison.`,
+                  condition: c.raw,
+                });
+              if (/\{%\s*[\s\S]*?%\}/.test(c.rawValue || ""))
+                diagnostics.push({
+                  severity: "error",
+                  code: "JINJA_STATEMENT_IN_QUERY",
+                  message:
+                    "Quickbase Pipelines Advanced Query values should use a single {{ ... }} Jinja expression; {% ... %} statements are not supported inside the query string.",
+                  condition: c.raw,
+                });
+              for (const j of c.jinja)
+                if (j.analysis.hasPrev)
+                  diagnostics.push({
+                    severity: "error",
+                    code: "PREV_IN_ADVANCED_QUERY",
+                    message:
+                      "$prev is available on Record Updated trigger expressions but is not supported inside Quickbase Advanced Query filter strings.",
+                    condition: c.raw,
+                  });
+            }
+            if (
+              scan.connectors.some((c) => c === null) &&
+              conditions.length > 1
+            )
+              diagnostics.push({
+                severity: "warning",
+                code: "MISSING_CONNECTOR",
+                message:
+                  "Multiple query conditions were detected without a clear AND or OR between every condition.",
+              });
+          } else if (/\{[^{}]+\.[A-Z]+\./.test(trimmed))
+            diagnostics.push({
+              severity: "error",
+              code: "UNPARSED_QUERY",
+              message:
+                "The input resembles Quickbase query syntax, but no complete conditions could be parsed.",
+            });
+          if (/\{%\s*(break|continue)\b/i.test(trimmed))
+            diagnostics.push({
+              severity: "error",
+              code: "UNSUPPORTED_LOOP_CONTROL",
+              message:
+                "Quickbase Pipelines Jinja does not support {% break %} or {% continue %}. Use select/reject filters or guard the loop body with an if statement.",
+            });
+          if (/\{%\s*(include|import|extends)\b/i.test(trimmed))
+            diagnostics.push({
+              severity: "error",
+              code: "UNSUPPORTED_TEMPLATE_FEATURE",
+              message:
+                "Quickbase Pipelines does not support include, import, or extends template inheritance.",
+            });
+          if (/\{%\s*do\b/i.test(trimmed))
+            diagnostics.push({
+              severity: "error",
+              code: "UNSUPPORTED_DO_EXTENSION",
+              message:
+                "Quickbase Pipelines does not support the Jinja do extension.",
+            });
+          const d = {
+            generatedAt: new Date().toISOString(),
+            source,
+            input: trimmed,
+            detectedLanguage: detectLanguage(
+              trimmed,
+              conditions,
+              allJinja,
+              jinjaStatements,
+            ),
+            table: currentTableContext(),
+            conditions,
+            connectors: scan.connectors,
+            connectorDetails: scan.connectorDetails || [],
+            jinjaExpressions: allJinja,
+            jinjaStatements,
+            jinjaComments,
+            diagnostics,
+          };
+          d.overall = getOverallState(d);
+          appState.currentDiagnostic = d;
+          renderDiagnostic(d);
+        }
+        function summarizeCondition(c) {
+          const fieldName = c.field?.label || `FID ${safeValue(c.fid)}`;
+          const op = c.operatorMeaning || c.operator || "Unknown operator";
+          let value = safeValue(c.rawValue);
+          if (c.valueType === "jinja") value = `Jinja value ${value}`;
+          if (c.valueType === "unsupported-jinja-statement")
+            value = `unsupported Jinja statement ${value}`;
+          if (c.valueType === "field-reference")
+            value = `field reference ${value}`;
+          return `${fieldName} ${op.toLowerCase()} ${value}`;
+        }
+        function buildQueryStructure(d) {
+          if (!d.conditions?.length) return null;
+          let structure = d.input;
+          let plain = d.input;
+          d.conditions.forEach((c, i) => {
+            structure = structure.replace(c.raw, `[Condition ${i + 1}]`);
+            plain = plain.replace(c.raw, `[${summarizeCondition(c)}]`);
+          });
+          const connectors = (d.connectorDetails || []).length
+            ? d.connectorDetails.map((c, i) => {
+                if (!c.raw) return `${i + 1} → Not detected`;
+                if (c.validCase === false)
+                  return `${i + 1} → ${c.raw} (should be ${c.normalized})`;
+                return `${i + 1} → ${c.raw}`;
+              })
+            : (d.connectors || []).map(
+                (c, i) => `${i + 1} → ${c || "Not detected"}`,
+              );
+          return { structure, plain, connectors };
+        }
+        function renderQueryStructure(d) {
+          const panel = document.getElementById("queryStructurePanel");
+          const structure = buildQueryStructure(d);
+          if (!structure) {
+            panel.style.display = "none";
+            panel.innerHTML = "";
+            return;
+          }
+          panel.style.display = "block";
+          panel.innerHTML = `<h3>Query Structure</h3>
+<div class="structure-code">${escapeHtml(structure.structure)}</div>
+<div class="connector-line">Connectors: ${escapeHtml(structure.connectors.join(" · ") || "None")}</div>
+<div class="plain-logic"><strong>Plain-language logic:</strong><br>${escapeHtml(structure.plain)}</div>`;
+        }
+        function renderDiagnostic(d) {
+          renderQueryStructure(d);
+          const badges = document.getElementById("languageBadges");
+          badges.replaceChildren();
+          if (
+            d.detectedLanguage.includes("Quickbase") ||
+            d.detectedLanguage.includes("Hybrid")
+          ) {
+            const b = document.createElement("span");
+            b.className = "badge query";
+            b.textContent = "Quickbase Query";
+            badges.appendChild(b);
+          }
+          if (
+            d.detectedLanguage.includes("Jinja") ||
+            d.detectedLanguage.includes("Hybrid")
+          ) {
+            const b = document.createElement("span");
+            b.className = "badge jinja";
+            b.textContent = "Pipelines Jinja";
+            badges.appendChild(b);
+          }
+          if (!badges.children.length) {
+            const b = document.createElement("span");
+            b.className = "badge warn";
+            b.textContent = d.detectedLanguage;
+            badges.appendChild(b);
+          }
+          document.getElementById("conditionCount").textContent = String(
+            d.conditions.length,
+          );
+          document.getElementById("jinjaCount").textContent = String(
+            (d.jinjaExpressions?.length || 0) +
+              (d.jinjaStatements?.length || 0),
+          );
+          document.getElementById("diagnosticCount").textContent = String(
+            d.diagnostics.length,
+          );
+          document.getElementById("overallState").textContent = d.overall;
+          const health = document.getElementById("healthBox"),
+            errors = d.diagnostics.filter((x) => x.severity === "error").length,
+            warnings = d.diagnostics.filter(
+              (x) => x.severity === "warning",
+            ).length;
+          health.className = errors
+            ? "health-box bad"
+            : warnings
+              ? "health-box warn"
+              : "health-box";
+          health.innerHTML = errors
+            ? `<strong>Fix Required:</strong> ${errors} error(s) and ${warnings} warning(s) detected.`
+            : warnings
+              ? `<strong>Review Recommended:</strong> ${warnings} warning(s) detected.`
+              : `<strong>Clean:</strong> no diagnostics were triggered by the Workbench's current local rule set. This does not substitute for Quickbase/Pipelines runtime validation.`;
+          const list = document.getElementById("analysisList");
+          list.replaceChildren();
+          d.conditions.forEach((c, i) => {
+            const card = document.createElement("article");
+            card.className = "analysis-card";
+            const jinjaSummary = c.jinja.length
+              ? c.jinja.map((j) => j.raw).join("; ")
+              : "None";
+            card.innerHTML = `<div class="eyebrow">Condition ${i + 1}</div><h3>${escapeHtml(c.raw)}</h3><dl><dt>FID</dt><dd>${escapeHtml(safeValue(c.fid))}</dd><dt>Field</dt><dd>${c.field ? `${escapeHtml(c.field.label)} (${escapeHtml(c.field.fieldType)})` : "Not found in selected table"}</dd><dt>Operator</dt><dd>${escapeHtml(c.operator)}${c.operatorMeaning ? ` — ${escapeHtml(c.operatorMeaning)}` : ""}</dd><dt>Matching Value</dt><dd>${escapeHtml(safeValue(c.rawValue))}</dd><dt>Value Type</dt><dd>${escapeHtml(c.valueType)}</dd><dt>Embedded Jinja</dt><dd>${escapeHtml(jinjaSummary)}</dd></dl>`;
+            list.appendChild(card);
+          });
+          d.jinjaExpressions.forEach((j, i) => {
+            const a = j.analysis,
+              card = document.createElement("article");
+            card.className = "analysis-card";
+            card.innerHTML = `<div class="eyebrow">Jinja Expression ${i + 1}</div><h3>${escapeHtml(j.raw)}</h3><dl><dt>Expression</dt><dd>${escapeHtml(j.expression)}</dd><dt>Step References</dt><dd>${escapeHtml(a.stepReferences.join(", ") || "None detected")}</dd><dt>Field References</dt><dd>${escapeHtml(a.fieldReferences.join(", ") || "None detected")}</dd><dt>Trigger Context</dt><dd>${escapeHtml(a.contextReferences.join(", ") || "None detected")}</dd><dt>Runtime Object</dt><dd>${escapeHtml(a.runtimeReferences.join(", ") || "None detected")}</dd><dt>Time Helpers</dt><dd>${escapeHtml(a.timeReferences.join(", ") || "None detected")}</dd><dt>$prev</dt><dd>${a.hasPrev ? "Detected" : "Not detected"}</dd><dt>Validation Scope</dt><dd>References and known Workbench rules only — Pipelines runtime support is not certified.</dd></dl>`;
+            list.appendChild(card);
+          });
+          (d.jinjaStatements || []).forEach((statement, i) => {
+            const card = document.createElement("article");
+            card.className = "analysis-card";
+            card.innerHTML = `<div class="eyebrow">Jinja Statement ${i + 1}</div><h3>${escapeHtml(statement.raw)}</h3><dl><dt>Keyword</dt><dd>${escapeHtml(statement.keyword)}</dd><dt>Body</dt><dd>${escapeHtml(statement.body)}</dd><dt>Context</dt><dd>${d.conditions.length ? "Inside or alongside Quickbase query" : "Pipelines Jinja"}</dd></dl>`;
+            list.appendChild(card);
+          });
+          (d.jinjaComments || []).forEach((comment, i) => {
+            const card = document.createElement("article");
+            card.className = "analysis-card";
+            card.innerHTML = `<div class="eyebrow">Jinja Comment ${i + 1}</div><h3>${escapeHtml(comment.raw)}</h3><p>${escapeHtml(comment.comment || "Empty comment")}</p>`;
+            list.appendChild(card);
+          });
+          d.diagnostics.forEach((x, i) => {
+            const card = document.createElement("article");
+            card.className = `analysis-card ${x.severity === "error" ? "error" : "warning"}`;
+            card.innerHTML = `<div class="eyebrow">${x.severity === "error" ? "Error" : "Warning"} ${i + 1}</div><h3>${escapeHtml(x.code)}</h3><p>${escapeHtml(x.message)}</p>${x.condition ? `<div class="query-preview">${escapeHtml(x.condition)}</div>` : ""}`;
+            list.appendChild(card);
+          });
+          if (!list.children.length) {
+            const card = document.createElement("article");
+            card.className = "analysis-card";
+            card.innerHTML =
+              "<h3>No structured query conditions detected.</h3><p>The Workbench recognized the input language but did not parse a Quickbase query condition.</p>";
+            list.appendChild(card);
+          }
+          document.getElementById("reportOutput").textContent =
+            buildWorkbenchReport(d);
+          document.getElementById("jsonOutput").textContent = JSON.stringify(
+            d,
+            null,
+            2,
+          );
+          document.getElementById("inputOutput").textContent =
+            d.input || "No input.";
+        }
+        function buildWorkbenchReport(d) {
+          const lines = [];
+          lines.push(
+            "QUICKBASE REST-API UTILITIES",
+            "QUERY & JINJA WORKBENCH",
+            "=".repeat(76),
+            "",
+            `Generated: ${d.generatedAt || "Not returned"}`,
+            `Source: ${d.source}`,
+            "",
+            "TABLE CONTEXT",
+            "-".repeat(76),
+            `Table: ${d.table.name}`,
+            `DBID: ${safeValue(d.table.dbid)}`,
+            `Fields Cached: ${d.table.fieldCount}`,
+            "",
+            "INPUT",
+            "-".repeat(76),
+            d.input || "",
+            "",
+            "LANGUAGE DETECTION",
+            "-".repeat(76),
+            `Detected: ${d.detectedLanguage}`,
+            `Quickbase Query: ${d.detectedLanguage.includes("Quickbase") || d.detectedLanguage.includes("Hybrid") ? "YES" : "NO"}`,
+            `Pipelines Jinja: ${d.detectedLanguage.includes("Jinja") || d.detectedLanguage.includes("Hybrid") ? "YES" : "NO"}`,
+            "",
+            "PARSED QUERY",
+            "-".repeat(76),
+          );
+          if (!d.conditions.length)
+            lines.push("No Quickbase query conditions parsed.");
+          d.conditions.forEach((c, i) => {
+            lines.push(
+              `Condition ${i + 1}`,
+              `  Raw: ${c.raw}`,
+              `  FID: ${safeValue(c.fid)}`,
+              `  Field: ${c.field ? `${c.field.label} (${c.field.fieldType})` : "NOT FOUND"}`,
+              `  Operator: ${c.operator}${c.operatorMeaning ? ` — ${c.operatorMeaning}` : ""}`,
+              `  Matching Value: ${safeValue(c.rawValue)}`,
+              `  Value Type: ${c.valueType}`,
+              "",
+            );
+          });
+          const structure = buildQueryStructure(d);
+          if (structure) {
+            lines.push(
+              "QUERY STRUCTURE",
+              "-".repeat(76),
+              structure.structure,
+              "",
+              `Connectors: ${structure.connectors.join(" | ") || "None"}`,
+              "",
+              "PLAIN-LANGUAGE LOGIC",
+              "-".repeat(76),
+              structure.plain,
+              "",
+            );
+          }
+          lines.push(
+            "JINJA ANALYSIS",
+            "-".repeat(76),
+            "Validation scope: reference detection and known Workbench rules.",
+            "The Workbench does not certify arbitrary Jinja runtime support in Pipelines.",
+            "",
+          );
+          if (!d.jinjaExpressions.length)
+            lines.push("No {{ ... }} Jinja expressions detected.");
+          d.jinjaExpressions.forEach((j, i) => {
+            const a = j.analysis;
+            lines.push(
+              `Expression ${i + 1}: ${j.raw}`,
+              `  Step References: ${a.stepReferences.join(", ") || "None"}`,
+              `  Field References: ${a.fieldReferences.join(", ") || "None"}`,
+              `  Context References: ${a.contextReferences.join(", ") || "None"}`,
+              `  Runtime References: ${a.runtimeReferences.join(", ") || "None"}`,
+              `  Time Helpers: ${a.timeReferences.join(", ") || "None"}`,
+              `  $prev: ${a.hasPrev ? "Detected" : "No"}`,
+              "",
+            );
+          });
+          if ((d.jinjaStatements || []).length) {
+            lines.push("JINJA STATEMENTS", "-".repeat(76));
+            d.jinjaStatements.forEach((s, i) => {
+              lines.push(
+                `Statement ${i + 1}: ${s.raw}`,
+                `  Keyword: ${s.keyword}`,
+                `  Body: ${s.body}`,
+                "",
+              );
+            });
+          }
+          if ((d.jinjaComments || []).length) {
+            lines.push("JINJA COMMENTS", "-".repeat(76));
+            d.jinjaComments.forEach((c, i) => {
+              lines.push(
+                `Comment ${i + 1}: ${c.raw}`,
+                `  Text: ${c.comment || "Empty comment"}`,
+                "",
+              );
+            });
+          }
+          lines.push("VALIDATION", "-".repeat(76));
+          if (!d.diagnostics.length)
+            lines.push(
+              "🟢 No diagnostics triggered by the current Workbench rules.",
+            );
+          else
+            d.diagnostics.forEach((x) =>
+              lines.push(
+                `${x.severity === "error" ? "🔴" : "🟠"} ${x.code}: ${x.message}`,
+              ),
+            );
+          lines.push("", "OVERALL", "-".repeat(76), d.overall);
+          return lines.join("\n");
+        }
+        async function copyText(text, message) {
+          try {
+            await navigator.clipboard.writeText(text);
+            setStatus(message, "success");
+          } catch (error) {
+            console.error(error);
+            setStatus(
+              "Clipboard access failed. Select and copy the text manually.",
+              "error",
+            );
+          }
+        }
+        async function init() {
+          appState.appDbid = getAppDbid();
+          document.getElementById("realmContext").textContent = REALM;
+          document.getElementById("appContext").textContent =
+            appState.appDbid || "Unable to detect";
+          addCondition();
+          if (!appState.appDbid) {
+            setStatus(
+              "Unable to detect the current Quickbase App DBID. Run this Code Page from inside a Quickbase app.",
+              "error",
+            );
+            return;
+          }
+          try {
+            await loadTables();
+          } catch (error) {
+            console.error(error);
+            setStatus(error.message, "error");
+          }
+        }
+        document
+          .getElementById("tableSelect")
+          .addEventListener("change", async (e) => {
+            try {
+              await loadFields(e.target.value);
+            } catch (error) {
+              console.error(error);
+              setStatus(error.message, "error");
+            }
+          });
+        document
+          .getElementById("addConditionButton")
+          .addEventListener("click", addCondition);
+        document
+          .getElementById("generateButton")
+          .addEventListener("click", generateQueryFromBuilder);
+        document
+          .getElementById("analyzePasteButton")
+          .addEventListener("click", () =>
+            analyzeInput(
+              document.getElementById("pasteInput").value,
+              "Paste Existing Query or Jinja",
+            ),
+          );
+        document
+          .getElementById("loadGeneratedButton")
+          .addEventListener("click", () => {
+            document.getElementById("pasteInput").value =
+              appState.currentGeneratedQuery;
+          });
+        document
+          .getElementById("copyGeneratedButton")
+          .addEventListener("click", () =>
+            copyText(appState.currentGeneratedQuery, "Generated query copied."),
+          );
+        document
+          .getElementById("copyReportButton")
+          .addEventListener("click", () =>
+            copyText(
+              document.getElementById("reportOutput").textContent,
+              "Workbench report copied.",
+            ),
+          );
+        document
+          .getElementById("copyJsonButton")
+          .addEventListener("click", () =>
+            copyText(
+              document.getElementById("jsonOutput").textContent,
+              "Diagnostic JSON copied.",
+            ),
+          );
+        document
+          .getElementById("copyInputButton")
+          .addEventListener("click", () =>
+            copyText(
+              document.getElementById("inputOutput").textContent,
+              "Analyzed input copied.",
+            ),
+          );
+        init();
+      })();
+    </script>
+  </body>
+</html>
