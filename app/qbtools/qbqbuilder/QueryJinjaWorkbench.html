@@ -456,6 +456,370 @@
         font-size: 13px;
         font-weight: 700;
       }
+      .section-toggle[aria-expanded="true"] {
+        background: #e8f6ec;
+        color: #176d2d;
+        border-color: #9ac9a5;
+      }
+      .section-toggle[aria-expanded="true"]:hover {
+        background: #dff1e4;
+      }
+      .section-toggle[aria-expanded="false"] {
+        background: #fff3bf;
+        color: #705400;
+        border-color: #e3c85e;
+      }
+      .section-toggle[aria-expanded="false"]:hover {
+        background: #ffec99;
+      }
+      .live-query-status {
+        margin-top: 14px;
+        padding: 14px 16px;
+        border-radius: 10px;
+        border: 1px solid #cbd7e1;
+        background: #f8fafc;
+        color: #40576a;
+        font-weight: 700;
+      }
+      .live-query-status.success {
+        border-color: #afd0b6;
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .live-query-status.error {
+        border-color: #dba3a3;
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .live-query-status.warn {
+        border-color: #e4d0a1;
+        background: var(--amber-bg);
+        color: var(--amber);
+      }
+      .results-summary-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        margin-top: 14px;
+      }
+      .results-table-wrap {
+        margin-top: 16px;
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #fff;
+      }
+      .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+        font-size: 13px;
+      }
+      .results-table th,
+      .results-table td {
+        padding: 9px 10px;
+        border-bottom: 1px solid #e3e9ee;
+        border-right: 1px solid #eef2f5;
+        text-align: left;
+        vertical-align: top;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      .results-table th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: #eef4f8;
+        color: #29475f;
+        font-weight: 800;
+      }
+      .results-table tr:last-child td {
+        border-bottom: 0;
+      }
+      .execution-code {
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 8px;
+        background: #172b3a;
+        color: #eef7ff;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      .section-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 36px;
+        padding: 7px 11px;
+        border: 1px solid #c8d4de;
+        border-radius: 8px;
+        background: #f3f7fb;
+        color: #29475f;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .section-toggle:hover {
+        background: #e7f0f7;
+      }
+      .section-toggle .toggle-icon {
+        display: inline-block;
+        transition: transform 0.18s ease;
+      }
+      .section-toggle[aria-expanded="false"] .toggle-icon {
+        transform: rotate(-90deg);
+      }
+      .collapsible-body[hidden] {
+        display: none !important;
+      }
+      .section-summary {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .builder-primary-table {
+        margin-bottom: 16px;
+        padding: 14px 16px;
+        border: 2px solid #7fa7c8;
+        border-left: 6px solid var(--navy);
+        border-radius: 10px;
+        background: #eef6fc;
+        color: #29475f;
+        box-shadow: 0 0 0 3px rgba(31, 92, 153, 0.05);
+      }
+      .builder-primary-table strong {
+        color: var(--navy-dark);
+      }
+      .builder-primary-table .primary-table-name {
+        display: inline-block;
+        margin-left: 4px;
+        font-weight: 900;
+        color: #143f67;
+      }
+      .builder-primary-table p {
+        margin: 6px 0 0;
+        color: #50697d;
+        font-size: 13px;
+        font-weight: 650;
+      }
+      button.add-condition-button {
+        background: #218739;
+        color: #fff;
+        border: 1px solid #176d2d;
+        box-shadow: 0 3px 9px rgba(33, 135, 57, 0.18);
+      }
+      button.add-condition-button:hover {
+        background: #176d2d;
+      }
+      .builder-plan.bad {
+        border-color: #dba3a3;
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .condition-table-context {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border: 1px solid #d4dfe7;
+        border-radius: 9px;
+        background: #fff;
+        color: #40576a;
+        font-size: 13px;
+      }
+      .condition-table-context.good {
+        border-color: #afd0b6;
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .condition-table-context.warn {
+        border-color: #e4d0a1;
+        background: var(--amber-bg);
+        color: var(--amber);
+      }
+      .condition-table-context.bad {
+        border-color: #dba3a3;
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .field-selector-panel {
+        margin-top: 16px;
+        padding: 14px;
+        border: 1px solid #bfd0df;
+        border-radius: 10px;
+        background: #f5f9fd;
+      }
+      .field-selector-panel h3 {
+        color: #31597a;
+      }
+      .field-selector-grid {
+        display: grid;
+        gap: 8px 12px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        margin-top: 12px;
+      }
+      .field-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 8px 9px;
+        border: 1px solid #d8e0e7;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .field-check input {
+        width: auto;
+        min-height: 0;
+        margin: 2px 0 0;
+      }
+      .field-selector-help {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .condition-path-fields {
+        margin-top: 8px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: #f2f7fb;
+        color: #40576a;
+        font-size: 12px;
+      }
+      .planner-steps {
+        display: grid;
+        gap: 9px;
+        margin-top: 10px;
+      }
+      .planner-step {
+        padding: 10px;
+        border: 1px solid #d6e0e8;
+        border-radius: 8px;
+        background: #fff;
+      }
+      .planner-step code {
+        margin-top: 6px;
+      }
+      .builder-plan {
+        margin-top: 14px;
+        padding: 14px;
+        border-radius: 10px;
+        border: 1px solid #bfd0df;
+        background: #f5f9fd;
+      }
+      .builder-plan.warn {
+        border-color: #e4d0a1;
+        background: var(--amber-bg);
+      }
+      .builder-plan strong {
+        color: #334e68;
+      }
+      .builder-plan code {
+        display: block;
+        margin-top: 7px;
+        padding: 9px 10px;
+        border-radius: 7px;
+        background: #172b3a;
+        color: #eef7ff;
+        overflow-wrap: anywhere;
+      }
+      .condition-owner {
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .relationship-cache {
+        margin-top: 16px;
+        padding: 16px;
+        border: 1px solid #bfd0df;
+        border-radius: 10px;
+        background: #f5f9fd;
+      }
+      .relationship-cache-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        margin-top: 12px;
+      }
+      .relationship-cache-card {
+        padding: 12px;
+        border: 1px solid #d5e1ea;
+        border-radius: 9px;
+        background: #fff;
+      }
+      .relationship-cache-card strong {
+        display: block;
+        font-size: 22px;
+        color: var(--navy-dark);
+      }
+      .relationship-cache-card span {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .path-controls {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: 1fr 1fr auto;
+        align-items: end;
+      }
+      .path-result {
+        margin-top: 16px;
+        padding: 16px;
+        border-radius: 10px;
+        border: 1px solid #cbd7e1;
+        background: #f8fafc;
+      }
+      .path-result.good {
+        border-color: #afd0b6;
+        background: var(--green-bg);
+      }
+      .path-result.warn {
+        border-color: #e4d0a1;
+        background: var(--amber-bg);
+      }
+      .path-result.bad {
+        border-color: #dba3a3;
+        background: var(--red-bg);
+      }
+      .path-chain {
+        margin-top: 10px;
+        padding: 12px;
+        border-radius: 8px;
+        background: #172b3a;
+        color: #eef7ff;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        overflow-wrap: anywhere;
+      }
+      .path-step-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .path-step {
+        padding: 12px;
+        border: 1px solid #d6e0e8;
+        border-radius: 9px;
+        background: #fff;
+      }
+      .path-step strong {
+        color: #334e68;
+      }
+      .path-field-list {
+        margin: 7px 0 0;
+        padding-left: 18px;
+      }
+      .path-report {
+        margin-top: 14px;
+      }
+      @media (max-width: 820px) {
+        .path-controls {
+          grid-template-columns: 1fr;
+        }
+      }
       .note {
         margin-top: 12px;
         padding: 12px 14px;
@@ -492,7 +856,7 @@
         <div class="eyebrow">Quickbase REST-API Utilities</div>
         <h1>Query &amp; Jinja Workbench</h1>
         <div style="margin-top: 8px; font-weight: 800; opacity: 0.9">
-          Version 1 · Patch 5
+          Version 1 · Patch 14 · QC1
         </div>
         <p>
           Build, paste, explain, and diagnose Quickbase Advanced Query syntax
@@ -528,29 +892,124 @@
               metadata drives query explanation and validation.
             </p>
           </div>
-        </div>
+        <button type="button" class="section-toggle" aria-expanded="true"><span class="toggle-icon">▾</span><span class="toggle-label">Collapse</span></button></div><div class="collapsible-body">
         <label
           >Quickbase Table<select id="tableSelect">
             <option>Loading tables…</option>
           </select></label
         >
         <div id="schemaStatus" class="status">Connecting to Quickbase…</div>
-      </section>
+
+        <div class="relationship-cache">
+          <h3>Application Relationship Cache</h3>
+          <p style="margin:6px 0 0;color:var(--muted);">
+            Patch 14 crawls every table as a potential child table, caches its
+            fields and relationships, then builds an application-wide graph for
+            shortest-path discovery.
+          </p>
+
+          <div class="relationship-cache-grid">
+            <div class="relationship-cache-card">
+              <strong id="cacheTableCount">0</strong>
+              <span>Tables Cached</span>
+            </div>
+            <div class="relationship-cache-card">
+              <strong id="cacheFieldCount">0</strong>
+              <span>Fields Cached</span>
+            </div>
+            <div class="relationship-cache-card">
+              <strong id="cacheRelationshipCount">0</strong>
+              <span>Relationships Cached</span>
+            </div>
+            <div class="relationship-cache-card">
+              <strong id="cacheGraphEdgeCount">0</strong>
+              <span>Relationship Graph Edges</span>
+            </div>
+          </div>
+        </div>
+      </div></section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Relationship Path Explorer</h2>
+            <p>
+              Validate the application-wide relationship graph before we wire it
+              into Add Condition. The Workbench searches for the shortest
+              relationship path between two tables.
+            </p>
+          </div>
+          <span class="badge query">Patch 14</span>
+        <button type="button" class="section-toggle" aria-expanded="false"><span class="toggle-icon">▾</span><span class="toggle-label">Expand</span></button></div><div class="collapsible-body" hidden>
+        <div class="builder-primary-table">
+          <strong>Primary Query Table:</strong>
+          <span id="pathPrimaryTableLabel" class="primary-table-name">Loading…</span>
+          <p>
+            Controlled by <strong>Application Context → Quickbase Table</strong>.
+            Change the Quickbase Table above to change the starting point used
+            by this Relationship Path Explorer.
+          </p>
+        </div>
+
+
+        <div class="path-controls">
+          <div class="condition-table-context good">
+            <strong>Current Query Table</strong><br />
+            <span id="pathStartTableLabel">Loading current table…</span>
+          </div>
+
+          <label>
+            Explore Related Table
+            <select id="pathEndTable">
+              <option>Loading tables…</option>
+            </select>
+          </label>
+
+          <button id="findPathButton" type="button">Find Shortest Path</button>
+        </div>
+
+        <div id="relationshipPathResult" class="path-result">
+          Build the application relationship cache, then choose two tables.
+        </div>
+
+        <div class="path-report">
+          <div class="copy-panel">
+            <div class="copy-panel-header">
+              <h3>Relationship Path Report</h3>
+              <button id="copyPathReportButton" type="button">
+                Copy Path Report
+              </button>
+            </div>
+            <pre id="pathReportOutput">No relationship path analyzed yet.</pre>
+          </div>
+        </div>
+      </div></section>
 
       <section class="panel">
         <div class="panel-head">
           <div>
             <h2>Visual Query Builder</h2>
             <p>
-              Start with a simple Quickbase condition, then add more only when
-              needed.
+              Build QBL from the live schema. Condition 1 always starts from the
+              Quickbase Table selected in Application Context above; added
+              conditions can explore related tables and relationship-derived
+              fields.
             </p>
           </div>
           <span class="badge query">Quickbase Query</span>
+        <button type="button" class="section-toggle" aria-expanded="true"><span class="toggle-icon">▾</span><span class="toggle-label">Collapse</span></button></div><div class="collapsible-body">
+        <div class="builder-primary-table">
+          <strong>Primary Query Table:</strong>
+          <span id="builderPrimaryTableLabel" class="primary-table-name">Loading…</span>
+          <p>
+            Controlled by <strong>Application Context → Quickbase Table</strong>.
+            Condition 1 is anchored to this table. To start the expression from a
+            different table, change the Quickbase Table selection above.
+          </p>
         </div>
         <div id="conditions"></div>
         <div class="actions">
-          <button id="addConditionButton" type="button" class="ghost">
+          <button id="addConditionButton" type="button" class="add-condition-button">
             + Add Condition</button
           ><button id="generateButton" type="button">
             Generate &amp; Explain
@@ -569,18 +1028,140 @@
             Copy Generated Query
           </button>
         </div>
-      </section>
+      </div></section>
 
-      <section class="panel">
+      
+      <section class="panel" id="liveQueryPanel">
         <div class="panel-head">
           <div>
-            <h2>Paste Existing Query or Jinja</h2>
+            <h2>Live Query Results</h2>
+            <p>
+              Execute a valid one-table QBL expression against the live
+              Quickbase JSON API and inspect the records, request payload,
+              response, timing, or any API error.
+            </p>
+          </div>
+          <span class="badge query">JSON API</span>
+          <button type="button" class="section-toggle" aria-expanded="false">
+            <span class="toggle-icon">▾</span>
+            <span class="toggle-label">Expand</span>
+          </button>
+        </div>
+
+        <div class="collapsible-body" hidden>
+          <div class="builder-primary-table">
+            <strong>Execution Source:</strong>
+            <span id="liveQueryTableLabel" class="primary-table-name">No generated query yet</span>
+            <p>
+              The Workbench executes only QBL that resolves to one Quickbase
+              table. Hybrid Pipelines Jinja and unresolved cross-table plans
+              are not executed by this Code Page.
+            </p>
+          </div>
+
+          <div id="liveQueryExpression" class="execution-code">
+            Generate a valid QBL expression in Visual Query Builder first.
+          </div>
+
+          <div class="field-selector-panel">
+            <h3>Fields to Return</h3>
+            <div class="field-selector-help">
+              The first selection defaults to the fields used by the Visual Query Builder plus Record ID#. This directly controls the JSON API <code>select</code> array. After a query runs, change the checkboxes and choose <strong>Apply Fields &amp; Re-run</strong> to add or remove returned columns.
+            </div>
+            <div id="liveFieldSelector" class="field-selector-grid">
+              Generate a valid one-table QBL plan to choose return fields.
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="runLiveQueryButton" type="button">
+              Run Live Query
+            </button>
+            <button id="applyLiveFieldsButton" type="button" class="ghost">
+              Apply Fields &amp; Re-run
+            </button>
+            <button id="copyLiveRequestButton" type="button" class="secondary">
+              Copy Request JSON
+            </button>
+            <button id="copyLiveResponseButton" type="button" class="secondary">
+              Copy Response JSON
+            </button>
+          </div>
+
+          <div id="liveQueryStatus" class="live-query-status">
+            Waiting for a generated QBL expression.
+          </div>
+
+          <div class="results-summary-grid">
+            <div class="relationship-cache-card">
+              <strong id="liveRecordCount">0</strong>
+              <span>Records Returned</span>
+            </div>
+            <div class="relationship-cache-card">
+              <strong id="liveFieldCount">0</strong>
+              <span>Fields Returned</span>
+            </div>
+            <div class="relationship-cache-card">
+              <strong id="liveExecutionTime">—</strong>
+              <span>Execution Time</span>
+            </div>
+            <div class="relationship-cache-card">
+              <strong id="liveHttpStatus">—</strong>
+              <span>HTTP Status</span>
+            </div>
+          </div>
+
+          <div id="liveResultsTableWrap" class="results-table-wrap" style="display:none;">
+            <table class="results-table">
+              <thead id="liveResultsHead"></thead>
+              <tbody id="liveResultsBody"></tbody>
+            </table>
+          </div>
+
+          <div class="copy-grid">
+            <section class="copy-panel">
+              <div class="copy-panel-header">
+                <h3>Request JSON</h3>
+                <button id="copyLiveRequestPanelButton" type="button">
+                  Copy
+                </button>
+              </div>
+              <pre id="liveRequestOutput">No request sent yet.</pre>
+            </section>
+
+            <section class="copy-panel">
+              <div class="copy-panel-header">
+                <h3>Response JSON</h3>
+                <button id="copyLiveResponsePanelButton" type="button">
+                  Copy
+                </button>
+              </div>
+              <pre id="liveResponseOutput">No response returned yet.</pre>
+            </section>
+
+            <section class="copy-panel">
+              <div class="copy-panel-header">
+                <h3>Execution Report</h3>
+                <button id="copyLiveReportButton" type="button">
+                  Copy
+                </button>
+              </div>
+              <pre id="liveExecutionReport">No live query executed yet.</pre>
+            </section>
+          </div>
+        </div>
+      </section>
+
+<section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Query & Jinja Tester</h2>
             <p>
               Reverse-engineer inherited Quickbase queries, Pipelines Jinja
               expressions, or hybrid Advanced Query strings.
             </p>
           </div>
-        </div>
+        <button type="button" class="section-toggle" aria-expanded="false"><span class="toggle-icon">▾</span><span class="toggle-label">Expand</span></button></div><div class="collapsible-body" hidden>
         <div class="query-input-panel">
           <label for="pasteInput"
             >⌨ Query / Jinja Input — Paste or Type Here</label
@@ -601,7 +1182,7 @@
             Load Generated Query Here
           </button>
         </div>
-      </section>
+      </div></section>
 
       <section class="panel" id="analysisPanel">
         <div class="panel-head">
@@ -612,7 +1193,7 @@
               and Pipeline compatibility checks.
             </p>
           </div>
-        </div>
+        <button type="button" class="section-toggle" aria-expanded="true"><span class="toggle-icon">▾</span><span class="toggle-label">Collapse</span></button></div><div class="collapsible-body">
         <div class="language-badges" id="languageBadges">
           <span class="badge">Waiting for input</span>
         </div>
@@ -664,6 +1245,7 @@
             <pre id="inputOutput">No input analyzed yet.</pre>
           </section>
         </div>
+        </div>
       </section>
     </main>
     <script>
@@ -678,10 +1260,22 @@
           tables: [],
           tablesById: {},
           fieldsByTable: {},
+          relationships: [],
+          relationshipGraph: {},
+          relationshipCacheLoadedAt: null,
+          currentRelationshipPath: null,
           selectedTableId: null,
           currentDiagnostic: null,
           currentInput: "",
           currentGeneratedQuery: "",
+          currentBuilderPlan: null,
+          conditionsState: [],
+          nextConditionId: 1,
+          liveFieldPlanSignature: "",
+          liveSelectedFieldIds: [],
+          liveRequest: null,
+          liveResponse: null,
+          liveExecutionReport: "",
         };
         const OPERATOR_DEFS = {
           EX: { label: "Equals exactly", families: ["all"] },
@@ -750,58 +1344,678 @@
           if (APP_TOKEN) h["QB-App-Token"] = APP_TOKEN;
           return h;
         }
+        function getTableName(tableDbid) {
+          return appState.tablesById[tableDbid]?.name || tableDbid;
+        }
+
+        function getCachedField(tableDbid, fid) {
+          return (
+            (appState.fieldsByTable[tableDbid] || []).find(
+              (field) => Number(field.id) === Number(fid),
+            ) || null
+          );
+        }
+
+        function normalizeRelationshipResponse(data) {
+          if (Array.isArray(data)) return data;
+          if (Array.isArray(data?.relationships)) return data.relationships;
+          return [];
+        }
+
+        function relationshipKey(relationship) {
+          return [
+            relationship.parentTableId,
+            relationship.childTableId,
+            relationship.id,
+          ].join("|");
+        }
+
+        function buildRelationshipGraph() {
+          const graph = {};
+
+          for (const table of appState.tables) {
+            graph[table.id] = [];
+          }
+
+          for (const relationship of appState.relationships) {
+            const parent = relationship.parentTableId;
+            const child = relationship.childTableId;
+
+            if (!graph[parent]) graph[parent] = [];
+            if (!graph[child]) graph[child] = [];
+
+            graph[parent].push({
+              fromTableId: parent,
+              toTableId: child,
+              direction: "parent-to-child",
+              relationship,
+            });
+
+            graph[child].push({
+              fromTableId: child,
+              toTableId: parent,
+              direction: "child-to-parent",
+              relationship,
+            });
+          }
+
+          appState.relationshipGraph = graph;
+          renderRelationshipCacheStats();
+        }
+
+        function renderRelationshipCacheStats() {
+          const fieldCount = Object.values(appState.fieldsByTable).reduce(
+            (total, fields) => total + (Array.isArray(fields) ? fields.length : 0),
+            0,
+          );
+
+          const edgeCount = Object.values(appState.relationshipGraph).reduce(
+            (total, edges) => total + (Array.isArray(edges) ? edges.length : 0),
+            0,
+          );
+
+          document.getElementById("cacheTableCount").textContent =
+            String(appState.tables.length);
+          document.getElementById("cacheFieldCount").textContent =
+            String(fieldCount);
+          document.getElementById("cacheRelationshipCount").textContent =
+            String(appState.relationships.length);
+          document.getElementById("cacheGraphEdgeCount").textContent =
+            String(edgeCount);
+        }
+
+        function updatePrimaryQueryTableUI() {
+          const tableId = appState.selectedTableId;
+          const tableName = tableId
+            ? getTableName(tableId)
+            : "No table selected";
+
+          const builderLabel = document.getElementById(
+            "builderPrimaryTableLabel",
+          );
+          const pathLabel = document.getElementById(
+            "pathPrimaryTableLabel",
+          );
+
+          const labelText = tableId
+            ? `${tableName} — ${tableId}`
+            : tableName;
+
+          if (builderLabel) {
+            builderLabel.textContent = labelText;
+          }
+
+          if (pathLabel) {
+            pathLabel.textContent = labelText;
+          }
+        }
+
+        function populateRelationshipPathSelectors() {
+          const endSelect = document.getElementById("pathEndTable");
+          const startLabel = document.getElementById(
+            "pathStartTableLabel",
+          );
+
+          endSelect.replaceChildren();
+
+          const currentTableId = appState.selectedTableId;
+          const currentTable = appState.tablesById[currentTableId];
+
+          updatePrimaryQueryTableUI();
+
+          startLabel.textContent = currentTable
+            ? `${currentTable.name} — ${currentTable.id}`
+            : "No current query table selected";
+
+          for (const table of appState.tables) {
+            if (table.id === currentTableId) continue;
+
+            const option = document.createElement("option");
+            option.value = table.id;
+            option.textContent = `${table.name} — ${table.id}`;
+            endSelect.appendChild(option);
+          }
+
+          if (!endSelect.options.length && currentTableId) {
+            const option = document.createElement("option");
+            option.value = currentTableId;
+            option.textContent = `${getTableName(currentTableId)} — ${currentTableId}`;
+            endSelect.appendChild(option);
+          }
+        }
+
+        async function loadApplicationRelationshipCache() {
+          setStatus(
+            "Building application-wide field and relationship cache…",
+          );
+
+          const relationshipMap = new Map();
+
+          for (let index = 0; index < appState.tables.length; index++) {
+            const table = appState.tables[index];
+
+            setStatus(
+              `Caching schema ${index + 1}/${appState.tables.length}: ${table.name}…`,
+            );
+
+            const token = await getTemporaryToken(table.id);
+
+            const fieldPromise = appState.fieldsByTable[table.id]
+              ? Promise.resolve(appState.fieldsByTable[table.id])
+              : fetch(
+                  `https://api.quickbase.com/v1/fields?tableId=${table.id}`,
+                  {
+                    method: "GET",
+                    headers: authHeaders(token),
+                  },
+                ).then(async (response) => {
+                  const data = await response.json();
+                  if (!response.ok) {
+                    throw new Error(
+                      `Fields HTTP ${response.status} for ${table.name}: ${JSON.stringify(data)}`,
+                    );
+                  }
+                  return data;
+                });
+
+            const relationshipPromise = fetch(
+              `https://api.quickbase.com/v1/tables/${table.id}/relationships`,
+              {
+                method: "GET",
+                headers: authHeaders(token),
+              },
+            ).then(async (response) => {
+              const data = await response.json();
+
+              if (!response.ok) {
+                throw new Error(
+                  `Relationships HTTP ${response.status} for ${table.name}: ${JSON.stringify(data)}`,
+                );
+              }
+
+              return normalizeRelationshipResponse(data);
+            });
+
+            const [fields, relationships] = await Promise.all([
+              fieldPromise,
+              relationshipPromise,
+            ]);
+
+            appState.fieldsByTable[table.id] = fields;
+
+            for (const relationship of relationships) {
+              relationshipMap.set(
+                relationshipKey(relationship),
+                relationship,
+              );
+            }
+          }
+
+          appState.relationships = [...relationshipMap.values()];
+          appState.relationshipCacheLoadedAt = new Date().toISOString();
+
+          buildRelationshipGraph();
+          populateRelationshipPathSelectors();
+          refreshConditionFieldOptions();
+
+          setStatus(
+            `Application cache ready — ${appState.tables.length} table(s), ` +
+              `${appState.relationships.length} relationship(s).`,
+            "success",
+          );
+        }
+
+        function relationshipStepDetails(edge) {
+          const relationship = edge.relationship;
+          const rawReference = relationship.foreignKeyField;
+
+          const referenceField =
+            rawReference && typeof rawReference === "object"
+              ? getCachedField(
+                  relationship.childTableId,
+                  rawReference.id,
+                ) || rawReference
+              : rawReference !== undefined && rawReference !== null
+                ? getCachedField(
+                    relationship.childTableId,
+                    rawReference,
+                  )
+                : null;
+
+          return {
+            fromTableId: edge.fromTableId,
+            toTableId: edge.toTableId,
+            direction: edge.direction,
+            relationshipId: relationship.id,
+            parentTableId: relationship.parentTableId,
+            childTableId: relationship.childTableId,
+            referenceField,
+            lookupFields: Array.isArray(relationship.lookupFields)
+              ? relationship.lookupFields
+              : [],
+            summaryFields: Array.isArray(relationship.summaryFields)
+              ? relationship.summaryFields
+              : [],
+          };
+        }
+
+        function findShortestRelationshipPath(startTableId, endTableId) {
+          if (!startTableId || !endTableId) return null;
+
+          if (startTableId === endTableId) {
+            return {
+              startTableId,
+              endTableId,
+              hops: 0,
+              steps: [],
+              tablePath: [startTableId],
+            };
+          }
+
+          const queue = [
+            {
+              tableId: startTableId,
+              steps: [],
+              tablePath: [startTableId],
+            },
+          ];
+
+          const visited = new Set([startTableId]);
+
+          while (queue.length) {
+            const current = queue.shift();
+            const edges =
+              appState.relationshipGraph[current.tableId] || [];
+
+            for (const edge of edges) {
+              if (visited.has(edge.toTableId)) continue;
+
+              const nextSteps = [
+                ...current.steps,
+                relationshipStepDetails(edge),
+              ];
+              const nextTablePath = [
+                ...current.tablePath,
+                edge.toTableId,
+              ];
+
+              if (edge.toTableId === endTableId) {
+                return {
+                  startTableId,
+                  endTableId,
+                  hops: nextSteps.length,
+                  steps: nextSteps,
+                  tablePath: nextTablePath,
+                };
+              }
+
+              visited.add(edge.toTableId);
+              queue.push({
+                tableId: edge.toTableId,
+                steps: nextSteps,
+                tablePath: nextTablePath,
+              });
+            }
+          }
+
+          return null;
+        }
+
+        function getPathNativeEvidence(path) {
+          if (!path || path.hops === 0) {
+            return {
+              classification: "QBL Native",
+              message:
+                "Both selections are the same table. No relationship traversal is required.",
+            };
+          }
+
+          const startTableId = path.startTableId;
+          const supportOnStart = [];
+
+          for (const step of path.steps) {
+            if (
+              step.childTableId === startTableId &&
+              step.referenceField
+            ) {
+              supportOnStart.push({
+                role: "Reference",
+                field: step.referenceField,
+              });
+            }
+
+            if (step.childTableId === startTableId) {
+              for (const field of step.lookupFields || []) {
+                supportOnStart.push({
+                  role: "Lookup",
+                  field,
+                });
+              }
+            }
+
+            if (step.parentTableId === startTableId) {
+              for (const field of step.summaryFields || []) {
+                supportOnStart.push({
+                  role: "Summary",
+                  field,
+                });
+              }
+            }
+          }
+
+          if (path.hops === 1 && supportOnStart.length) {
+            return {
+              classification: "QBL Native Candidate",
+              message:
+                `A direct relationship exists and ${supportOnStart.length} relationship-derived field(s) are available on the current starting table. A one-table QBL query may be possible depending on the field selected.`,
+            };
+          }
+
+          if (path.hops === 1) {
+            return {
+              classification: "Direct Relationship",
+              message:
+                "The tables are directly related, but the returned relationship-derived fields are not currently exposed on the starting table. Querying the related table may still be QBL-native; combining criteria from both tables requires a cross-table plan.",
+            };
+          }
+
+          return {
+            classification: "Cross-Table Query Plan Candidate",
+            message:
+              "A relationship path exists, but it spans multiple relationship hops. The planner should first look for Quickbase lookup/summary shortcuts before JavaScript coordinates relationship keys between REST requests.",
+          };
+        }
+
+        function buildRelationshipPathReport(path) {
+          const lines = [];
+
+          lines.push("QUICKBASE REST-API UTILITIES");
+          lines.push("RELATIONSHIP PATH REPORT — PATCH 14");
+          lines.push("=".repeat(76));
+          lines.push("");
+          lines.push(
+            `Cache Built: ${appState.relationshipCacheLoadedAt || "Not built"}`,
+          );
+          lines.push(`Tables Cached: ${appState.tables.length}`);
+          lines.push(
+            `Relationships Cached: ${appState.relationships.length}`,
+          );
+          lines.push("");
+
+          if (!path) {
+            lines.push("RESULT");
+            lines.push("-".repeat(76));
+            lines.push("No relationship path found.");
+            return lines.join("\n");
+          }
+
+          const evidence = getPathNativeEvidence(path);
+
+          lines.push("PATH SUMMARY");
+          lines.push("-".repeat(76));
+          lines.push(
+            `Start: ${getTableName(path.startTableId)} (${path.startTableId})`,
+          );
+          lines.push(
+            `Destination: ${getTableName(path.endTableId)} (${path.endTableId})`,
+          );
+          lines.push(`Hops: ${path.hops}`);
+          lines.push(
+            `Path: ${path.tablePath.map(getTableName).join(" → ")}`,
+          );
+          lines.push(`Classification: ${evidence.classification}`);
+          lines.push(`Interpretation: ${evidence.message}`);
+          lines.push("");
+
+          lines.push("RELATIONSHIP STEPS");
+          lines.push("-".repeat(76));
+
+          if (!path.steps.length) {
+            lines.push("No relationship steps required.");
+          }
+
+          path.steps.forEach((step, index) => {
+            lines.push(`Step ${index + 1}`);
+            lines.push(
+              `  From: ${getTableName(step.fromTableId)} (${step.fromTableId})`,
+            );
+            lines.push(
+              `  To: ${getTableName(step.toTableId)} (${step.toTableId})`,
+            );
+            lines.push(`  Direction: ${step.direction}`);
+            lines.push(
+              `  Parent: ${getTableName(step.parentTableId)} (${step.parentTableId})`,
+            );
+            lines.push(
+              `  Child: ${getTableName(step.childTableId)} (${step.childTableId})`,
+            );
+            lines.push(
+              `  Reference: ${
+                step.referenceField
+                  ? `${step.referenceField.label} (FID ${step.referenceField.id})`
+                  : `FID ${step.relationshipId}`
+              }`,
+            );
+            lines.push(
+              `  Lookup Fields: ${
+                step.lookupFields.length
+                  ? step.lookupFields
+                      .map((field) => `${field.label} (FID ${field.id})`)
+                      .join("; ")
+                  : "None returned"
+              }`,
+            );
+            lines.push(
+              `  Summary Fields: ${
+                step.summaryFields.length
+                  ? step.summaryFields
+                      .map((field) => `${field.label} (FID ${field.id})`)
+                      .join("; ")
+                  : "None returned"
+              }`,
+            );
+            lines.push("");
+          });
+
+          lines.push("DESIGN RULE");
+          lines.push("-".repeat(76));
+          lines.push(
+            "Prefer the shortest Quickbase-native relationship path that keeps the query on one table. Use JavaScript only when the schema does not expose the necessary fields.",
+          );
+
+          return lines.join("\n");
+        }
+
+        function renderRelationshipPath(path) {
+          const result = document.getElementById(
+            "relationshipPathResult",
+          );
+
+          appState.currentRelationshipPath = path;
+          document.getElementById("pathReportOutput").textContent =
+            buildRelationshipPathReport(path);
+
+          if (!path) {
+            result.className = "path-result bad";
+            result.innerHTML = `
+              <strong>⚠ CROSS-TABLE QUERY PLAN REQUIRED</strong>
+              <p>
+                No relationship path was found between the selected tables in
+                the current application relationship cache.
+              </p>
+            `;
+            return;
+          }
+
+          const evidence = getPathNativeEvidence(path);
+
+          const stepsHtml = path.steps
+            .map((step, index) => {
+              const reference = step.referenceField
+                ? `${escapeHtml(step.referenceField.label)} (FID ${escapeHtml(step.referenceField.id)})`
+                : `FID ${escapeHtml(step.relationshipId)}`;
+
+              const lookups = step.lookupFields.length
+                ? step.lookupFields
+                    .map(
+                      (field) =>
+                        `<li>${escapeHtml(field.label)} — FID ${escapeHtml(field.id)}</li>`,
+                    )
+                    .join("")
+                : "<li>None returned</li>";
+
+              const summaries = step.summaryFields.length
+                ? step.summaryFields
+                    .map(
+                      (field) =>
+                        `<li>${escapeHtml(field.label)} — FID ${escapeHtml(field.id)}</li>`,
+                    )
+                    .join("")
+                : "<li>None returned</li>";
+
+              return `
+                <div class="path-step">
+                  <strong>Step ${index + 1}: ${escapeHtml(getTableName(step.fromTableId))} → ${escapeHtml(getTableName(step.toTableId))}</strong>
+                  <div>Direction: ${escapeHtml(step.direction)}</div>
+                  <div>Reference field: ${reference}</div>
+                  <div style="margin-top:7px;"><strong>Lookup fields returned by Quickbase</strong></div>
+                  <ul class="path-field-list">${lookups}</ul>
+                  <div style="margin-top:7px;"><strong>Summary fields returned by Quickbase</strong></div>
+                  <ul class="path-field-list">${summaries}</ul>
+                </div>
+              `;
+            })
+            .join("");
+
+          const className =
+            evidence.classification.includes("Cross-Table")
+              ? "warn"
+              : "good";
+
+          result.className = `path-result ${className}`;
+          result.innerHTML = `
+            <strong>${escapeHtml(evidence.classification)}</strong>
+            <div class="path-chain">
+              ${escapeHtml(
+                path.tablePath.map(getTableName).join(" → "),
+              )}
+            </div>
+            <p>${escapeHtml(evidence.message)}</p>
+            <p><strong>${path.hops}</strong> relationship hop(s).</p>
+            ${
+              stepsHtml
+                ? `<div class="path-step-list">${stepsHtml}</div>`
+                : ""
+            }
+          `;
+        }
+
+        function analyzeSelectedRelationshipPath() {
+          const start = appState.selectedTableId;
+          const end = document.getElementById(
+            "pathEndTable",
+          ).value;
+
+          const path = findShortestRelationshipPath(start, end);
+          renderRelationshipPath(path);
+        }
+
+
         async function loadTables() {
           setStatus("Loading tables from the current Quickbase application…");
+
           const token = await getTemporaryToken(appState.appDbid);
+
           const response = await fetch(
             `https://api.quickbase.com/v1/tables?appId=${appState.appDbid}`,
-            { method: "GET", headers: authHeaders(token) },
+            {
+              method: "GET",
+              headers: authHeaders(token),
+            },
           );
+
           const data = await response.json();
-          if (!response.ok)
+
+          if (!response.ok) {
             throw new Error(
               `Tables HTTP ${response.status}: ${JSON.stringify(data)}`,
             );
+          }
+
           appState.tables = data;
-          appState.tablesById = Object.fromEntries(data.map((t) => [t.id, t]));
+          appState.tablesById = Object.fromEntries(
+            data.map((table) => [table.id, table]),
+          );
+
           const select = document.getElementById("tableSelect");
           select.replaceChildren();
+
           for (const table of data) {
             const option = document.createElement("option");
             option.value = table.id;
             option.textContent = `${table.name} — ${table.id}`;
             select.appendChild(option);
           }
-          if (data.length) {
-            appState.selectedTableId = data[0].id;
-            await loadFields(data[0].id);
-          }
-          setStatus(
-            `${data.length} table(s) loaded. Field metadata is ready for query analysis.`,
-            "success",
-          );
-        }
-        async function loadFields(tableDbid) {
-          setStatus(`Loading field metadata for ${tableDbid}…`);
-          const token = await getTemporaryToken(tableDbid);
-          const response = await fetch(
-            `https://api.quickbase.com/v1/fields?tableId=${tableDbid}`,
-            { method: "GET", headers: authHeaders(token) },
-          );
-          const data = await response.json();
-          if (!response.ok)
-            throw new Error(
-              `Fields HTTP ${response.status}: ${JSON.stringify(data)}`,
+
+          if (!data.length) {
+            setStatus(
+              "Quickbase returned no tables for this application.",
+              "error",
             );
-          appState.fieldsByTable[tableDbid] = data;
-          appState.selectedTableId = tableDbid;
+            return;
+          }
+
+          appState.selectedTableId = data[0].id;
+
+          await loadApplicationRelationshipCache();
+
+          select.value = appState.selectedTableId;
           refreshConditionFieldOptions();
-          const tableName = appState.tablesById[tableDbid]?.name || tableDbid;
+
           setStatus(
-            `${data.length} field(s) loaded for ${tableName}.`,
+            `${data.length} table(s) and ${appState.relationships.length} relationship(s) cached. Ready for schema-aware query work.`,
             "success",
           );
         }
+
+        async function loadFields(tableDbid) {
+          appState.selectedTableId = tableDbid;
+
+          if (!appState.fieldsByTable[tableDbid]) {
+            setStatus(`Refreshing field metadata for ${tableDbid}…`);
+
+            const token = await getTemporaryToken(tableDbid);
+            const response = await fetch(
+              `https://api.quickbase.com/v1/fields?tableId=${tableDbid}`,
+              {
+                method: "GET",
+                headers: authHeaders(token),
+              },
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(
+                `Fields HTTP ${response.status}: ${JSON.stringify(data)}`,
+              );
+            }
+
+            appState.fieldsByTable[tableDbid] = data;
+          }
+
+          const tableName =
+            appState.tablesById[tableDbid]?.name || tableDbid;
+
+          populateRelationshipPathSelectors();
+          renderRelationshipPath(null);
+
+          setStatus(
+            `${appState.fieldsByTable[tableDbid].length} cached field(s) ready for ${tableName}.`,
+            "success",
+          );
+        }
+
         function getSelectedFields() {
           return appState.fieldsByTable[appState.selectedTableId] || [];
         }
@@ -841,105 +2055,1459 @@
           );
           return allowed.length ? allowed : Object.entries(OPERATOR_DEFS);
         }
-        function createConditionRow(index) {
-          const wrap = document.createElement("div");
-          wrap.className = "condition-card";
-          wrap.dataset.index = String(index);
-          wrap.innerHTML = `<div class="condition-header"><span>Condition ${index + 1}</span><button type="button" class="ghost remove-condition">Remove</button></div><div class="builder-grid"><label>Field<select class="field-select"></select></label><label>Operator<select class="operator-select"></select></label><label>Value Mode<select class="value-mode"><option value="static">Static</option><option value="jinja">Jinja</option></select></label><label>Matching Value<input class="value-input" type="text" placeholder="Open" /></label></div><label style="margin-top:10px;">Join to Next Condition<select class="join-select"><option value="AND">AND</option><option value="OR">OR</option></select></label>`;
-          wrap
-            .querySelector(".remove-condition")
-            .addEventListener("click", () => {
-              wrap.remove();
-              renumberConditions();
-            });
-          wrap
-            .querySelector(".field-select")
-            .addEventListener("change", () => refreshOperatorForRow(wrap));
-          wrap.querySelector(".value-mode").addEventListener("change", () => {
-            const mode = wrap.querySelector(".value-mode").value;
-            wrap.querySelector(".value-input").placeholder =
-              mode === "jinja" ? "a.customer_id" : "Open";
-          });
-          return wrap;
-        }
-        function addCondition() {
-          const c = document.getElementById("conditions");
-          const row = createConditionRow(c.children.length);
-          c.appendChild(row);
-          populateFieldSelect(row.querySelector(".field-select"));
-          refreshOperatorForRow(row);
-          renumberConditions();
-        }
-        function renumberConditions() {
-          const rows = [...document.querySelectorAll(".condition-card")];
-          rows.forEach((row, i) => {
-            row.dataset.index = String(i);
-            row.querySelector(".condition-header span").textContent =
-              `Condition ${i + 1}`;
-            row.querySelector(".remove-condition").style.display =
-              rows.length === 1 ? "none" : "inline-block";
-            row.querySelector(".join-select").disabled = i === rows.length - 1;
-          });
-        }
-        function populateFieldSelect(select) {
-          const fields = [...getSelectedFields()].sort(
-            (a, b) => Number(a.id) - Number(b.id),
+        function getRelationshipFieldChoices(
+          baseTableId,
+          relatedTableId,
+        ) {
+          const path = findShortestRelationshipPath(
+            baseTableId,
+            relatedTableId,
           );
-          select.replaceChildren();
-          for (const field of fields) {
-            const o = document.createElement("option");
-            o.value = field.id;
-            o.textContent = `${field.label} — FID ${field.id} (${field.fieldType})`;
-            select.appendChild(o);
+
+          if (!path) {
+            return {
+              path: null,
+              choices: [],
+              nativeChoices: [],
+              crossTableChoices: [],
+            };
           }
-        }
-        function refreshConditionFieldOptions() {
-          document
-            .querySelectorAll(".condition-card .field-select")
-            .forEach((select) => {
-              const old = select.value;
-              populateFieldSelect(select);
-              if ([...select.options].some((o) => o.value === old))
-                select.value = old;
-              refreshOperatorForRow(select.closest(".condition-card"));
+
+          const seen = new Set();
+          const choices = [];
+
+          function addChoice(field, ownerTableId, role, stepIndex) {
+            if (!field || field.id === undefined) return;
+
+            const cachedField =
+              getCachedField(ownerTableId, field.id) || field;
+
+            const key = `${ownerTableId}:${cachedField.id}`;
+            if (seen.has(key)) return;
+            seen.add(key);
+
+            choices.push({
+              field: cachedField,
+              ownerTableId,
+              role,
+              stepIndex,
+              keepsQueryOnBase: ownerTableId === baseTableId,
             });
-        }
-        function refreshOperatorForRow(row) {
-          const field = findField(row.querySelector(".field-select").value);
-          const s = row.querySelector(".operator-select");
-          const old = s.value;
-          s.replaceChildren();
-          for (const [code, def] of getOperatorOptions(field)) {
-            const o = document.createElement("option");
-            o.value = code;
-            o.textContent = `${code} — ${def.label}`;
-            s.appendChild(o);
           }
-          if ([...s.options].some((o) => o.value === old)) s.value = old;
+
+          path.steps.forEach((step, stepIndex) => {
+            if (step.referenceField) {
+              addChoice(
+                step.referenceField,
+                step.childTableId,
+                "Reference",
+                stepIndex,
+              );
+            }
+
+            for (const field of step.lookupFields || []) {
+              addChoice(
+                field,
+                step.childTableId,
+                "Lookup",
+                stepIndex,
+              );
+            }
+
+            for (const field of step.summaryFields || []) {
+              addChoice(
+                field,
+                step.parentTableId,
+                "Summary",
+                stepIndex,
+              );
+            }
+          });
+
+          return {
+            path,
+            choices,
+            nativeChoices: choices.filter(
+              (choice) => choice.keepsQueryOnBase,
+            ),
+            crossTableChoices: choices.filter(
+              (choice) => !choice.keepsQueryOnBase,
+            ),
+          };
         }
+
+        function makeConditionState(index = 0) {
+          return {
+            id: appState.nextConditionId++,
+            tableId: appState.selectedTableId,
+            fieldId: null,
+            ownerTableId: appState.selectedTableId,
+            operator: "EX",
+            valueMode: "static",
+            value: "",
+            join: "AND",
+            isPrimary: index === 0,
+          };
+        }
+
+        function initializeConditionState() {
+          if (!appState.conditionsState.length) {
+            appState.conditionsState = [makeConditionState(0)];
+          }
+
+          const first = appState.conditionsState[0];
+          first.isPrimary = true;
+          first.tableId = appState.selectedTableId;
+
+          if (
+            first.ownerTableId !== appState.selectedTableId ||
+            !getCachedField(appState.selectedTableId, first.fieldId)
+          ) {
+            first.fieldId = null;
+            first.ownerTableId = appState.selectedTableId;
+          }
+        }
+
+        function getAvailableFieldsForCondition(condition) {
+          const baseTableId = appState.selectedTableId;
+          const requestedTableId = condition.isPrimary
+            ? baseTableId
+            : condition.tableId || baseTableId;
+
+          if (!requestedTableId || requestedTableId === baseTableId) {
+            return {
+              path: requestedTableId ? {
+                startTableId: baseTableId,
+                endTableId: baseTableId,
+                hops: 0,
+                steps: [],
+                tablePath: [baseTableId],
+              } : null,
+              relationshipChoices: [],
+              destinationChoices: [
+                ...(appState.fieldsByTable[baseTableId] || []),
+              ]
+                .sort((a, b) => Number(a.id) - Number(b.id))
+                .map((field) => ({
+                  field,
+                  ownerTableId: baseTableId,
+                  role: "Native Field",
+                })),
+            };
+          }
+
+          const relationship = getRelationshipFieldChoices(
+            baseTableId,
+            requestedTableId,
+          );
+
+          if (!relationship.path) {
+            return {
+              path: null,
+              relationshipChoices: [],
+              destinationChoices: [],
+            };
+          }
+
+          const relationshipChoices = relationship.choices;
+          const relationshipKeys = new Set(
+            relationshipChoices.map(
+              (choice) => `${choice.ownerTableId}:${choice.field.id}`,
+            ),
+          );
+
+          const destinationChoices = [
+            ...(appState.fieldsByTable[requestedTableId] || []),
+          ]
+            .sort((a, b) => Number(a.id) - Number(b.id))
+            .filter(
+              (field) =>
+                !relationshipKeys.has(
+                  `${requestedTableId}:${field.id}`,
+                ),
+            )
+            .map((field) => ({
+              field,
+              ownerTableId: requestedTableId,
+              role: "Destination Table Field",
+            }));
+
+          return {
+            path: relationship.path,
+            relationshipChoices,
+            destinationChoices,
+          };
+        }
+
+        function getConditionChoice(condition) {
+          const available = getAvailableFieldsForCondition(condition);
+          const choices = [
+            ...(available.relationshipChoices || []),
+            ...(available.destinationChoices || []),
+          ];
+
+          const choice = choices.find(
+            (item) =>
+              Number(item.field.id) === Number(condition.fieldId) &&
+              item.ownerTableId === condition.ownerTableId,
+          );
+
+          return { available, choices, choice: choice || null };
+        }
+
+        function normalizeConditionState(condition) {
+          const { choices, choice } = getConditionChoice(condition);
+          const selected = choice || choices[0] || null;
+
+          if (!selected) {
+            condition.fieldId = null;
+            condition.ownerTableId = null;
+            condition.operator = "EX";
+            return;
+          }
+
+          condition.fieldId = Number(selected.field.id);
+          condition.ownerTableId = selected.ownerTableId;
+
+          const allowed = getOperatorOptions(selected.field).map(
+            ([code]) => code,
+          );
+
+          if (!allowed.includes(condition.operator)) {
+            condition.operator = allowed[0] || "EX";
+          }
+        }
+
+        function setConditionTable(conditionId, tableId) {
+          const condition = appState.conditionsState.find(
+            (item) => item.id === conditionId,
+          );
+          if (!condition || condition.isPrimary) return;
+
+          condition.tableId = tableId;
+          condition.fieldId = null;
+          condition.ownerTableId = null;
+          normalizeConditionState(condition);
+          renderConditionsFromState();
+          updateBuilderPlanPreview();
+        }
+
+        function setConditionField(
+          conditionId,
+          fieldId,
+          ownerTableId,
+        ) {
+          const condition = appState.conditionsState.find(
+            (item) => item.id === conditionId,
+          );
+          if (!condition) return;
+
+          condition.fieldId = Number(fieldId);
+          condition.ownerTableId = ownerTableId;
+          normalizeConditionState(condition);
+          renderConditionsFromState();
+          updateBuilderPlanPreview();
+        }
+
+        function populateConditionTableOptions(select, condition) {
+          select.replaceChildren();
+
+          for (const table of appState.tables) {
+            const option = document.createElement("option");
+            option.value = table.id;
+            option.textContent =
+              table.id === appState.selectedTableId
+                ? `${table.name} — Current Query Table`
+                : table.name;
+            select.appendChild(option);
+          }
+
+          select.value = condition.isPrimary
+            ? appState.selectedTableId || ""
+            : condition.tableId || appState.selectedTableId || "";
+          select.disabled = condition.isPrimary;
+        }
+
+        function populateConditionFieldOptions(
+          select,
+          condition,
+          available,
+        ) {
+          select.replaceChildren();
+
+          function appendGroup(label, items) {
+            if (!items.length) return;
+            const group = document.createElement("optgroup");
+            group.label = label;
+
+            for (const item of items) {
+              const option = document.createElement("option");
+              option.value = item.field.id;
+              option.dataset.ownerTableId = item.ownerTableId;
+              option.dataset.role = item.role;
+              option.textContent = `${item.field.label} — FID ${item.field.id} [${item.role}]`;
+              group.appendChild(option);
+            }
+
+            select.appendChild(group);
+          }
+
+          if (!available.path && !condition.isPrimary) {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "No relationship path available";
+            select.appendChild(option);
+            select.disabled = true;
+            return;
+          }
+
+          appendGroup(
+            available.path?.hops
+              ? "Relationship Path Fields"
+              : `Fields on ${getTableName(appState.selectedTableId)}`,
+            available.relationshipChoices || [],
+          );
+
+          appendGroup(
+            available.path?.hops
+              ? `All Fields on ${getTableName(condition.tableId)}`
+              : `Fields on ${getTableName(appState.selectedTableId)}`,
+            available.destinationChoices || [],
+          );
+
+          select.disabled = false;
+
+          const matchingOption = [...select.options].find(
+            (option) =>
+              Number(option.value) === Number(condition.fieldId) &&
+              (option.dataset.ownerTableId || appState.selectedTableId) ===
+                condition.ownerTableId,
+          );
+
+          if (matchingOption) {
+            matchingOption.selected = true;
+          }
+        }
+
+        function renderConditionPathMessage(container, condition, available) {
+          const base = appState.selectedTableId;
+
+          if (condition.tableId === base || condition.isPrimary) {
+            container.className = "condition-table-context good";
+            container.innerHTML = `<strong>QBL Native</strong> — fields belong to the current query table ${escapeHtml(getTableName(base))}.`;
+            return;
+          }
+
+          if (!available.path) {
+            container.className = "condition-table-context bad";
+            container.innerHTML = `<strong>⚠ No relationship path found.</strong> ${escapeHtml(getTableName(base))} cannot currently reach ${escapeHtml(getTableName(condition.tableId))} through the cached Quickbase relationships.`;
+            return;
+          }
+
+          const pathText = available.path.tablePath
+            .map(getTableName)
+            .join(" → ");
+
+          container.className = "condition-table-context warn";
+          container.innerHTML = `<strong>Relationship path:</strong> ${escapeHtml(pathText)} · ${available.path.hops} hop(s). Relationship fields explain the bridge; the <em>All Fields</em> group lets this condition filter ordinary fields on ${escapeHtml(getTableName(condition.tableId))}.`;
+        }
+
+        function renderConditionsFromState() {
+          initializeConditionState();
+
+          const container = document.getElementById("conditions");
+          container.replaceChildren();
+
+          appState.conditionsState.forEach((condition, index) => {
+            condition.isPrimary = index === 0;
+            if (condition.isPrimary) {
+              condition.tableId = appState.selectedTableId;
+            }
+
+            normalizeConditionState(condition);
+            const available = getAvailableFieldsForCondition(condition);
+            const selected = getConditionChoice(condition).choice;
+
+            const wrap = document.createElement("div");
+            wrap.className = "condition-card";
+            wrap.dataset.conditionId = String(condition.id);
+
+            wrap.innerHTML = `
+              <div class="condition-header">
+                <span>Condition ${index + 1}</span>
+                <button type="button" class="ghost remove-condition">Remove</button>
+              </div>
+              <div class="builder-grid">
+                <label>Table Context<select class="condition-table-select"></select></label>
+                <label>Field<select class="field-select"></select></label>
+                <label>Operator<select class="operator-select"></select></label>
+                <label>Value Mode<select class="value-mode"><option value="static">Static</option><option value="jinja">Jinja</option></select></label>
+              </div>
+              <label style="margin-top:10px;">Matching Value<input class="value-input" type="text" /></label>
+              <div class="condition-owner"></div>
+              <div class="condition-table-context"></div>
+              <label style="margin-top:10px;">Join to Next Condition<select class="join-select"><option value="AND">AND</option><option value="OR">OR</option></select></label>
+            `;
+
+            const tableSelect = wrap.querySelector(".condition-table-select");
+            const fieldSelect = wrap.querySelector(".field-select");
+            const operatorSelect = wrap.querySelector(".operator-select");
+            const modeSelect = wrap.querySelector(".value-mode");
+            const valueInput = wrap.querySelector(".value-input");
+            const joinSelect = wrap.querySelector(".join-select");
+            const owner = wrap.querySelector(".condition-owner");
+            const context = wrap.querySelector(".condition-table-context");
+            const removeButton = wrap.querySelector(".remove-condition");
+
+            populateConditionTableOptions(tableSelect, condition);
+            populateConditionFieldOptions(fieldSelect, condition, available);
+
+            operatorSelect.replaceChildren();
+            for (const [code, def] of getOperatorOptions(selected?.field || null)) {
+              const option = document.createElement("option");
+              option.value = code;
+              option.textContent = `${code} — ${def.label}`;
+              operatorSelect.appendChild(option);
+            }
+            operatorSelect.value = condition.operator;
+
+            modeSelect.value = condition.valueMode;
+            valueInput.value = condition.value;
+            valueInput.placeholder = condition.valueMode === "jinja"
+              ? "a.customer_id"
+              : "Open";
+            joinSelect.value = condition.join;
+            joinSelect.disabled = index === appState.conditionsState.length - 1;
+            removeButton.style.display = appState.conditionsState.length === 1
+              ? "none"
+              : "inline-block";
+
+            owner.textContent = selected
+              ? `QBL field owner: ${getTableName(selected.ownerTableId)} · ${selected.role}`
+              : "No QBL field owner resolved";
+
+            renderConditionPathMessage(context, condition, available);
+
+            tableSelect.addEventListener("change", () => {
+              setConditionTable(condition.id, tableSelect.value);
+            });
+
+            fieldSelect.addEventListener("change", () => {
+              const option = fieldSelect.options[fieldSelect.selectedIndex];
+              setConditionField(
+                condition.id,
+                fieldSelect.value,
+                option?.dataset.ownerTableId || condition.tableId,
+              );
+            });
+
+            operatorSelect.addEventListener("change", () => {
+              condition.operator = operatorSelect.value;
+              updateBuilderPlanPreview();
+            });
+
+            modeSelect.addEventListener("change", () => {
+              condition.valueMode = modeSelect.value;
+              valueInput.placeholder = condition.valueMode === "jinja"
+                ? "a.customer_id"
+                : "Open";
+              updateBuilderPlanPreview();
+            });
+
+            valueInput.addEventListener("input", () => {
+              condition.value = valueInput.value;
+              updateBuilderPlanPreview();
+            });
+
+            joinSelect.addEventListener("change", () => {
+              condition.join = joinSelect.value;
+              updateBuilderPlanPreview();
+            });
+
+            removeButton.addEventListener("click", () => {
+              appState.conditionsState = appState.conditionsState.filter(
+                (item) => item.id !== condition.id,
+              );
+              if (!appState.conditionsState.length) {
+                appState.conditionsState = [makeConditionState(0)];
+              }
+              renderConditionsFromState();
+              updateBuilderPlanPreview();
+            });
+
+            container.appendChild(wrap);
+          });
+        }
+
+        function addCondition() {
+          const condition = makeConditionState(
+            appState.conditionsState.length,
+          );
+          condition.tableId = appState.selectedTableId;
+          condition.ownerTableId = appState.selectedTableId;
+          appState.conditionsState.push(condition);
+          renderConditionsFromState();
+          updateBuilderPlanPreview();
+        }
+
+        function renumberConditions() {
+          renderConditionsFromState();
+        }
+
+        function refreshConditionFieldOptions() {
+          if (appState.conditionsState.length) {
+            appState.conditionsState[0].tableId = appState.selectedTableId;
+            appState.conditionsState[0].ownerTableId = appState.selectedTableId;
+            if (
+              !getCachedField(
+                appState.selectedTableId,
+                appState.conditionsState[0].fieldId,
+              )
+            ) {
+              appState.conditionsState[0].fieldId = null;
+            }
+          }
+          renderConditionsFromState();
+          updateBuilderPlanPreview();
+        }
+
         function escapeQueryValue(value) {
           return String(value).replace(/'/g, "\\'");
         }
-        function generateQueryFromBuilder() {
-          const rows = [...document.querySelectorAll(".condition-card")];
-          const parts = [];
-          rows.forEach((row, i) => {
-            const fid = row.querySelector(".field-select").value,
-              op = row.querySelector(".operator-select").value,
-              mode = row.querySelector(".value-mode").value,
-              raw = row.querySelector(".value-input").value.trim();
-            const value =
-              mode === "jinja" ? `{{${raw}}}` : escapeQueryValue(raw);
-            parts.push(`{${fid}.${op}.'${value}'}`);
-            if (i < rows.length - 1)
-              parts.push(row.querySelector(".join-select").value);
+
+        function collectBuilderRows() {
+          return appState.conditionsState.map((condition, index) => {
+            const { choice } = getConditionChoice(condition);
+            const field = choice?.field || null;
+            const raw = String(condition.value || "").trim();
+            const value = condition.valueMode === "jinja"
+              ? `{{${raw}}}`
+              : escapeQueryValue(raw);
+
+            return {
+              conditionId: condition.id,
+              index,
+              requestedTableId: condition.tableId,
+              ownerTableId: choice?.ownerTableId || null,
+              field,
+              role: choice?.role || null,
+              operator: condition.operator,
+              mode: condition.valueMode,
+              raw,
+              fragment:
+                field && condition.operator
+                  ? `{${field.id}.${condition.operator}.'${value}'}`
+                  : "",
+              join:
+                index < appState.conditionsState.length - 1
+                  ? condition.join || "AND"
+                  : null,
+            };
           });
-          const query = parts.join("");
-          appState.currentGeneratedQuery = query;
-          document.getElementById("generatedQuery").textContent =
-            query || "No query generated.";
-          analyzeInput(query, "Visual Builder");
         }
+
+        function buildCrossTablePlanner(validRows, fragmentsByTable) {
+          const primaryTableId = appState.selectedTableId;
+          const involvedTables = [
+            ...new Set(validRows.map((row) => row.ownerTableId)),
+          ];
+          const paths = [];
+
+          for (const tableId of involvedTables) {
+            if (tableId === primaryTableId) continue;
+            const path = findShortestRelationshipPath(
+              primaryTableId,
+              tableId,
+            );
+            paths.push({ tableId, path });
+          }
+
+          const bridges = [];
+          for (const item of paths) {
+            if (!item.path) continue;
+            item.path.steps.forEach((step, index) => {
+              bridges.push({
+                pathTableId: item.tableId,
+                index,
+                fromTableId: step.fromTableId,
+                toTableId: step.toTableId,
+                parentTableId: step.parentTableId,
+                childTableId: step.childTableId,
+                referenceField: step.referenceField,
+              });
+            });
+          }
+
+          return {
+            primaryTableId,
+            involvedTables,
+            paths,
+            bridges,
+            fragmentsByTable,
+            requestedSequence: validRows.map((row) => ({
+              tableId: row.ownerTableId,
+              fragment: row.fragment,
+              join: row.join,
+              index: row.index,
+            })),
+          };
+        }
+
+        function buildBuilderPlan() {
+          const rows = collectBuilderRows();
+          const unresolvedRows = rows.filter(
+            (item) => !item.ownerTableId || !item.field || !item.fragment,
+          );
+          const validRows = rows.filter(
+            (item) => item.ownerTableId && item.field && item.fragment,
+          );
+          const ownerTables = [
+            ...new Set(validRows.map((item) => item.ownerTableId)),
+          ];
+
+          if (!rows.length || !validRows.length) {
+            return {
+              mode: "empty",
+              rows,
+              ownerTables,
+              unresolvedRows,
+              query: "",
+            };
+          }
+
+          if (unresolvedRows.length) {
+            return {
+              mode: "invalid",
+              rows,
+              ownerTables,
+              unresolvedRows,
+              query: "",
+            };
+          }
+
+          if (ownerTables.length === 1) {
+            const ownerTableId = ownerTables[0];
+            const parts = [];
+
+            validRows.forEach((item, index) => {
+              parts.push(item.fragment);
+              if (index < validRows.length - 1) {
+                parts.push(item.join || "AND");
+              }
+            });
+
+            return {
+              mode:
+                ownerTableId === appState.selectedTableId
+                  ? "qbl-native"
+                  : "single-related-table",
+              rows,
+              ownerTables,
+              unresolvedRows,
+              query: parts.join(""),
+              queryTableId: ownerTableId,
+            };
+          }
+
+          const fragmentsByTable = {};
+          for (const item of validRows) {
+            if (!fragmentsByTable[item.ownerTableId]) {
+              fragmentsByTable[item.ownerTableId] = [];
+            }
+            fragmentsByTable[item.ownerTableId].push(item.fragment);
+          }
+
+          return {
+            mode: "cross-table",
+            rows,
+            ownerTables,
+            unresolvedRows,
+            query: "",
+            fragmentsByTable,
+            planner: buildCrossTablePlanner(
+              validRows,
+              fragmentsByTable,
+            ),
+          };
+        }
+
+        function renderBuilderPlan(plan) {
+          let panel = document.getElementById("builderRelationshipPlan");
+
+          if (!panel) {
+            panel = document.createElement("div");
+            panel.id = "builderRelationshipPlan";
+            panel.className = "builder-plan";
+            document
+              .getElementById("conditions")
+              .insertAdjacentElement("afterend", panel);
+          }
+
+          if (plan.mode === "empty") {
+            panel.className = "builder-plan";
+            panel.innerHTML =
+              "<strong>Builder Plan</strong><br />Choose fields and values to build QBL.";
+            return;
+          }
+
+          if (plan.mode === "invalid") {
+            panel.className = "builder-plan bad";
+            const rowNumbers = (plan.unresolvedRows || [])
+              .map((item) => item.index + 1)
+              .join(", ");
+            panel.innerHTML = `
+              <strong>🔴 Builder condition incomplete</strong>
+              <p>Condition ${escapeHtml(rowNumbers || "unknown")} cannot be translated into QBL from the current schema selection. The Workbench will not silently drop that condition.</p>
+            `;
+            return;
+          }
+
+          if (
+            plan.mode === "qbl-native" ||
+            plan.mode === "single-related-table"
+          ) {
+            panel.className = "builder-plan";
+            panel.innerHTML = `
+              <strong>🟢 QBL Native — one query table</strong>
+              <div>Query table: ${escapeHtml(getTableName(plan.queryTableId))}</div>
+              <code>${escapeHtml(plan.query)}</code>
+            `;
+            return;
+          }
+
+          panel.className = "builder-plan warn";
+
+          const fragmentHtml = Object.entries(
+            plan.fragmentsByTable || {},
+          )
+            .map(([tableId, items]) => {
+              const fragments = items
+                .map(
+                  (fragment, index) =>
+                    `Fragment ${index + 1}: ${fragment}`,
+                )
+                .join("\n");
+
+              return `<div class="planner-step"><strong>${escapeHtml(getTableName(tableId))}</strong><code>${escapeHtml(fragments)}</code></div>`;
+            })
+            .join("");
+
+          const requestedSequenceHtml = (
+            plan.planner?.requestedSequence || []
+          ).length
+            ? `<div class="planner-step"><strong>Requested Boolean Sequence</strong><code>${escapeHtml(
+                (plan.planner.requestedSequence || [])
+                  .map((item, index, all) => {
+                    const tablePrefix =
+                      `[${getTableName(item.tableId)}] `;
+                    const connector =
+                      index < all.length - 1
+                        ? ` ${item.join || "AND"}`
+                        : "";
+                    return `${tablePrefix}${item.fragment}${connector}`;
+                  })
+                  .join("\n"),
+              )}</code><div style="margin-top:7px;color:#667788;font-size:12px;">Cross-table fragments are shown without inventing new AND/OR semantics. Execution coordination must preserve this original condition order.</div></div>`
+            : "";
+
+          const pathHtml = (plan.planner?.paths || [])
+            .map(({ tableId, path }) => {
+              if (!path) {
+                return `<div class="planner-step"><strong>${escapeHtml(getTableName(tableId))}</strong><div>No relationship path found.</div></div>`;
+              }
+
+              const bridgeText = path.steps
+                .map((step) => {
+                  const reference = step.referenceField
+                    ? `${step.referenceField.label} (FID ${step.referenceField.id})`
+                    : `relationship ${step.relationshipId}`;
+                  return `${getTableName(step.parentTableId)} → ${getTableName(step.childTableId)} via ${reference}`;
+                })
+                .join("; ");
+
+              return `<div class="planner-step"><strong>Path: ${escapeHtml(path.tablePath.map(getTableName).join(" → "))}</strong><div>${escapeHtml(bridgeText)}</div></div>`;
+            })
+            .join("");
+
+          panel.innerHTML = `
+            <strong>⚠ CROSS-TABLE QUERY PLAN REQUIRED</strong>
+            <p>
+              These conditions live on more than one Quickbase table. QBL remains table-specific; JavaScript will only coordinate the relationship keys between REST requests after the Quickbase-native filters run.
+            </p>
+            <div class="planner-steps">${requestedSequenceHtml}${fragmentHtml}${pathHtml}</div>
+          `;
+        }
+
+        function getDefaultLiveFieldIds(plan) {
+          if (
+            !plan ||
+            !["qbl-native", "single-related-table"].includes(plan.mode)
+          ) {
+            return [];
+          }
+
+          const ids = new Set([3]);
+          for (const row of plan.rows || []) {
+            if (
+              row.ownerTableId === plan.queryTableId &&
+              row.field?.id !== undefined
+            ) {
+              ids.add(Number(row.field.id));
+            }
+          }
+
+          return [...ids].filter((fid) =>
+            Boolean(getCachedField(plan.queryTableId, fid)),
+          );
+        }
+
+        function getLiveFieldPlanSignature(plan) {
+          if (!plan?.queryTableId) return "";
+          return `${plan.queryTableId}|${getDefaultLiveFieldIds(plan)
+            .sort((a, b) => a - b)
+            .join(",")}`;
+        }
+
+        function renderLiveFieldSelector(plan) {
+          const container = document.getElementById("liveFieldSelector");
+          if (!container) return;
+
+          container.replaceChildren();
+
+          if (
+            !plan ||
+            !["qbl-native", "single-related-table"].includes(plan.mode)
+          ) {
+            container.textContent =
+              "Generate a valid one-table QBL plan to choose return fields.";
+            appState.liveSelectedFieldIds = [];
+            appState.liveFieldPlanSignature = "";
+            return;
+          }
+
+          const signature = getLiveFieldPlanSignature(plan);
+          if (signature !== appState.liveFieldPlanSignature) {
+            appState.liveFieldPlanSignature = signature;
+            appState.liveSelectedFieldIds = getDefaultLiveFieldIds(plan);
+          }
+
+          const fields = [
+            ...(appState.fieldsByTable[plan.queryTableId] || []),
+          ].sort((a, b) => Number(a.id) - Number(b.id));
+
+          for (const field of fields) {
+            const label = document.createElement("label");
+            label.className = "field-check";
+
+            const input = document.createElement("input");
+            input.type = "checkbox";
+            input.value = field.id;
+            input.checked = appState.liveSelectedFieldIds.includes(
+              Number(field.id),
+            );
+
+            const text = document.createElement("span");
+            text.textContent = `${field.label} — FID ${field.id} (${field.fieldType})`;
+
+            input.addEventListener("change", () => {
+              const fid = Number(field.id);
+              const selected = new Set(appState.liveSelectedFieldIds);
+              if (input.checked) selected.add(fid);
+              else selected.delete(fid);
+              appState.liveSelectedFieldIds = [...selected];
+            });
+
+            label.appendChild(input);
+            label.appendChild(text);
+            container.appendChild(label);
+          }
+        }
+
+        function updateBuilderPlanPreview() {
+          const plan = buildBuilderPlan();
+          appState.currentBuilderPlan = plan;
+          renderBuilderPlan(plan);
+          updateLiveQueryPreview(plan);
+          renderLiveFieldSelector(plan);
+        }
+
+        function hasRuntimeJinja(query) {
+          return /\{\{[\s\S]*?\}\}|\{%[\s\S]*?%\}/.test(
+            String(query || ""),
+          );
+        }
+
+        function updateLiveQueryPreview(plan) {
+          appState.currentBuilderPlan = plan;
+
+          const tableLabel = document.getElementById(
+            "liveQueryTableLabel",
+          );
+          const expression = document.getElementById(
+            "liveQueryExpression",
+          );
+          const status = document.getElementById(
+            "liveQueryStatus",
+          );
+
+          if (
+            plan &&
+            (plan.mode === "qbl-native" ||
+              plan.mode === "single-related-table")
+          ) {
+            tableLabel.textContent =
+              `${getTableName(plan.queryTableId)} — ${plan.queryTableId}`;
+            expression.textContent = plan.query;
+
+            if (hasRuntimeJinja(plan.query)) {
+              status.className =
+                "live-query-status warn";
+              status.textContent =
+                "Pipelines Jinja detected. The QBL structure can be analyzed, but this Code Page cannot execute Pipelines runtime expressions.";
+            } else {
+              status.className = "live-query-status";
+              status.textContent =
+                "Valid one-table QBL plan ready for live REST execution.";
+            }
+
+            return;
+          }
+
+          tableLabel.textContent =
+            "No executable one-table QBL plan";
+          expression.textContent =
+            plan?.mode === "cross-table"
+              ? "⚠ CROSS-TABLE QUERY PLAN REQUIRED"
+              : plan?.mode === "invalid"
+                ? "🔴 BUILDER CONDITION INCOMPLETE"
+                : "Generate a valid QBL expression in Visual Query Builder first.";
+
+          status.className =
+            plan?.mode === "cross-table"
+              ? "live-query-status warn"
+              : plan?.mode === "invalid"
+                ? "live-query-status error"
+                : "live-query-status";
+
+          status.textContent =
+            plan?.mode === "cross-table"
+              ? "Multiple Quickbase tables own the selected FIDs. A single records/query request will not be sent."
+              : plan?.mode === "invalid"
+                ? "One or more builder conditions cannot be translated into QBL."
+                : "Waiting for a generated QBL expression.";
+        }
+
+        function extractCellValue(cell) {
+          if (cell === null || cell === undefined) return "";
+
+          if (
+            typeof cell === "object" &&
+            Object.prototype.hasOwnProperty.call(cell, "value")
+          ) {
+            const value = cell.value;
+
+            if (value === null || value === undefined) return "";
+
+            if (Array.isArray(value)) {
+              return value
+                .map((item) =>
+                  typeof item === "object"
+                    ? JSON.stringify(item)
+                    : String(item),
+                )
+                .join(", ");
+            }
+
+            if (typeof value === "object") {
+              return JSON.stringify(value);
+            }
+
+            return String(value);
+          }
+
+          if (typeof cell === "object") {
+            return JSON.stringify(cell);
+          }
+
+          return String(cell);
+        }
+
+        function renderLiveResults(
+          data,
+          tableDbid,
+          selectedFieldIds = appState.liveSelectedFieldIds,
+        ) {
+          const rows = Array.isArray(data?.data)
+            ? data.data
+            : [];
+          const fields = Array.isArray(data?.fields)
+            ? data.fields
+            : [];
+
+          document.getElementById(
+            "liveRecordCount",
+          ).textContent = String(rows.length);
+
+          const requestedIds = (selectedFieldIds || [])
+            .map(Number)
+            .filter(Number.isFinite);
+
+          document.getElementById(
+            "liveFieldCount",
+          ).textContent = String(requestedIds.length);
+
+          const wrap = document.getElementById(
+            "liveResultsTableWrap",
+          );
+          const head = document.getElementById(
+            "liveResultsHead",
+          );
+          const body = document.getElementById(
+            "liveResultsBody",
+          );
+
+          head.replaceChildren();
+          body.replaceChildren();
+
+          if (!rows.length || !requestedIds.length) {
+            wrap.style.display = "none";
+            return;
+          }
+
+          const fieldIds = requestedIds;
+          const headerRow = document.createElement("tr");
+
+          for (const fid of fieldIds) {
+            const field =
+              fields.find(
+                (candidate) =>
+                  Number(candidate.id) === Number(fid),
+              ) || getCachedField(tableDbid, fid);
+
+            const th = document.createElement("th");
+            th.textContent = field
+              ? `${field.label} · FID ${fid}`
+              : `FID ${fid}`;
+            headerRow.appendChild(th);
+          }
+
+          head.appendChild(headerRow);
+
+          for (const row of rows) {
+            const tr = document.createElement("tr");
+
+            for (const fid of fieldIds) {
+              const td = document.createElement("td");
+              td.textContent = extractCellValue(
+                row[String(fid)] ?? row[fid],
+              );
+              tr.appendChild(td);
+            }
+
+            body.appendChild(tr);
+          }
+
+          wrap.style.display = "block";
+        }
+
+        function buildLiveExecutionReport({
+          plan,
+          requestBody,
+          responseData,
+          httpStatus,
+          elapsedMs,
+          error,
+        }) {
+          const lines = [];
+
+          lines.push("QUICKBASE REST-API UTILITIES");
+          lines.push("LIVE QUERY EXECUTION REPORT — PATCH 14");
+          lines.push("=".repeat(76));
+          lines.push("");
+          lines.push(
+            `Generated: ${new Date().toISOString()}`,
+          );
+          lines.push(
+            `Query Table: ${
+              plan?.queryTableId
+                ? `${getTableName(plan.queryTableId)} (${plan.queryTableId})`
+                : "Not resolved"
+            }`,
+          );
+          lines.push(
+            `QBL: ${plan?.query || "Not generated"}`,
+          );
+          lines.push(
+            `Fields Returned: ${requestBody?.select?.join(", ") || "None"}`,
+          );
+          lines.push("");
+          lines.push("REQUEST");
+          lines.push("-".repeat(76));
+          lines.push(
+            requestBody
+              ? JSON.stringify(requestBody, null, 2)
+              : "No request body.",
+          );
+          lines.push("");
+          lines.push("EXECUTION");
+          lines.push("-".repeat(76));
+          lines.push(
+            `HTTP Status: ${httpStatus ?? "Not returned"}`,
+          );
+          lines.push(
+            `Elapsed: ${
+              elapsedMs === null || elapsedMs === undefined
+                ? "Not measured"
+                : `${elapsedMs.toFixed(1)} ms`
+            }`,
+          );
+          lines.push(
+            `Records Returned: ${
+              Array.isArray(responseData?.data)
+                ? responseData.data.length
+                : 0
+            }`,
+          );
+
+          if (error) {
+            lines.push("");
+            lines.push("ERROR");
+            lines.push("-".repeat(76));
+            lines.push(error);
+          }
+
+          lines.push("");
+          lines.push("RESPONSE");
+          lines.push("-".repeat(76));
+          lines.push(
+            responseData
+              ? JSON.stringify(responseData, null, 2)
+              : "No response body.",
+          );
+
+          return lines.join("\n");
+        }
+
+        async function runLiveQuery() {
+          const plan =
+            appState.currentBuilderPlan ||
+            buildBuilderPlan();
+
+          updateLiveQueryPreview(plan);
+
+          const status = document.getElementById(
+            "liveQueryStatus",
+          );
+
+          if (
+            !plan ||
+            !["qbl-native", "single-related-table"].includes(
+              plan.mode,
+            )
+          ) {
+            status.className =
+              "live-query-status error";
+            status.textContent =
+              "No executable one-table QBL plan is available. Resolve the Builder Plan first.";
+            return;
+          }
+
+          if (hasRuntimeJinja(plan.query)) {
+            status.className =
+              "live-query-status warn";
+            status.textContent =
+              "Execution blocked: this query contains Pipelines Jinja that must be resolved inside the Pipelines runtime.";
+            return;
+          }
+
+          const tableDbid = plan.queryTableId;
+          const cachedFields =
+            appState.fieldsByTable[tableDbid] || [];
+
+          const select = (appState.liveSelectedFieldIds.length
+            ? appState.liveSelectedFieldIds
+            : getDefaultLiveFieldIds(plan))
+            .map(Number)
+            .filter(
+              (fid) =>
+                Number.isFinite(fid) &&
+                cachedFields.some(
+                  (field) => Number(field.id) === fid,
+                ),
+            );
+
+          if (!select.length) {
+            status.className = "live-query-status error";
+            status.textContent =
+              "Select at least one field to return before running the live query.";
+            return;
+          }
+
+          appState.liveSelectedFieldIds = [...select];
+
+          const requestBody = {
+            from: tableDbid,
+            select,
+            where: plan.query,
+            options: {
+              top: 100,
+              skip: 0,
+            },
+          };
+
+          appState.liveRequest = requestBody;
+          appState.liveResponse = null;
+
+          document.getElementById(
+            "liveRequestOutput",
+          ).textContent = JSON.stringify(
+            requestBody,
+            null,
+            2,
+          );
+
+          document.getElementById(
+            "liveResponseOutput",
+          ).textContent =
+            "Waiting for Quickbase response…";
+
+          document.getElementById(
+            "liveExecutionReport",
+          ).textContent =
+            "Live query running…";
+
+          status.className = "live-query-status";
+          status.textContent =
+            `Running records/query against ${getTableName(tableDbid)}…`;
+
+          document.getElementById(
+            "liveRecordCount",
+          ).textContent = "0";
+          document.getElementById(
+            "liveFieldCount",
+          ).textContent = "0";
+          document.getElementById(
+            "liveExecutionTime",
+          ).textContent = "…";
+          document.getElementById(
+            "liveHttpStatus",
+          ).textContent = "…";
+
+          const started = performance.now();
+          let httpStatus = null;
+          let responseData = null;
+
+          try {
+            const token =
+              await getTemporaryToken(tableDbid);
+
+            const response = await fetch(
+              "https://api.quickbase.com/v1/records/query",
+              {
+                method: "POST",
+                headers: authHeaders(token),
+                body: JSON.stringify(requestBody),
+              },
+            );
+
+            httpStatus = response.status;
+            const elapsedMs =
+              performance.now() - started;
+
+            responseData = await response.json();
+            appState.liveResponse = responseData;
+
+            document.getElementById(
+              "liveExecutionTime",
+            ).textContent =
+              `${elapsedMs.toFixed(1)} ms`;
+            document.getElementById(
+              "liveHttpStatus",
+            ).textContent =
+              String(httpStatus);
+
+            document.getElementById(
+              "liveResponseOutput",
+            ).textContent = JSON.stringify(
+              responseData,
+              null,
+              2,
+            );
+
+            if (!response.ok) {
+              const message =
+                responseData?.message ||
+                responseData?.description ||
+                JSON.stringify(responseData);
+
+              status.className =
+                "live-query-status error";
+              status.textContent =
+                `Quickbase returned HTTP ${httpStatus}: ${message}`;
+
+              const report =
+                buildLiveExecutionReport({
+                  plan,
+                  requestBody,
+                  responseData,
+                  httpStatus,
+                  elapsedMs,
+                  error: message,
+                });
+
+              appState.liveExecutionReport = report;
+
+              document.getElementById(
+                "liveExecutionReport",
+              ).textContent = report;
+
+              renderLiveResults(
+                { data: [], fields: [] },
+                tableDbid,
+                select,
+              );
+
+              return;
+            }
+
+            renderLiveResults(
+              responseData,
+              tableDbid,
+              select,
+            );
+
+            const recordCount =
+              Array.isArray(responseData?.data)
+                ? responseData.data.length
+                : 0;
+
+            status.className =
+              "live-query-status success";
+            status.textContent =
+              `Quickbase returned ${recordCount} record(s) from ${getTableName(tableDbid)}.`;
+
+            const report =
+              buildLiveExecutionReport({
+                plan,
+                requestBody,
+                responseData,
+                httpStatus,
+                elapsedMs,
+                error: null,
+              });
+
+            appState.liveExecutionReport = report;
+
+            document.getElementById(
+              "liveExecutionReport",
+            ).textContent = report;
+          } catch (error) {
+            const elapsedMs =
+              performance.now() - started;
+            const message =
+              error instanceof Error
+                ? error.message
+                : String(error);
+
+            document.getElementById(
+              "liveExecutionTime",
+            ).textContent =
+              `${elapsedMs.toFixed(1)} ms`;
+            document.getElementById(
+              "liveHttpStatus",
+            ).textContent =
+              httpStatus === null
+                ? "Request failed"
+                : String(httpStatus);
+
+            status.className =
+              "live-query-status error";
+            status.textContent =
+              `Live query failed: ${message}`;
+
+            const report =
+              buildLiveExecutionReport({
+                plan,
+                requestBody,
+                responseData,
+                httpStatus,
+                elapsedMs,
+                error: message,
+              });
+
+            appState.liveExecutionReport = report;
+
+            document.getElementById(
+              "liveExecutionReport",
+            ).textContent = report;
+
+            document.getElementById(
+              "liveResponseOutput",
+            ).textContent =
+              responseData
+                ? JSON.stringify(
+                    responseData,
+                    null,
+                    2,
+                  )
+                : message;
+          }
+        }
+
+        function generateQueryFromBuilder() {
+          const plan = buildBuilderPlan();
+
+          appState.currentBuilderPlan = plan;
+          renderBuilderPlan(plan);
+          updateLiveQueryPreview(plan);
+
+          if (plan.mode === "invalid") {
+            appState.currentGeneratedQuery = "";
+
+            document.getElementById(
+              "generatedQuery",
+            ).textContent =
+              "🔴 BUILDER CONDITION INCOMPLETE\nOne or more conditions cannot be translated into QBL from the current relationship path. No query was generated.";
+
+            return;
+          }
+
+          if (
+            plan.mode === "qbl-native" ||
+            plan.mode === "single-related-table"
+          ) {
+            appState.currentGeneratedQuery = plan.query;
+
+            document.getElementById(
+              "generatedQuery",
+            ).textContent = plan.query;
+
+            if (
+              plan.queryTableId ===
+              appState.selectedTableId
+            ) {
+              analyzeInput(
+                plan.query,
+                "Visual Builder",
+              );
+            } else {
+              document.getElementById(
+                "generatedQuery",
+              ).textContent =
+                `Query Table: ${getTableName(plan.queryTableId)}\n${plan.query}\n\nSwitch the main Quickbase Table to ${getTableName(plan.queryTableId)} before schema-aware analysis/execution of this generated QBL.`;
+            }
+
+            return;
+          }
+
+          appState.currentGeneratedQuery = "";
+
+          document.getElementById(
+            "generatedQuery",
+          ).textContent =
+            "⚠ CROSS-TABLE QUERY PLAN REQUIRED\nThe selected conditions resolve to relationship fields owned by multiple tables. See Builder Plan above.";
+        }
+
         function scanQueryConditions(input) {
           const conditions = [],
             connectors = [];
@@ -1642,6 +4210,9 @@
             `Table: ${d.table.name}`,
             `DBID: ${safeValue(d.table.dbid)}`,
             `Fields Cached: ${d.table.fieldCount}`,
+            `Application Tables Cached: ${appState.tables.length}`,
+            `Application Relationships Cached: ${appState.relationships.length}`,
+            `Relationship Cache Built: ${appState.relationshipCacheLoadedAt || "Not built"}`,
             "",
             "INPUT",
             "-".repeat(76),
@@ -1754,12 +4325,54 @@
             );
           }
         }
+        function initializeCollapsibleSections() {
+          document
+            .querySelectorAll(".panel")
+            .forEach((panel) => {
+              const toggle = panel.querySelector(
+                ":scope > .panel-head .section-toggle",
+              );
+              const body = panel.querySelector(
+                ":scope > .collapsible-body",
+              );
+
+              if (!toggle || !body) return;
+
+              toggle.addEventListener("click", () => {
+                const expanded =
+                  toggle.getAttribute(
+                    "aria-expanded",
+                  ) === "true";
+
+                toggle.setAttribute(
+                  "aria-expanded",
+                  String(!expanded),
+                );
+
+                body.hidden = expanded;
+
+                const label =
+                  toggle.querySelector(
+                    ".toggle-label",
+                  );
+
+                if (label) {
+                  label.textContent = expanded
+                    ? "Expand"
+                    : "Collapse";
+                }
+              });
+            });
+        }
+
         async function init() {
+          initializeCollapsibleSections();
           appState.appDbid = getAppDbid();
           document.getElementById("realmContext").textContent = REALM;
           document.getElementById("appContext").textContent =
             appState.appDbid || "Unable to detect";
-          addCondition();
+          appState.conditionsState = [makeConditionState(0)];
+          renderConditionsFromState();
           if (!appState.appDbid) {
             setStatus(
               "Unable to detect the current Quickbase App DBID. Run this Code Page from inside a Quickbase app.",
@@ -1775,10 +4388,87 @@
           }
         }
         document
+          .getElementById("runLiveQueryButton")
+          .addEventListener("click", runLiveQuery);
+
+        document
+          .getElementById("applyLiveFieldsButton")
+          .addEventListener("click", runLiveQuery);
+
+        document
+          .getElementById("copyLiveRequestButton")
+          .addEventListener("click", () =>
+            copyText(
+              document.getElementById("liveRequestOutput").textContent,
+              "Live query request JSON copied.",
+            ),
+          );
+
+        document
+          .getElementById("copyLiveResponseButton")
+          .addEventListener("click", () =>
+            copyText(
+              document.getElementById("liveResponseOutput").textContent,
+              "Live query response JSON copied.",
+            ),
+          );
+
+        document
+          .getElementById("copyLiveRequestPanelButton")
+          .addEventListener("click", () =>
+            copyText(
+              document.getElementById("liveRequestOutput").textContent,
+              "Live query request JSON copied.",
+            ),
+          );
+
+        document
+          .getElementById("copyLiveResponsePanelButton")
+          .addEventListener("click", () =>
+            copyText(
+              document.getElementById("liveResponseOutput").textContent,
+              "Live query response JSON copied.",
+            ),
+          );
+
+        document
+          .getElementById("copyLiveReportButton")
+          .addEventListener("click", () =>
+            copyText(
+              document.getElementById("liveExecutionReport").textContent,
+              "Live execution report copied.",
+            ),
+          );
+
+        document
+          .getElementById("findPathButton")
+          .addEventListener("click", analyzeSelectedRelationshipPath);
+
+        document
+          .getElementById("copyPathReportButton")
+          .addEventListener("click", () =>
+            copyText(
+              document.getElementById("pathReportOutput").textContent,
+              "Relationship path report copied.",
+            ),
+          );
+
+        document
           .getElementById("tableSelect")
           .addEventListener("change", async (e) => {
             try {
               await loadFields(e.target.value);
+              appState.conditionsState = [makeConditionState(0)];
+              appState.conditionsState[0].tableId = e.target.value;
+              appState.conditionsState[0].ownerTableId = e.target.value;
+              populateRelationshipPathSelectors();
+              refreshConditionFieldOptions();
+              appState.currentGeneratedQuery = "";
+              appState.liveRequest = null;
+              appState.liveResponse = null;
+              document.getElementById(
+                "generatedQuery",
+              ).textContent = "No query generated yet.";
             } catch (error) {
               console.error(error);
               setStatus(error.message, "error");
